@@ -1,763 +1,621 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>吃音リハビリサポートアプリ - 臨床評価＆教育システム</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>吃音臨床伴走システム - さくら先生の伴走ロードマップ</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: #fcf8f6;
+    }
+    /* 音声波形アニメーション */
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.3); }
+      50% { transform: scaleY(1); }
+    }
+    .wave-bar {
+      animation: wave 1.2s ease-in-out infinite;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.6s; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-    <header class="bg-blue-600 text-white shadow-md">
-        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
-            <h1 class="text-xl font-bold tracking-wider flex items-center gap-2">
-                <span>💬</span> 吃音リハビリサポートシステム (臨床・教育統合型)
-            </h1>
-            <p class="text-sm text-blue-100 mt-2 md:mt-0">専門的臨床評価 & 要約なし教育パッケージ</p>
-        </div>
-    </header>
+  <header class="bg-white border-b border-pink-100 shadow-xs sticky top-0 z-50 px-4 py-3">
+    <div class="max-w-md mx-auto">
+      <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
+        <span>伴走ロードマップ</span>
+        <span id="roadmap-progress">Step 1 / 11</span>
+      </div>
+      <div class="flex items-center justify-between relative">
+        <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
+        <div id="roadmap-line" class="absolute left-0 top-1/2 h-0.5 bg-pink-400 -translate-y-1/2 z-0 transition-all duration-300" style="width: 0%;"></div>
+        
+        <script>
+          for (let i = 1; i <= 11; i++) {
+            document.write(`
+              <div id="dot-${i}" class="w-6 h-6 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center text-xs font-bold text-slate-400 z-10 transition-all duration-300">
+                ${i}
+              </div>
+            `);
+          }
+        </script>
+      </div>
+    </div>
+  </header>
 
-    <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div class="container mx-auto px-4 flex overflow-x-auto">
-            <button onclick="switchTab('tab-info')" id="btn-tab-info" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-blue-600 text-blue-600 whitespace-nowrap transition-colors flex items-center gap-2">
-                📋 1. 基本情報・発話自己調査
-            </button>
-            <button onclick="switchTab('tab-vicious')" id="btn-tab-vicious" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-blue-600 whitespace-nowrap transition-colors flex items-center gap-2">
-                🔄 2. 悪循環チェックシート
-            </button>
-            <button onclick="switchTab('tab-stage')" id="btn-tab-stage" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-blue-600 whitespace-nowrap transition-colors flex items-center gap-2">
-                📊 3. 吃音進展段階 (自動判定)
-            </button>
-            <button onclick="switchTab('tab-education')" id="btn-tab-education" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-slate-600 hover:text-blue-600 whitespace-nowrap transition-colors flex items-center gap-2">
-                📖 4. 吃音教育資料 (専門テキスト)
-            </button>
-        </div>
+  <main class="flex-1 w-full max-w-md mx-auto px-4 py-6">
+    
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-pink-50 flex items-start gap-3 mb-6">
+      <div class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-2xl shrink-0 border border-pink-200">🌸</div>
+      <div class="flex-1">
+        <h3 class="text-xs font-bold text-pink-500 mb-0.5">さくら先生 (ST)</h3>
+        <p id="sakura-bubble" class="text-sm leading-relaxed text-slate-700 font-medium">
+          こんにちは！言語聴覚士のさくらです。あなたに寄り添い、お話しがもっと楽になるよう最後までしっかり伴走しますね。まずは準備から始めましょう！
+        </p>
+      </div>
     </div>
 
-    <main class="container mx-auto px-4 py-8 flex-grow max-w-5xl">
+    <div id="step-content" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 min-h-[380px] flex flex-col justify-between">
+      </div>
 
-        <div id="tab-info" class="tab-content active space-y-8">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <h2 class="text-lg font-bold text-slate-900 border-l-4 border-blue-500 pl-3 mb-6">1. 基本情報の収集</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">氏名</label>
-                        <input type="text" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例：山田 太郎">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">年齢</label>
-                        <input type="number" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例：25">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">現在の所属 (学年や職業)</label>
-                        <input type="text" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例：大学3年 / 営業職">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">家族歴 (家族に吃音の人がいるか)</label>
-                        <div class="flex gap-4 mt-2">
-                            <label class="inline-flex items-center"><input type="radio" name="family_history" value="yes" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">あり</span></label>
-                            <label class="inline-flex items-center"><input type="radio" name="family_history" value="no" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">なし</span></label>
-                            <label class="inline-flex items-center"><input type="radio" name="family_history" value="unknown" class="text-blue-600 focus:ring-blue-500" checked><span class="ml-2">不明</span></label>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">吃音の訓練歴の有無</label>
-                        <div class="flex gap-4 mt-1 mb-2">
-                            <label class="inline-flex items-center"><input type="radio" name="training_history" value="yes" onclick="toggleTrainingDetails(true)" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">あり</span></label>
-                            <label class="inline-flex items-center"><input type="radio" name="training_history" value="no" onclick="toggleTrainingDetails(false)" class="text-blue-600 focus:ring-blue-500" checked><span class="ml-2">なし</span></label>
-                        </div>
-                        <div id="training_details_wrap" class="hidden">
-                            <textarea id="training_details" rows="2" class="w-full border border-slate-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="訓練を受けた時期、場所、内容など（覚えている範囲で）"></textarea>
-                        </div>
-                    </div>
-                </div>
+  </main>
+
+  <footer class="bg-white border-t border-slate-100 p-4 sticky bottom-0 z-50">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-4">
+      <button id="btn-back" onclick="prevStep()" class="px-5 py-3 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 active:scale-95 transition disabled:opacity-50" disabled>
+        戻る
+      </button>
+      <button id="btn-next" onclick="nextStep()" class="flex-1 py-3 rounded-xl font-bold text-sm bg-pink-500 text-white shadow-md shadow-pink-100 active:scale-95 transition disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none">
+        次に進む
+      </button>
+    </div>
+  </footer>
+
+  <script>
+    // 状態管理
+    const state = {
+      currentStep: 1,
+      profile: {
+        motherName: 'お母さん',
+        fatherName: 'お父さん'
+      },
+      currentQuestionIndex: 0,
+      answers: {}, // questionId: score
+      mrProgress: {}, // scenarioId: checkCount
+      audioPlaying: false,
+      audioTime: 0,
+      audioInterval: null
+    };
+
+    // 悪循環チェックシート全55項目データ
+    const allQuestions = [
+      { id: 1, cat: "他者の推測", text: "吃ると他の人は笑うに違いない。" },
+      { id: 2, cat: "他者の推測", text: "吃ると他の人は変な話し方だと思っている。" },
+      { id: 3, cat: "他者の推測", text: "吃る人は劣っていると他の人は考えている。" },
+      { id: 4, cat: "他者の推測", text: "皆が自分の話し方に注目している。" },
+      { id: 5, cat: "自分への考え", text: "吃ることは恥ずかしいことである。" },
+      { id: 6, cat: "自分への考え", text: "吃ることはいけないことである。" },
+      { id: 7, cat: "自分への考え", text: "吃ることは変な話し方である。" },
+      { id: 8, cat: "自分への考え", text: "吃ると他の人から笑われるに違いない。" },
+      { id: 9, cat: "自分への考え", text: "吃ると馬鹿にされるに違いない。" },
+      { id: 10, cat: "孤立感", text: "他の人には知られたくない。" },
+      { id: 11, cat: "孤立感", text: "吃るのは自分だけだ。" },
+      { id: 12, cat: "発話への考え", text: "話すとは意識して言葉を出すことである。" },
+      { id: 13, cat: "発話への考え", text: "話すとは口を動かして声を出すことである。" },
+      { id: 14, cat: "発話への考え", text: "特定の場面では言うべき表現が決まっていると思う。" },
+      { id: 15, cat: "注目・監視", text: "発話前に、語音（言葉の音）に注目している。" },
+      { id: 16, cat: "注目・監視", text: "発話前に、発話中に言葉に注目している。" },
+      { id: 17, cat: "注目・監視", text: "発話前に、言える、言えないと判断する。" },
+      { id: 18, cat: "注目・監視", text: "自分の体の緊張状態に注意が向く。" },
+      { id: 19, cat: "注目・監視", text: "音が上手く出たか、吃ったか意識している。" },
+      { id: 20, cat: "注目・監視", text: "発話前または発話中に口、舌の状態に注意がいってしまう。" },
+      { id: 21, cat: "注目・監視", text: "発話前または発話中に自分の身体の状態（こわばり等）を感じている。" },
+      { id: 22, cat: "注目・監視", text: "発話後、上手く言えた、言えなかったと分析・反省する。" },
+      { id: 23, cat: "工夫・コントロール", text: "発話中に舌、口、呼吸器官の動きを意識的に行おうとする。" },
+      { id: 24, cat: "工夫・コントロール", text: "発話中に、口を意図的に大きく動かし話そうとする。" },
+      { id: 25, cat: "工夫・コントロール", text: "口の形を自分が言いやすいように調整・工夫する。" },
+      { id: 26, cat: "工夫・コントロール", text: "口を大きく開けて話すように意識する。" },
+      { id: 27, cat: "工夫・コントロール", text: "お腹に力を入れて話す（お腹から声を出す）。" },
+      { id: 28, cat: "工夫・コントロール", text: "息をゆっくり吐きながら話すようにコントロールする。" },
+      { id: 29, cat: "工夫・コントロール", text: "他の人には分からない様に体でリズムを取って話す。" },
+      { id: 30, cat: "工夫・コントロール", text: "話す速度を無理にゆっくりにして話す（ゆっくり話す）。" },
+      { id: 31, cat: "工夫・コントロール", text: "発話前に息をわざと深く吸う。" },
+      { id: 32, cat: "助走行動", text: "詰まらないように事前に咳払いをする。" },
+      { id: 33, cat: "助走行動", text: "深呼吸をしてから話す（一度深く吸って吐いてから再度吸い話す）。" },
+      { id: 34, cat: "助走行動", text: "「えーと」「まー」等の言葉を、意識的に言葉の頭に入れる。" },
+      { id: 35, cat: "助走行動", text: "勢いを付ける（わざと怒った様な感情・テンションを持つ）。" },
+      { id: 36, cat: "助走行動", text: "発話中に、色々姿勢を変えて、言いやすい体勢を取ろうとする。" },
+      { id: 37, cat: "助走行動", text: "詰まると身体を動かす（身振りと見せかける）。" },
+      { id: 38, cat: "助走行動", text: "話すとき意識的に身体の一部（手や足）を動かしながら話す。" },
+      { id: 39, cat: "助走行動", text: "意識的に相手の言った言葉に続けて話す。" },
+      { id: 40, cat: "助走行動", text: "相手の言葉の一部を自分の言葉に取り込んで話す。" },
+      { id: 41, cat: "助走行動", text: "他の言葉を目的の言葉の前にいれる（例：その、あの）。" },
+      { id: 42, cat: "延期行動", text: "詰まったときに少し間をおく。" },
+      { id: 43, cat: "延期行動", text: "詰まりそうな時、詰まって出ないときは、言うのを後に延ばす。" },
+      { id: 44, cat: "延期行動", text: "相手に先に言わせてから、それに乗じて言う。" },
+      { id: 45, cat: "延期行動", text: "詰まって出ない時は考えているふりをして言うのを先に延ばす。" },
+      { id: 46, cat: "解除反応", text: "詰まって出ない時に意識的に一時止めて、再度話し始める。" },
+      { id: 47, cat: "解除反応", text: "詰まると姿勢を意識的に変えてロックを外そうとする。" },
+      { id: 48, cat: "解除反応", text: "詰まって出ない時に、さらに力を入れて無理やり乗り切る。" },
+      { id: 49, cat: "感情・反芻", text: "吃ってしまった後、激しく悔やんだり恥ずかしいと感じる。" },
+      { id: 50, cat: "感情・反芻", text: "特定の場面（電話、発表など）で強い不安・恐怖・緊張を感じる。" },
+      { id: 51, cat: "感情・反芻", text: "日常生活の全般で「また吃るかもしれない」と恐怖を感じる。" },
+      { id: 52, cat: "感情・反芻", text: "失敗した発話場面を、後から何度も思い出して思い悩む。" },
+      { id: 53, cat: "回避行動", text: "話すこと自体を諦めたり、その場面を避けて通る（回避）。" },
+      { id: 54, cat: "環境要因", text: "周囲の人間関係や場面、プレッシャーによって話しやすさが激しく変わる。" },
+      { id: 55, cat: "自己意識", text: "自分が吃音者であることを四六時中意識し、身構えてしまう。" }
+    ];
+
+    // ⑨対立内容 シナリオ（M・R用パーソナライズ元データ）
+    const mrScenarios = [
+      { id: 1, round: 4, age: "3歳", count: 5, text: "<1>母にだっことねだる場面\n<2>母にだっこと言っている。\n<3>母はだっこして家の中をあちこちと歩いている。" },
+      { id: 2, round: 4, age: "3歳", count: 10, text: "<1>父（母）に本を読んでもらっている場面\n<2>自分が思ったことを沢山言い、質問もしている。\n<3>父（母）は嬉しそうにニコニコして答えてくれている。" },
+      { id: 5, round: 5, age: "4－6歳", count: 5, text: "<1>母から手伝ってと言われた場面\n<2>今TVが良いところだから嫌という。\n<3>母はじゃ良いよといった。" },
+      { id: 6, round: 5, age: "4－6歳", count: 5, text: "<1>店で母に買ってくれとねだっている場面\n<2>母に○○と○○を買ってと言っている。\n<3>母はニコニコして全部いいよと受け入れてくれている。" },
+      { id: 10, round: 5, age: "4－6歳", count: 5, text: "<1>家で用事をしている母に話す場面\n<2>一緒に遊ぼうと自分のペースで(母)を誘っている。\n<3>(母)はニコニコして、すぐ一緒に遊び始める。" },
+      { id: 13, round: 6, age: "4－6歳", count: 5, text: "<1>帰宅した場面\n<2>上着を居間に放り出したまま家で遊び始める。\n<3>親から片付けるようにと指示されたら、お母さん片付けるしておいてと頼む。\n<4>お母さんはニコニコして片付けた。" },
+      { id: 14, round: 6, age: "4－6歳", count: 5, text: "<1>寝る前にテレビをみている場面\n<2>お母さんから歯磨きを促され、後でという。\n<3>テレビを見た後、もう眠いから歯磨きやめたと言う。\n<4>お母さんは良いよと了承する。" },
+      { id: 21, round: 7, age: "4－6歳", count: 5, text: "<1>園で友達と遊んでいる場面\n<2>遊びについて、自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>みんなで楽しく遊んでいる。" },
+      { id: 22, round: 7, age: "4－6歳", count: 5, text: "<1>園の部屋にいる場面\n<2>皆に○○して遊ぼうと呼び掛ける。\n<3>皆が入れて入れてと集まってきた。" },
+      { id: 29, round: 8, age: "7－9歳", count: 5, text: "<1>学校で友達と遊んでいる場面\n<2>遊びに誘ったり、ルールを説明したり、自分のペースで気軽に話したりしている。\n<3>みんなで楽しく遊んでいる。" },
+      { id: 30, round: 8, age: "7－9歳", count: 5, text: "<1>教室で休み時間に数人が集まってワイワイやっている場面\n<2>自分から輪の中に入り、話しを聞き、質問に答え、話題を提供したり、質問したりしている。\n<3>皆が楽しんでいる。" },
+      { id: 37, round: 9, age: "7－9歳", count: 5, text: "<1>家で家族がいる部屋で本を読む場面\n<2>本を見ながら自分のペースで読む。（本には書いてない内容を勝手に自発話で言う。）" },
+      { id: 38, round: 9, age: "7－9歳", count: 5, text: "<1>授業中にふいに当てられて本を読む場面\n<2>先生や周囲の状況を良く観察しながら、自分のペースで読んでいる。\n<3>クラスで一番上手いと先生からほめられた。" },
+      { id: 45, round: 10, age: "10-11歳", count: 5, text: "<1>クラスで自己紹介している場面\n<2>自分の番が回ってくるまで周囲を良く観察してまっている" },
+      { id: 46, round: 10, age: "10-11歳", count: 5, text: "<1>自己紹介で自分の番が回ってきた場面\n<2>周囲を良く観察しながら、自分のペースで自己紹介をしている。\n<3>周囲から拍手で受け入れられた。" },
+      { id: 53, round: 11, age: "12歳", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
+      { id: 54, round: 11, age: "12歳", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
+      { id: 61, round: 12, age: "15歳", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
+      { id: 62, round: 12, age: "15歳", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
+      { id: 69, round: 13, age: "17歳", count: 5, text: "<1>休み時間にクラスメイトと話す場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
+      { id: 70, round: 13, age: "17歳", count: 5, text: "<1>○○の授業で当てられる順番を待っている場面\n<2>教室や先生の様子を良く観察して待っており、順番が来て当てられたら、立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
+      { id: 77, round: 14, age: "6歳", count: 5, text: "<1>友達と玩具の電話で遊んでいる場面\n<2>目の前の友達に電話を掛け、話したり、相手からの電話に出て名乗ったり、話したり、質問したり、質問に答えたり、聞いたりしている。\n<3>相手も楽しく遊んでいる。" },
+      { id: 78, round: 14, age: "10-12歳", count: 5, text: "<1>友達に電話を掛け、友達が出た場面\n<2>友達の姿を勝手に想像し、その姿に向かって自分のペースで名乗っている。\n<3>友達は電話があったことを喜んでいる。" }
+    ];
+
+    // さくら先生のメッセージ辞書
+    const sakuraMessages = {
+      1: "こんにちは！お名前やご家族の普段の呼び方を設定して、あなた専用のプログラムを作りましょう！",
+      2: "今のあなたのお話し習慣を振り返ってみましょう。1問ずつ、体感の割合（％）を大きめのボタンでタップしてくださいね。文字潰れは起きませんので安心してください。",
+      3: "チェックありがとうございました！あなたを苦しめている『お話しパターンの個性・特徴（悪循環）』が可視化されました。原因がわかれば怖くありませんよ！",
+      4: "ここからは吃音アプローチ（RASS）について解説します。進展段階を昔に遡ることで、あなた本来の“自然で無意識な発話”を取り戻していきます。",
+      5: "最も効果的な『年表方式メンタルリハーサル法（M・R法）』に入ります。毎日寝る前に、頭の中で『理想のお話し』をリハーサルする手法です。",
+      6: "【幼児期編（3〜6歳）】のシナリオです。ご家族の呼称があなた専用に合成されています。指定回数（5回/10回）を完了するまでクリアボタンをタップしてくださいね。",
+      7: "M・R法をより深めるために、心身をリラックスさせ、中性的なイメージを心に描くトレーニング音声ガイドシミュレーターです。ぜひ目を閉じて聞いてみてください。",
+      8: "【学童期編（7〜11歳）】に進みます。場面が学校や教室に広がります。緊張しそうになったら、いつでも前のリラクセーションガイドに戻ってくださいね。",
+      9: "【思春期・成人期編（12〜17歳）】です。複雑な電話対応や自己紹介の場面をリハーサルし、かつての恐怖や身構えを完全に脱感作（リセット）しましょう！",
+      10: "素晴らしい継続力です！日常生活で『否定的感情の反芻』を禁止できているか、毎日の実施チェックシートを記録していきましょう。",
+      11: "全ステップを修了しました！素晴らしい努力の成果です。これからは不安に囚われず、あなた本来の自然な発話で、豊かにお話ししていきましょうね！🌸"
+    };
+
+    // 初期化
+    window.onload = function() {
+      // M・R法の進行状態をゼロクリア初期化
+      mrScenarios.forEach(s => {
+        state.mrProgress[s.id] = 0;
+      });
+      renderStep();
+    };
+
+    // ステップ描画コアロジック
+    function renderStep() {
+      const container = document.getElementById('step-content');
+      const bubble = document.getElementById('sakura-bubble');
+      const progressText = document.getElementById('roadmap-progress');
+      const roadmapLine = document.getElementById('roadmap-line');
+      
+      // ヘッダー・さくら先生アップデート
+      progressText.innerText = `Step ${state.currentStep} / 11`;
+      bubble.innerText = sakuraMessages[state.currentStep];
+      roadmapLine.style.width = `${((state.currentStep - 1) / 10) * 100}%`;
+
+      // ロードマップ丸のハイライト処理
+      for (let i = 1; i <= 11; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i < state.currentStep) {
+          dot.className = "w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold z-10 border-2 border-pink-500 shadow-xs";
+          dot.innerHTML = "✓";
+        } else if (i === state.currentStep) {
+          dot.className = "w-6 h-6 rounded-full bg-white text-pink-500 flex items-center justify-center text-xs font-bold z-10 border-2 border-pink-500 scale-110 shadow-md ring-4 ring-pink-100";
+          dot.innerHTML = i;
+        } else {
+          dot.className = "w-6 h-6 rounded-full bg-white text-slate-400 flex items-center justify-center text-xs font-bold z-10 border-2 border-slate-200";
+          dot.innerHTML = i;
+        }
+      }
+
+      // ナビゲーションボタンの基本制御
+      document.getElementById('btn-back').disabled = (state.currentStep === 1);
+      document.getElementById('btn-next').disabled = false;
+      document.getElementById('btn-next').innerText = "次に進む";
+
+      // 音声タイマー停止
+      if (state.currentStep !== 7) {
+        clearInterval(state.audioInterval);
+        state.audioPlaying = false;
+        state.audioTime = 0;
+      }
+
+      // ステップごとのUI条件分岐
+      let html = "";
+      
+      if (state.currentStep === 1) {
+        // --- STEP 1: プロフィール設定 ---
+        html = `
+          <div>
+            <h2 class="text-base font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">基本プロフィール設定</h2>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">お母さんの普段の呼び方</label>
+                <select id="select-mother" onchange="state.profile.motherName=this.value" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:border-pink-400 focus:outline-hidden">
+                  <option value="お母さん">お母さん</option>
+                  <option value="ママ">ママ</option>
+                  <option value="おかん">おかん</option>
+                  <option value="ハハ">ハハ</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">お父さんの普段の呼び方</label>
+                <select id="select-father" onchange="state.profile.fatherName=this.value" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:border-pink-400 focus:outline-hidden">
+                  <option value="お父さん">お父さん</option>
+                  <option value="パパ">パパ</option>
+                  <option value="おやじ">おやじ</option>
+                  <option value="チチ">チチ</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-slate-400 mt-6 leading-relaxed">※設定した呼び名は、後半のメンタルリハーサル法のシナリオへ自動的にリアルタイム合成されます。</p>
+        `;
+      } 
+      else if (state.currentStep === 2) {
+        // --- STEP 2: 悪循環チェックシート（1問1カード） ---
+        document.getElementById('btn-next').disabled = true; // 回答するまで進めない
+        const q = allQuestions[state.currentQuestionIndex];
+        const savedAns = state.answers[q.id] || "";
+        
+        html = `
+          <div class="flex flex-col justify-between h-full">
+            <div>
+              <div class="flex items-center justify-between text-xs font-bold text-pink-500 mb-2">
+                <span>[${q.cat}]</span>
+                <span>${state.currentQuestionIndex + 1} / 55</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1 rounded-full mb-4 overflow-hidden">
+                <div class="bg-pink-400 h-full" style="width: ${((state.currentQuestionIndex + 1) / 55) * 100}%"></div>
+              </div>
+              <p class="text-base font-bold text-slate-800 leading-normal mb-6 pt-2">
+                ${q.text}
+              </p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <h2 class="text-lg font-bold text-slate-900 border-l-4 border-blue-500 pl-3 mb-2">2. 発話に関する自己調査評価表</h2>
-                <p class="text-xs text-slate-500 mb-6">現在の発話の状態、およびそれに対する主観的な評価尺度を測定します。</p>
-                
-                <div class="space-y-6">
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                        <label class="block text-sm font-semibold text-slate-800 mb-2">Q1. しゃべる時に必要な努力のうち何割をなめらかにしゃべることに使っていますか？</label>
-                        <p class="text-xs text-slate-500 mb-3">(0 = 0%, 10 = 100%)</p>
-                        <select id="self_q1" onchange="calculateResults()" class="w-full md:w-1/3 border border-slate-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                            <option value="0">0 (0%) - 全く努力を使っていない</option>
-                            <option value="1">1 (10%)</option>
-                            <option value="2">2 (20%)</option>
-                            <option value="3">3 (30%)</option>
-                            <option value="4">4 (40%)</option>
-                            <option value="5" selected>5 (50%)</option>
-                            <option value="6">6 (60%)</option>
-                            <option value="7">7 (70%)</option>
-                            <option value="8">8 (80%)</option>
-                            <option value="9">9 (90%)</option>
-                            <option value="10">10 (100%) - すべての努力をなめらかさに注いでいる</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                        <label class="block text-sm font-semibold text-slate-800 mb-2">Q2. 自分の話し方に1〜10の得点をつけるとしたら、あなたは何点をつけますか？</label>
-                        <p class="text-xs text-slate-500 mb-3">(1 = とても悪い, 10 = とてもよい)</p>
-                        <select id="self_q2" onchange="calculateResults()" class="w-full md:w-1/3 border border-slate-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                            <option value="1">1 - とても悪い</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5" selected>5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10 - とてもよい</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                        <label class="block text-sm font-semibold text-slate-800 mb-2">Q3. あなたは自分の話し方にどのくらい満足していますか？</label>
-                        <div class="mt-3 space-y-2">
-                            <label class="flex items-center text-sm text-slate-700"><input type="radio" name="self_q3" value="1" onchange="calculateResults()" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">1：全く満足していない</span></label>
-                            <label class="flex items-center text-sm text-slate-700"><input type="radio" name="self_q3" value="2" onchange="calculateResults()" class="text-blue-600 focus:ring-blue-500" checked><span class="ml-2">2：満足していない</span></label>
-                            <label class="flex items-center text-sm text-slate-700"><input type="radio" name="self_q3" value="3" onchange="calculateResults()" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">3：どちらでもない</span></label>
-                            <label class="flex items-center text-sm text-slate-700"><input type="radio" name="self_q3" value="4" onchange="calculateResults()" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">4：満足している</span></label>
-                            <label class="flex items-center text-sm text-slate-700"><input type="radio" name="self_q3" value="5" onchange="calculateResults()" class="text-blue-600 focus:ring-blue-500"><span class="ml-2">5：非常に満足している</span></label>
-                        </div>
-                    </div>
-                </div>
+            <div>
+              <label class="block text-center text-xs font-bold text-slate-400 mb-3">あなたに当てはまる度合い（％）をタップ</label>
+              <div class="grid grid-cols-5 gap-2 max-w-xs mx-auto">
+                ${[10,20,30,40,50,60,70,80,90,100].map(val => {
+                  const isSelected = state.answers[q.id] === val;
+                  return `
+                    <button onclick="answerQuestion(${q.id}, ${val})" class="w-11 h-11 text-xs rounded-full font-bold flex items-center justify-center transition-all duration-150 ${isSelected ? 'bg-pink-500 text-white ring-4 ring-pink-100' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-100'}">
+                      ${val}%
+                    </button>
+                  `;
+                }).join('')}
+              </div>
             </div>
+          </div>
+        `;
+      } 
+      else if (state.currentStep === 3) {
+        // --- STEP 3: お話しパターンの個性・特徴（結果） ---
+        // ダミー集計ロジック（回答済みの平均、未回答なら初期値）
+        let sum = 0, count = 0;
+        Object.values(state.answers).forEach(v => { sum += v; count++; });
+        const score = count > 0 ? Math.round(sum / count) : 65;
+
+        html = `
+          <div class="space-y-4">
+            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">分析結果：お話しパターンの個性・特徴</h2>
             
-            <div class="text-right">
-                <button onclick="switchTab('tab-vicious')" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors">
-                    悪循環チェックシートへ進む ➔
-                </button>
+            <div class="bg-pink-50/50 rounded-xl p-4 text-center">
+              <span class="text-xs font-bold text-slate-500 block mb-1">現在の身構え・悪循環レベル</span>
+              <span class="text-3xl font-black text-pink-500">${score}%</span>
             </div>
+
+            <div class="space-y-2.5 text-xs text-slate-600 leading-relaxed">
+              <p class="font-bold text-slate-700 text-sm">💡 さくら先生からのフィードバック</p>
+              <p>「話す前に無意識に『吃るかも』と予測し、口や呼吸を意図的にコントロール（工夫）しようとする強い身構えが見られます。」</p>
+              <p>「この身構えこそが、中核症状をブロック（難発）へ悪化させてしまう最大の要因です。次のステップから、この認知と行動の悪循環を優しく紐解いていきましょうね。」</p>
+            </div>
+          </div>
+        `;
+      } 
+      else if (state.currentStep === 4) {
+        // --- STEP 4: 吃音アプローチ・ロードマップ解説 ---
+        html = `
+          <div class="space-y-4">
+            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">遡及的アプローチ（RASS）の仕組み</h2>
+            
+            <div class="border-l-4 border-pink-400 pl-3 space-y-3 text-xs leading-relaxed text-slate-600">
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">1. 吃音の中核症状</h4>
+                <p>自分の意思と関係なく生じる「連発」「伸発」「阻止（難発）」。本来はこれだけなら軽度です。</p>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">2. 二次的症状（工夫・回避）</h4>
+                <p>どもるのを恐れて「言い換え」「助走」「力を入れて乗り切る」行動。これが症状を慢性化・重症化させます。</p>
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-800 text-sm">3. 改善へのゴール</h4>
+                <p>健常者と同じ<span class="font-bold text-pink-500">“自然で無意識な発話”</span>を目指します。進展段階を幼児期へと過去に遡り、身構えの記憶をリセットします。</p>
+              </div>
+            </div>
+          </div>
+        `;
+      } 
+      else if (state.currentStep === 5) {
+        // --- STEP 5: M・R法完全統合の解説 ---
+        html = `
+          <div class="space-y-4">
+            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">年表方式メンタルリハーサル法（M・R法）</h2>
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-xs leading-relaxed text-slate-600 space-y-2">
+              <p class="font-bold text-slate-800">【実施ルール】</p>
+              <p>① 毎日寝る前に、リラックスした状態で行います。</p>
+              <p>② 各年齢のシナリオを頭の中で「ありありとイメージ」します。</p>
+              <p>③ 吃る工夫を一切せず、自分のペースで気楽に話し、相手に快く受け入れられる大成功イメージを固定します。</p>
+            </div>
+            <p class="text-xs font-bold text-pink-500 bg-pink-50 p-2.5 rounded-lg text-center">※各年齢ステージのシナリオ指定回数を全て完了するまで、次のステップはロックされます。</p>
+          </div>
+        `;
+      } 
+      else if (state.currentStep === 6) {
+        // --- STEP 6: M・R法【幼児期編 (3〜6歳)】 ---
+        html = renderMrStage(["3歳", "4－6歳", "6歳"]);
+      } 
+      else if (state.currentStep === 7) {
+        // --- STEP 7: リラクセーション音声ガイドシミュレーター ---
+        html = renderAudioPlayer();
+      } 
+      else if (state.currentStep === 8) {
+        // --- STEP 8: M・R法【学童期編 (7〜11歳)】 ---
+        html = renderMrStage(["7－9歳", "10-11歳", "10-12歳"]);
+      } 
+      else if (state.currentStep === 9) {
+        // --- STEP 9: M・R法【思春期・成人期編 (12〜17歳)】 ---
+        html = renderMrStage(["12歳", "13歳", "15歳", "17歳"]);
+      } 
+      else if (state.currentStep === 10) {
+        // --- STEP 10: 日常生活での実施記録 ---
+        html = `
+          <div class="space-y-4">
+            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">日常生活での行動チェック</h2>
+            <p class="text-xs text-slate-500 leading-relaxed">吃音の悪化要因を防ぐため、日々の生活態度を自己チェックしましょう。</p>
+            
+            <div class="space-y-3 pt-2">
+              ${[
+                "毎日寝る前にM.R法を実施した",
+                "吃ってしまった失敗を、後からグルグル反芻するのを禁止できた",
+                "話すテクニックや工夫に注目せず、自然に任せて話した",
+                "話す場面を回避せず、自分の意思で行動できた"
+              ].map((item, idx) => `
+                <label class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100 cursor-pointer active:bg-slate-100 transition">
+                  <input type="checkbox" class="mt-0.5 accent-pink-500 w-4 h-4 rounded-sm">
+                  <span class="text-xs text-slate-700 font-medium leading-tight">${item}</span>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } 
+      else if (state.currentStep === 11) {
+        // --- STEP 11: 終了画面 ---
+        document.getElementById('btn-next').innerText = "最初からやり直す";
+        html = `
+          <div class="text-center space-y-4 py-4">
+            <span class="text-5xl block">🎉</span>
+            <h2 class="text-lg font-black text-pink-500">伴走ロードマップ修了</h2>
+            <p class="text-xs text-slate-600 leading-relaxed px-2">
+              すべてのステップ、および進展段階の遡及メンタルリハーサルを完了しました！あなたの中に「自然に話せた」という成功記憶が強く上書きされました。
+            </p>
+            <div class="bg-pink-50 border border-pink-100 rounded-xl p-4 text-left max-w-xs mx-auto">
+              <span class="text-xs font-bold text-pink-700 block mb-1">🌸 さくら先生からの最後の約束</span>
+              <span class="text-xs text-slate-700 leading-relaxed block">
+                「お話しへの過剰な注目や身構えを手放せたあなたなら大丈夫。これからも深呼吸を忘れず、リラックスしてあなたらしい毎日を楽しんでくださいね。ずっと応援しています！」
+              </span>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    // 悪循環チェックの回答アクション
+    function answerQuestion(qId, value) {
+      state.answers[qId] = value;
+      
+      // 1カード形式：タップしたら0.2秒後に自動で次の質問へ
+      setTimeout(() => {
+        if (state.currentQuestionIndex < allQuestions.length - 1) {
+          state.currentQuestionIndex++;
+          renderStep();
+        } else {
+          // 55問すべて回答し終えたら自動的に次のステップ（Step 3）へ
+          state.currentStep = 3;
+          renderStep();
+        }
+      }, 200);
+    }
+
+    // M・R法ステージの表示生成ロジック（ロック制御含む）
+    function renderMrStage(ages) {
+      // 対象年齢に合致するシナリオを抽出
+      const filterScenarios = mrScenarios.filter(s => ages.includes(s.age));
+      
+      // ロック条件判定：このステージの全シナリオが規定回数に達しているか
+      let allCleared = true;
+      
+      let itemsHtml = filterScenarios.map(s => {
+        const currentCount = state.mrProgress[s.id] || 0;
+        const isScenarioCleared = currentCount >= s.count;
+        if (!isScenarioCleared) allCleared = false;
+
+        // 家族の呼び名をパーソナライズ置換
+        let text = s.text;
+        text = text.replace(/母|お母さん/g, state.profile.motherName);
+        text = text.replace(/父|お父さん/g, state.profile.fatherName);
+
+        // 回数達成チェックボックス(丸型)の生成
+        let checksHtml = "";
+        for (let i = 1; i <= s.count; i++) {
+          const isChecked = i <= currentCount;
+          checksHtml += `
+            <button onclick="toggleMrCheck(${s.id}, ${i})" class="w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${isChecked ? 'bg-pink-500 text-white' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+              ${i}
+            </button>
+          `;
+        }
+
+        return `
+          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-100 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold px-2 py-0.5 bg-slate-200 text-slate-700 rounded-sm">No.${s.id} [${s.age}]</span>
+              <span class="text-xs font-bold ${isScenarioCleared ? 'text-green-600' : 'text-amber-600'}">
+                ${isScenarioCleared ? '✓ 達成' : `実施数: ${currentCount}/${s.count}回`}
+              </span>
+            </div>
+            <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-medium bg-white p-2.5 rounded-lg border border-slate-100">${text}</p>
+            <div class="flex items-center gap-1.5 justify-end">
+              <span class="text-[10px] font-bold text-slate-400 mr-1">記録:</span>
+              ${checksHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 全て完了していない場合は次へ進むボタンを無効化
+      document.getElementById('btn-next').disabled = !allCleared;
+
+      return `
+        <div class="flex flex-col h-full justify-between">
+          <div>
+            <div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-3">
+              <h2 class="text-base font-bold text-slate-800">M・R法：${ages[0]}〜編</h2>
+              ${ages.includes("7－9歳") ? `<button onclick="state.currentStep=7;renderStep();" class="text-xs font-bold text-pink-500 bg-pink-50 px-2 py-1 rounded-sm">🧘 音声ガイド</button>` : ''}
+            </div>
+            <div class="space-y-3 max-h-[290px] overflow-y-auto pr-1">
+              ${itemsHtml}
+            </div>
+          </div>
+          ${!allCleared ? `<p class="text-[11px] text-center font-bold text-amber-500 bg-amber-50 rounded-md p-1.5 mt-3">⚠️ すべての実施記録（回数分）をタップするとロックが解除されます</p>` : ''}
         </div>
+      `;
+    }
 
-        <div id="tab-vicious" class="tab-content space-y-6">
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-                <h2 class="text-lg font-bold text-slate-900 border-l-4 border-blue-500 pl-3 mb-1">3. 思考・感情・行動の悪循環チェック</h2>
-                <p class="text-xs text-slate-500 mb-6">進展段階 第3層、第4層の吃音者の考え、行動、感情・情動の悪循環を網羅的に評価します。本人の感じる程度を 0% 〜 100% で指定してください。</p>
+    // M・R法の回数カウント操作
+    function toggleMrCheck(scenarioId, index) {
+      const current = state.mrProgress[scenarioId] || 0;
+      // タップした番号に応じてカウント数を増減
+      if (current === index) {
+        state.mrProgress[scenarioId] = index - 1;
+      } else {
+        state.mrProgress[scenarioId] = index;
+      }
+      renderStep();
+    }
 
-                <div id="vicious-questions-container" class="space-y-8">
-                    </div>
-            </div>
+    // STEP 7: リラクセーション音声ガイドプレイヤーのUI生成
+    function renderAudioPlayer() {
+      const minutes = Math.floor(state.audioTime / 60);
+      const seconds = state.audioTime % 60;
+      const displayTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / 01:00`;
+
+      // 時間経過に応じた字幕ナレーション
+      let caption = "目を閉じて、椅子の背もたれに体を深くあずけましょう...";
+      if (state.audioTime > 10) caption = "鼻からゆっくり吸って、口からふーーっと細く長く吐き出します...";
+      if (state.audioTime > 25) caption = "静かで心地よい、誰もいない穏やかな砂浜や草原を思い浮かべてください...";
+      if (state.audioTime > 45) caption = "全身の力が抜け、心が中性なニュートラル状態へと満たされていきます...";
+      if (state.audioTime >= 60) caption = "素晴らしいリラックス状態です。そのまま次のM・Rシナリオに進みましょう。";
+
+      return `
+        <div class="space-y-6 py-2">
+          <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">リラクセーション音声シミュレーター</h2>
+          
+          <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-inner flex flex-col items-center justify-center space-y-4">
             
-            <div class="flex justify-between">
-                <button onclick="switchTab('tab-info')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-6 py-2.5 rounded-lg transition-colors">
-                    ⬅ 前の画面に戻る
-                </button>
-                <button onclick="switchTab('tab-stage')" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm transition-colors">
-                    自動判定結果を確認する 📊
-                </button>
+            <div class="flex items-center justify-center gap-1.5 h-12">
+              ${[1,2,3,4,5].map(() => `
+                <div class="w-1 bg-pink-400 rounded-full h-full wave-bar" style="${state.audioPlaying ? '' : 'animation: none; transform: scaleY(0.2);'}"></div>
+              `).join('')}
             </div>
+
+            <div class="text-xs font-mono text-slate-400 font-bold">${displayTime}</div>
+
+            <button onclick="toggleAudio()" class="w-14 h-14 rounded-full bg-pink-500 hover:bg-pink-600 flex items-center justify-center text-white text-lg active:scale-95 transition shadow-md shadow-pink-900/30">
+              ${state.audioPlaying ? '⏸' : '▶'}
+            </button>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">LIVE 字幕ガイド</span>
+            <p class="text-xs text-slate-700 font-medium leading-relaxed">${caption}</p>
+          </div>
         </div>
+      `;
+    }
 
-        <div id="tab-stage" class="tab-content space-y-8">
-            <div class="bg-gradient-to-br from-slate-900 to-blue-900 text-white rounded-xl shadow-md p-6 border border-slate-800">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">言語聴覚士側評価指標</span>
-                    <span class="text-slate-400 text-xs">リアルタイムAI/ロジック判定</span>
-                </div>
-                <h2 class="text-xl font-bold mb-2 flex items-center gap-2">🩺 現在の吃音進展段階 自動判定結果</h2>
-                <p class="text-sm text-slate-300 mb-6">※本機能はユーザーの「発話自己調査」「悪循環チェックシート」の回答傾向から進展状態を自動プロファイリングしたものです。</p>
-                
-                <div class="p-6 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10">
-                    <div class="text-sm text-blue-300 font-medium mb-1">判定された現在のステータス</div>
-                    <div id="detected-stage-title" class="text-3xl font-extrabold text-blue-400">算出中...</div>
-                    <p id="detected-stage-desc" class="text-sm text-slate-200 mt-3 leading-relaxed">悪循環チェックシートを入力すると、ここに詳細な分析結果が反映されます。</p>
-                </div>
-            </div>
+    // 音声再生・一時停止の擬似制御
+    function toggleAudio() {
+      if (state.audioPlaying) {
+        clearInterval(state.audioInterval);
+        state.audioPlaying = false;
+      } else {
+        state.audioPlaying = true;
+        state.audioInterval = setInterval(() => {
+          state.audioTime++;
+          if (state.audioTime >= 60) {
+            clearInterval(state.audioInterval);
+            state.audioPlaying = false;
+          }
+          renderStep();
+        }, 1000);
+      }
+      renderStep();
+    }
 
-            <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 overflow-hidden">
-                <h2 class="text-lg font-bold text-slate-900 border-l-4 border-blue-500 pl-3 mb-2">吃音進展段階 評価ツールマトリクス</h2>
-                <p class="text-xs text-slate-500 mb-4">言語聴覚士が当事者の現在の吃音状態（中核症状、工夫・回避、心理的変動、注目、苦悩）を俯瞰・確認するための臨床用対照表です。</p>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                                <th class="p-3 border border-slate-200">進展段階</th>
-                                <th class="p-3 border border-slate-200">吃音症状</th>
-                                <th class="p-3 border border-slate-200">変動性（波）</th>
-                                <th class="p-3 border border-slate-200">困難な場面</th>
-                                <th class="p-3 border border-slate-200">困難な語音</th>
-                                <th class="p-3 border border-slate-200">自覚および情緒性反応</th>
-                                <th class="p-3 border border-slate-200">注目</th>
-                                <th class="p-3 border border-slate-200">苦悩</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 text-slate-600">
-                            <tr id="row-layer-1" class="transition-colors">
-                                <td class="p-3 font-bold text-slate-900 border border-slate-200 bg-slate-50/50">第1層</td>
-                                <td class="p-3 border border-slate-200">・音節や語の部分の繰り返し<br>・引き延ばし</td>
-                                <td class="p-3 border border-slate-200">・一過性に吃る<br>・変動性が大きい</td>
-                                <td class="p-3 border border-slate-200">・コミュニケーション上の圧力下<br>・興奮時、長い話しをするとき</td>
-                                <td class="p-3 border border-slate-200">・文頭の語</td>
-                                <td class="p-3 border border-slate-200">・すべての場面で自由に話す<br>・まれに瞬間的なもがき</td>
-                                <td class="p-3 border border-slate-200">無し</td>
-                                <td class="p-3 border border-slate-200">無し</td>
-                            </tr>
-                            <tr id="row-layer-2" class="transition-colors">
-                                <td class="p-3 font-bold text-slate-900 border border-slate-200 bg-slate-50/50">第2層</td>
-                                <td class="p-3 border border-slate-200">・繰り返し<br>・引き延ばし<br>・（阻止）ブロック</td>
-                                <td class="p-3 border border-slate-200">・慢性化<br>・一時的な消失あり</td>
-                                <td class="p-3 border border-slate-200">・家、学校、友人など同じように吃る<br>・特に、興奮時、速く話すとき</td>
-                                <td class="p-3 border border-slate-200">・話しことばの主要な部分</td>
-                                <td class="p-3 border border-slate-200">・吃音者であると思っている<br>・自由に話す<br>・非常に困難な瞬間に「ボクハ話セナイ」等と表明することあり<br>・（吃音に対する否定的な価値観）</td>
-                                <td class="p-3 border border-slate-200">あり</td>
-                                <td class="p-3 border border-slate-200">無し</td>
-                            </tr>
-                            <tr id="row-layer-3" class="transition-colors">
-                                <td class="p-3 font-bold text-slate-900 border border-slate-200 bg-slate-50/50">第3層</td>
-                                <td class="p-3 border border-slate-200">・回避以外の症状が出そろう<br>・解除反応、助走、延期を巧みに使う</td>
-                                <td class="p-3 border border-slate-200">・慢性的</td>
-                                <td class="p-3 border border-slate-200">・いくつかの特定の場面が特に困難で、それを自覚している</td>
-                                <td class="p-3 border border-slate-200">・困難な語音がある<br>・語の置き換えをする</td>
-                                <td class="p-3 border border-slate-200">・吃音を自覚し、欠点、問題として把握する<br>・吃音に憤り、いらだち、嫌悪感、フラストレーションをもつ</td>
-                                <td class="p-3 border border-slate-200">あり</td>
-                                <td class="p-3 border border-slate-200">あり</td>
-                            </tr>
-                            <tr id="row-layer-4" class="transition-colors">
-                                <td class="p-3 font-bold text-slate-900 border border-slate-200 bg-slate-50/50">第4層</td>
-                                <td class="p-3 border border-slate-200">・第1層の症状（連発・伸発）は減少<br>・ブロックが多くなる<br>・回避（発話回避・場面回避）</td>
-                                <td class="p-3 border border-slate-200">・慢性的<br>・消失することがほとんどない</td>
-                                <td class="p-3 border border-slate-200">・ほぼすべての場面（自発話、応答、電話、人前、店、役所など全般）</td>
-                                <td class="p-3 border border-slate-200">・多くの語音・ことばに拡大<br>・特定の語音に強い恐れ</td>
-                                <td class="p-3 border border-slate-200">・吃音への強固な恐怖、予期不安<br>・自分は普通の話し方ができない、劣った人間だとする強固な否定的自己認識・無力感</td>
-                                <td class="p-3 border border-slate-200">あり</td>
-                                <td class="p-3 border border-slate-200">あり（非常に強い ＋＋）</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    // 画面下部ナビゲーション：進む
+    function nextStep() {
+      if (state.currentStep < 11) {
+        state.currentStep++;
+        renderStep();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // 修了画面でボタンを押したら最初に戻る
+        state.currentStep = 1;
+        state.currentQuestionIndex = 0;
+        state.answers = {};
+        mrScenarios.forEach(s => state.mrProgress[s.id] = 0);
+        renderStep();
+      }
+    }
 
-        <div id="tab-education" class="tab-content space-y-8">
-            <div class="bg-white rounded-xl shadow-sm p-8 border border-slate-200 space-y-12 text-justify leading-relaxed">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-900 border-b-4 border-blue-600 pb-2 mb-6">吃音教育資料（成人用臨床マニュアル）</h2>
-                    <p class="text-sm text-slate-500">※以下は、提供された臨床教育用パワーポイント資料から一切の要約・削減を排し、原文のまま構築された専門知識パッケージです。</p>
-                </div>
+    // 画面下部ナビゲーション：戻る
+    function prevStep() {
+      if (state.currentStep > 1) {
+        state.currentStep--;
+        renderStep();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  </script>
 
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音とは</h3>
-                    <ul class="list-disc pl-6 space-y-2 text-slate-700 text-sm">
-                        <li>話しことばが滑らかに出ない発話障害</li>
-                        <li>好発年齢は2～4歳、発症率は8％程度</li>
-                        <li>有病率は全人口の１％（男性に多い）</li>
-                        <li>⇒自然治癒率7～8割程度（多くは大人になるまでに消失）</li>
-                        <li>以前は親の愛情不足や対応が原因とされたり、伝染する等も云われていたが、現在では否定。</li>
-                        <li>何らかの遺伝要因（7割）＋環境要因（3割）により発吃するのではないかと考えられている。</li>
-                        <li>根本的な原因はまだよくわかっていない＝根治療法なし</li>
-                        <li>世の中の吃音治療法は全て対症療法</li>
-                        <li>→臨床家によって「改善」の解釈が異なる</li>
-                        <li>※医学的に分かっている事と分からない事を分けて考える</li>
-                    </ul>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音の中核症状</h3>
-                    <p class="text-sm text-slate-600 font-medium">自分の意思とは関係なく現れる。</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                            <span class="font-bold text-blue-900 block mb-1">音節や語の部分の繰り返し（連発）</span>
-                            <span class="bg-white px-2 py-1 rounded border text-xs text-slate-700 font-mono">「みみみかん」</span>
-                        </div>
-                        <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                            <span class="font-bold text-blue-900 block mb-1">引き延ばし（伸発）</span>
-                            <span class="bg-white px-2 py-1 rounded border text-xs text-slate-700 font-mono">「み～かん」</span>
-                        </div>
-                        <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
-                            <span class="font-bold text-blue-900 block mb-1">ブロック（阻止、難発）</span>
-                            <span class="bg-white px-2 py-1 rounded border text-xs text-slate-700 font-mono">「ｍ…M…ッみかん」</span>
-                        </div>
-                    </div>
-                    <p class="text-xs text-red-600 font-semibold mt-2">※発話に伴い随伴症状（無意識に身体が動く）が現れる。</p>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音の二次的症状</h3>
-                    <p class="text-sm text-slate-600 font-medium">どもる事を恐れて、自分の意思で行う行動。</p>
-                    
-                    <div class="space-y-3 pl-4">
-                        <div class="border-l-2 border-slate-300 pl-3">
-                            <h4 class="font-bold text-slate-900 text-sm">工夫（発話の意図的操作）</h4>
-                            <ul class="list-disc pl-5 text-xs text-slate-700 mt-1 space-y-1">
-                                <li>ブロックから脱出するために行う「解除反応」</li>
-                                <li>言葉の前に他の言葉を入れる「助走」</li>
-                                <li>言えると思えるまで話すことを先延ばし「延期」</li>
-                                <li>etc…</li>
-                            </ul>
-                        </div>
-                        <div class="border-l-2 border-slate-300 pl-3">
-                            <h4 class="font-bold text-slate-900 text-sm">回避</h4>
-                            <ul class="list-disc pl-5 text-xs text-slate-700 mt-1 space-y-1">
-                                <li>話さないでその場をやり過ごす「発話回避」</li>
-                                <li>話す機会自体を遠ざける「場面回避」</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <p class="text-sm font-bold text-blue-700 bg-blue-50 p-3 rounded-lg border border-blue-100 mt-4">⚠️ 吃音最大の問題は進展すること</p>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音進展段階（吃音検査法小委員会、1981より改変）</h3>
-                    <div class="overflow-x-auto text-xs">
-                        <table class="w-full text-left border-collapse border border-slate-200">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-800 font-bold">
-                                    <th class="p-2 border border-slate-200">層</th>
-                                    <th class="p-2 border border-slate-200">症状</th>
-                                    <th class="p-2 border border-slate-200">発話への注目</th>
-                                    <th class="p-2 border border-slate-200">吃音の自覚</th>
-                                    <th class="p-2 border border-slate-200">苦悩</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="p-2 border border-slate-200 font-bold">第1層</td>
-                                    <td class="p-2 border border-slate-200">音や語の繰り返し、音や語の引き伸ばし</td>
-                                    <td class="p-2 border border-slate-200">－</td>
-                                    <td class="p-2 border border-slate-200">－</td>
-                                    <td class="p-2 border border-slate-200">－</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 border border-slate-200 font-bold">第2層</td>
-                                    <td class="p-2 border border-slate-200">第1層の症状、ことばが詰まる（ブロック）</td>
-                                    <td class="p-2 border border-slate-200">－</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 border border-slate-200 font-bold">第3層</td>
-                                    <td class="p-2 border border-slate-200">第1～2層の症状、工夫（語の置き換え等）</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 border border-slate-200 font-bold">第4層</td>
-                                    <td class="p-2 border border-slate-200">第1層の症状は減少、ブロックが多くなる、回避</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                    <td class="p-2 border border-slate-200">＋</td>
-                                    <td class="p-2 border border-slate-200">＋＋</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音悪化要因と流暢性の要因 (Charles Van Riper, 1967)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                        <div class="bg-red-50 p-4 rounded-lg border border-red-100">
-                            <h4 class="font-bold text-red-900 mb-3">【吃音悪化要因】</h4>
-                            <ul class="space-y-2 text-slate-700 text-xs">
-                                <li><strong class="text-red-700">罰：</strong>吃りに対して加えられる罰、あるいは罰の記憶</li>
-                                <li><strong class="text-red-700">フラストレーション：</strong>記憶に残っている全てのフラストレーション</li>
-                                <li><strong class="text-red-700">不安：</strong>すべてのタイプの不安</li>
-                                <li><strong class="text-red-700">罪：</strong>うまくいかなかった事の責任、原因が自分にあるとする考え</li>
-                                <li><strong class="text-red-700">敵意：</strong>罪の意識とは逆に、責任、原因が他者にあるとする考え</li>
-                                <li><strong class="text-red-700">場面に対する恐れ：</strong>過去の不愉快な経験に基づく恐れ</li>
-                                <li><strong class="text-red-700">話す事への心理的圧力：</strong>重要なことを言わなければならない時</li>
-                                <li><strong class="text-red-700">語に対する恐れ：</strong>不愉快な記憶に基づく特定の音・語への恐れ</li>
-                            </ul>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg border border-green-100">
-                            <h4 class="font-bold text-green-900 mb-3">【流暢性の要因】</h4>
-                            <ul class="space-y-2 text-slate-700 text-xs">
-                                <li><strong class="text-green-700">士気：</strong>士気ないし自我の強さ（肯定的な情動反応）</li>
-                                <li><strong class="text-green-700">流暢さ：</strong>本人が感じる流暢さの程度（自然で無意識な発話の経験）</li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 自然で無意識な発話とは</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-                        <div class="border p-4 rounded-lg bg-slate-50">
-                            <h4 class="font-bold text-slate-900 text-sm mb-2 text-blue-700">🟩 健常者の発話行動</h4>
-                            <p class="font-medium mb-2">思考するのみで、話した結果が生じるだけ</p>
-                            <p class="text-slate-600 bg-white p-2 rounded border">思考内容 ➡ [無意識] 注意も払わず、コントロールもしない ➡ 無意識の内に自然な発話を実行した“結果”が生じて伝わっている状態を達成！</p>
-                        </div>
-                        <div class="border p-4 rounded-lg bg-slate-50">
-                            <h4 class="font-bold text-slate-900 text-sm mb-2 text-red-700">🟥 2次性吃音の当事者の発話行動</h4>
-                            <ul class="list-disc pl-4 space-y-1 mb-2 text-slate-700">
-                                <li>思考し、発話へ注目する</li>
-                                <li>音をいかに出すか考える</li>
-                                <li>本来無意識の発話過程を意思によりコントロールする</li>
-                                <li>発話結果を分析し、落ち込む</li>
-                            </ul>
-                            <p class="text-slate-600 bg-white p-2 rounded border mb-2">思考内容 ➡ [言語機能・発話機能・構音器官の状態、運動] (kっっくるま)</p>
-                            <div class="bg-yellow-50 p-2 rounded border border-yellow-100 text-[11px] text-amber-900 space-y-1">
-                                <div>・どんな表現にしようか？言いたくないけど、声に出さないと伝わらないし・・・</div>
-                                <div>・最初は「く」だ、また言えないかも。あ！口が緊張してる、ゆっくり動かそう。</div>
-                                <div>・またどもった。監視し、意識的にコントロールしようとする。どもったら恥ずかしい、どうしよう。ああ！嫌だ</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 text-xs text-slate-700 space-y-1 mt-4">
-                        <p class="font-bold text-blue-900 text-sm">🧠 脳機能メカニズム</p>
-                        <p>・吃音は声を出す前の頭の中の脳の反応レベルで起こっている</p>
-                        <p>・吃音特有 of 脳の反応と通常の脳の反応が瞬時に切り替わる</p>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 吃音症状の特徴</h3>
-                    <ul class="list-disc pl-6 space-y-2 text-slate-700 text-sm">
-                        <li><strong>歌や斉読ではどもりにくい</strong> ➡ 基準となるペースがあると症状抑制</li>
-                        <li><strong>独り言ではどもりにくい</strong> ➡ 安心できる環境では症状抑制</li>
-                        <li><strong>緊張する場面や苦手な場面ではどもりやすい</strong> ➡ 予期不安や発話意識が高まると症状誘発</li>
-                        <li><strong>工夫を使うと一時的に言い易くなるが、しばらくすると慣れて効果が薄れる</strong> ➡ 最初は発話以外に注意が向くので症状抑制されるが、慣れると再び発話に注意が向き症状誘発</li>
-                    </ul>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 従来の言語訓練（直接法）とその限界</h3>
-                    <div class="space-y-4 pl-4 text-xs">
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">■ 流暢性形成法</h4>
-                            <p class="text-slate-600">・流暢性スキルを用いて流暢な発話を練習する（呼吸調整、軟起声、柔らかい構音接触、発話速度を下げる）</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">■ 吃音緩和法</h4>
-                            <p class="text-slate-600">・どもることに対する恥ずかしさや恐怖を軽減し、楽などもり方に変容させる。</p>
-                            <p class="text-slate-500 pl-4 mt-1">【同定】自分の吃音を明らかにする<br>【脱感作】随意吃などで自分の吃音をオープンにし、探る<br>【緩和】より楽な吃音への変容<br>【安定】スキルの習熟と解決力の向上</p>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm">■ 統合的アプローチ</h4>
-                            <p class="text-slate-600">・流暢性形成法と吃音緩和法を組み合わせて行う。</p>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-amber-50 p-4 rounded-lg border border-amber-200 text-xs text-amber-900">
-                        <p class="font-bold mb-1">📊 Langevin らの報告 (成人吃音者18名の治療後5年間の吃音発生頻度)</p>
-                        <p>訓練前 15.86％ ➡ 訓練直後 0.90％ ➡ 1年後 3.59％ ➡ 5年後 4.98％</p>
-                        <p class="mt-2 font-semibold text-red-700">※直接法は即効性があるが、再発性も高い。<br>※最近では他の支援と合わせて用いる多面的・包括的アプローチが主流。</p>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 現在用いられる吃音の支援</h3>
-                    <p class="text-sm text-slate-600">個々の状態に合わせて、組み合わせや優先順位を調整する。</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-semibold text-center">
-                        <div class="border p-3 rounded bg-slate-50 border-slate-200">〇 発話面<br><span class="text-slate-500 font-normal">言語訓練</span></div>
-                        <div class="border p-3 rounded bg-slate-50 border-slate-200">〇 心理面<br><span class="text-slate-500 font-normal">心理療法など</span></div>
-                        <div class="border p-3 rounded bg-slate-50 border-slate-200">〇 環境面<br><span class="text-slate-500 font-normal">障害者福祉手帳の取得、合理的配慮や自助団体への参加など</span></div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 justify-center pt-2 text-xs">
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded">吃音に対する問題意識を軽減する</span>
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded">安心して話せる環境を整備する</span>
-                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded">吃音症状を軽減する</span>
-                    </div>
-                </section>
-
-                <section class="space-y-4">
-                    <h3 class="text-lg font-bold text-slate-900 bg-slate-100 p-3 rounded border-l-4 border-slate-700">◆ 自然で無意識な発話への遡及的アプローチ（RASS）</h3>
-                    <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100 space-y-3 text-sm text-slate-700">
-                        <p>・声を出して訓練する直接法ではなく、<strong>全ての発話訓練を頭の中で行う間接法</strong></p>
-                        <p>・健常者と同じ<strong>“自然で無意識な発話”</strong>が目標</p>
-                        <p>・進展段階を遡り、当事者本来の自然で無意識な発話へ戻す。</p>
-                        <p>・日常生活で吃音悪化要因の増加を予防する。</p>
-                        <p>・普段の吃音独特の発話行動ではない、自然で無意識な発話行動の経験を増やす。</p>
-                        <p>・成人の場合は年表方式のメンタルリハーサル法（M・R法）を用いる。</p>
-                    </div>
-
-                    <div class="border rounded-xl p-5 bg-slate-50 space-y-4 text-xs">
-                        <div>
-                            <h4 class="font-bold text-slate-900 text-sm mb-1">💡 RASSで実施する内容</h4>
-                            <p class="text-slate-600">毎日寝る前にM.R法実施 ／ 自然で無意識な発話の再獲得 ／ 過去の恐れに対する脱感作</p>
-                            <p class="text-slate-500 mt-1">「考えを述べたり、自分の意思に基づいて行動したりする」ことの根底にある感情、情動の表出を容易にし、自分の意思や考えを表出し易くする。“自然で無意識な発話”と“発話以外の行動”も遂行出来るようになることをねらう。</p>
-                        </div>
-                        <div class="border-t pt-3">
-                            <h4 class="font-bold text-slate-900 text-sm mb-1">🏃 日常生活で実施すること</h4>
-                            <p class="text-red-700 font-semibold">【否定的感情の反芻の防止】</p>
-                            <p class="text-slate-600">吃音悪化要因の増加を防ぐため、否定的感情から『日常場面で禁止』『否定的感情・情動の反芻』『吃音に注目』『話すテクニック』『回避』を防止・制御する。</p>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
-    </main>
-
-    <footer class="bg-slate-200 border-t border-slate-300 text-center py-4 text-xs text-slate-500 mt-12">
-        &copy; 2026 吃音臨床リハビリテーション支援パッケージ (自動段階判定エンジン内蔵)
-    </footer>
-
-    <script>
-        // 悪循環チェックシート質問全55データ (削減なし、csv原文より忠実に再現)
-        const viciousQuestions = [
-            { id: "v_1_1", cat: "Ⅰ 価値観・考え", sub: "１）他者の考えに対する自分の推測", q: "① 吃ると他の人は笑うに違いない。", type: "percent" },
-            { id: "v_1_2", cat: "Ⅰ 価値観・考え", sub: "１）他者の考えに対する自分の推測", q: "② 吃ると他の人は変な話し方だと思っている。", type: "percent" },
-            { id: "v_1_3", cat: "Ⅰ 価値観・考え", sub: "１）他者の考えに対する自分の推測", q: "③ 吃る人は劣っていると他の人は考えている。", type: "percent" },
-            { id: "v_1_4", cat: "Ⅰ 価値観・考え", sub: "１）他者の考えに対する自分の推測", q: "④ 皆が自分の話し方に注目している。", type: "percent" },
-            
-            { id: "v_2_1", cat: "Ⅰ 価値観・考え", sub: "２）自分に対する考え", q: "⑤ 吃ることは恥ずかしいことである。", type: "percent" },
-            { id: "v_2_2", cat: "Ⅰ 価値観・考え", sub: "２）自分に対する考え", q: "⑥ 吃ることはいけないことである。", type: "percent" },
-            { id: "v_2_3", cat: "Ⅰ 価値観・考え", sub: "２）自分に対する考え", q: "⑦ 吃ることは変な話し方である。", type: "percent" },
-            { id: "v_2_4", cat: "Ⅰ 価値観・考え", sub: "２）自分に対する考え", q: "⑧ 吃ると他の人から笑われるに違いない。", type: "percent" },
-            { id: "v_2_5", cat: "Ⅰ 価値観・考え", sub: "２）自分に対する考え", q: "⑨ 吃ると馬鹿にされるに違いない。", type: "percent" },
-            
-            { id: "v_3_1", cat: "Ⅰ 価値観・考え", sub: "３）孤立", q: "⑩ 他の人には知られたくない。", type: "percent" },
-            { id: "v_3_2", cat: "Ⅰ 価値観・考え", sub: "３）孤立", q: "⑪ 吃るのは自分だけだ。", type: "percent" },
-            
-            { id: "v_5_1", cat: "Ⅰ 価値観・考え", sub: "５）発話への考え", q: "⑫ 話すとは意識して言葉を出すことである。", type: "percent" },
-            { id: "v_5_2", cat: "Ⅰ 価値観・考え", sub: "５）発話への考え", q: "⑬ 話すとは口を動かして声を出すことである。", type: "percent" },
-            { id: "v_5_3", cat: "Ⅰ 価値観・考え", sub: "５）発話への考え", q: "⑭ 特定の場面では言うべき表現が決まっていると思う。（セリフ、シナリオ）。", type: "percent" },
-            
-            { id: "v_6_1", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑮ 自分は普通の話し方ができない人である。", type: "percent" },
-            { id: "v_6_2", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑯ 自分は劣った（駄目な）人である。", type: "percent" },
-            { id: "v_6_3", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑰ 自分は価値が低い人だ。", type: "percent" },
-            { id: "v_6_4", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑱ 今の自分は嫌だ。", type: "percent" },
-            { id: "v_6_5", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑲ 自分は健常者でないから駄目だ。", type: "percent" },
-            { id: "v_6_6", cat: "Ⅰ 価値観・考え", sub: "６）否定的自己認識", q: "⑳ 自分はコミュニケーションが下手な人だ。", type: "percent" },
-            
-            { id: "v_7_1", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "① 吃って悔やむ（後悔）。", type: "percent" },
-            { id: "v_7_2", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "② 吃ると恥ずかしい。", type: "percent" },
-            { id: "v_7_3", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "③ 吃ることが辛い。", type: "percent" },
-            { id: "v_7_4", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "④ 吃ることが悲しい。", type: "percent" },
-            { id: "v_7_5", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "⑤ 個別の場面・条件下で吃るかもしれないと不安である（不安、恐怖感）。", type: "percent" },
-            { id: "v_7_6", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "⑥ 全般的な、また吃るかもしれないと不安である。", type: "percent" },
-            { id: "v_7_7", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "⑦ 自分は孤独であり、寂しい。", type: "percent" },
-            { id: "v_7_8_a", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "⑧ 「吃ったり失敗したりした」ことが頭に浮かび気持が落ち込む：1日の回数", type: "count", unit: "回/日" },
-            { id: "v_7_8_b", cat: "Ⅱ（感情・情動）", sub: "感情・情動反応", q: "⑧ 落ち込む時間（1回あたり）", type: "count", unit: "分" },
-            
-            { id: "v_8_1", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "① 発話前に、語音(言葉の音)に注目している。", type: "percent" },
-            { id: "v_8_2", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "② 発話前に、発話中に言葉に注目している。", type: "percent" },
-            { id: "v_8_3", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "③ 発話前に、言える、言えないと判断する。", type: "percent" },
-            { id: "v_8_4", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "④ 発話前または発話中に口、舌の状態に注意が向く。", type: "percent" },
-            { id: "v_8_5", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑤ 発話前または発話中に自分の身体の状態を感じている。", type: "percent" },
-            { id: "v_8_6", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑥ 発話後、上手く言えた、言えなかったと分析する（発話結果が気になる）。", type: "percent" },
-            { id: "v_8_7", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑦ 自分の話し方への他者の反応が気になる(吃音症状への他者の反応への注目)。", type: "percent" },
-            { id: "v_8_8", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑧ 発話時、その前後に緊張、不安へ注意を向ける。", type: "percent" },
-            { id: "v_8_9", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑨ （発話時以外に）吃ったことを繰り返して思い出す", type: "count", unit: "回/日" },
-            { id: "v_8_10", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "１．注 目", q: "⑩ 発話条件への注目・分析（場面の種類、人間関係、発話内容、発話行動に注目し分析する）。", type: "percent" },
-            
-            { id: "v_9_1", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "２．発話の目的化と意図的発話", q: "⑪ 上手く話そうと意識する（目的化）。", type: "percent" },
-            { id: "v_9_2", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "２．発話の目的化と意図的発話", q: "⑫ 話そうと(話す事自体を)意図的に考える。", type: "percent" },
-            { id: "v_9_3", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "２．発話の目的化と意図的発話", q: "⑬ 言葉を出そうと意図している(言葉を意識的に出そうとしている)。", type: "percent" },
-            
-            { id: "v_10_1", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "1) 発話中に舌、口、呼吸器官の動きを意識的に行おうとする。発声発語器官を意図的に動かそうとする。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_2", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "2) 発話中に、口を意図的に大きく動かし話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_3", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "3) 口の形を自分が言いやすいように工夫する。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_4", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "4) 口を大きく開けて話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_5", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "5) お腹に力を入れて話す（お腹から声を出す）。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_6", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "6) 息をゆっくり吐きながら話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_7", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "7) 他の人には分からない様にリズムを取って話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_8", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "8) 速度を落として、ゆっくり話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_9", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "9) 発話前に息を深く吸う。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_10", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "10) 息を少し吐いてから（途中まで吐いてから）話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_10_11", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 （構音運動･発話の意図的コントロール）", q: "11) 話す直前に、口を少し動かして言い易くする。", type: "percent", tags: ["kufu"] },
-            
-            { id: "v_11_12", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "12) つまらないように咳払いをする。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_13", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "13) 深呼吸をしてから話す（一度深く吸って吐いてから再度吸い話す）。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_14", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "14) 「えーと」「まー」等の言葉を、意識的に入れる。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_15", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "15) 勢いを付ける(例：わざと怒った様な感情を持つ→勢いが付く)。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_16", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "16) 発話中に、色々姿勢を変えて、言いやすい体勢を取る。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_17", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "17) 詰まらないように、次の言葉を言う前に身体を動かす（身振りと見せかける）。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_18", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "18) 話すとき意識的に身体の一部を動かしながら話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_19", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "19) 意識的に相手の言った言葉に続けて話す 「（相手の発話）は○○○です」。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_20", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "20) 相手の言葉を取り込んで話す。", type: "percent", tags: ["kufu"] },
-            { id: "v_11_21", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (助走または構音器官のコントロール - 助走)", q: "21) 他の言葉を目的の言葉の前にいれる.例：テレビ（bl→居間のテレビ）", type: "percent", tags: ["kufu"] },
-            
-            { id: "v_12_22", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (延期)", q: "22) 詰まったときに少し間をおく。", type: "percent", tags: ["kufu"] },
-            { id: "v_12_23", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (延期)", q: "23) 詰まりそうな時、詰まって出ないときは、言うのを後に延ばす。", type: "percent", tags: ["kufu"] },
-            { id: "v_12_24", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (延期)", q: "24) 相手に言わせてから言う。", type: "percent", tags: ["kufu"] },
-            { id: "v_12_25", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (延期)", q: "25) 詰まって出ない時は考えているふりをして言うのを先に延ばす。", type: "percent", tags: ["kufu"] },
-            
-            { id: "v_13_26", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "26) 詰まって出ない時に意識的に一時止めて、再度話し始める。", type: "percent", tags: ["kufu"] },
-            { id: "v_13_27", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "27) 詰まると姿勢を意識的に変える。", type: "percent", tags: ["kufu"] },
-            { id: "v_13_28", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "28) 詰まって出ない時に、力を入れて乗り切る。", type: "percent", tags: ["kufu"] },
-            { id: "v_13_29", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "29) 詰まって出ないときは勢いを付ける。", type: "percent", tags: ["kufu"] },
-            { id: "v_13_30", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "30) 詰まると、体をゆする。", type: "percent", tags: ["kufu"] },
-            { id: "v_13_31", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (解除反応)", q: "31) 詰まって出ないときに、言葉や体、口、舌から一旦注意をそらす。", type: "percent", tags: ["kufu"] },
-            
-            { id: "v_14_32", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "32) 表現形式を変える。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_33", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "33) 自分の言いやすい語を使って言いやすい表現に変える。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_34", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "34) 言い難い音はわざと、音を少し変えごまかす。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_35", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "35) 発話前に、発話中に言えそうもない言葉は他の言葉に代える。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_36", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "36) 発話前に、頭の中で言えるかどうか言ってみる。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_37", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "37) 飲める時は予め酒を飲んでおく。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_38", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "38) 発話前に自分の身体の緊張をほぐそうとする。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_39", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "39) 発話前に不安が強くなると色々触って不安を鎮める。", type: "percent", tags: ["kufu"] },
-            { id: "v_14_40", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (他)", q: "40) 吃った時に吃っていないと自分に言い聞かせる。", type: "percent", tags: ["kufu"] },
-            
-            { id: "v_15_41", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (回避)", q: "41) もう一度言わなければならない時は言わない。", type: "percent", tags: ["kaihi"] },
-            { id: "v_15_42", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (回避)", q: "42) 吃りそうな時は、分からないふりをして言わない。", type: "percent", tags: ["kaihi"] },
-            { id: "v_15_43", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (回避)", q: "43) 自分からはなるべく言わないようにし、相手が話すようにし向け、返答だけで済むようにする。", type: "percent", tags: ["kaihi"] },
-            { id: "v_15_44", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (回避)", q: "44) 詰まりそうな時は言わないことがある。", type: "percent", tags: ["kaihi"] },
-            { id: "v_15_45", cat: "Ⅲ 行動１ （語音、発話等への注目や工夫）", sub: "３．工 夫 (回避)", q: "45) 笑われそうな時は、言わないことがある。", type: "percent", tags: ["kaihi"] },
-            
-            { id: "v_16_1", cat: "Ⅳ 相手の発話内容理解", sub: "相手の発話内容理解", q: "⑭ 自分が話すことを考えることが精一杯で、相手の話を聞き漏らすことがある。", type: "percent" },
-            { id: "v_16_2", cat: "Ⅳ 相手の発話内容理解", sub: "相手の発話内容理解", q: "（別項） 相手の話を理解するために、相手の言った言葉をそのまま頭にとどめるように努力している(文そのものを記憶しようとする)。", type: "percent" },
-            
-            { id: "v_17_1", cat: "Ⅴ 行動２", sub: "行動２", q: "（発話以外の事で）物事を自動的に否定的に考える傾向がある。(無意識のうちに否定的側面の注意が向いている)", type: "percent" }
-        ];
-
-        // タブ切り替え処理
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('border-blue-600', 'text-blue-600');
-                el.classList.add('border-transparent', 'text-slate-600');
-            });
-
-            document.getElementById(tabId).classList.add('active');
-            const targetBtn = document.getElementById('btn-' + tabId);
-            targetBtn.classList.remove('border-transparent', 'text-slate-600');
-            targetBtn.classList.add('border-blue-600', 'text-blue-600');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // 訓練歴の表示トグル
-        function toggleTrainingDetails(show) {
-            const wrap = document.getElementById('training_details_wrap');
-            if (show) wrap.classList.remove('hidden');
-            else wrap.classList.add('hidden');
-        }
-
-        // 悪循環チェックシートのHTML構築
-        function buildViciousForm() {
-            const container = document.getElementById('vicious-questions-container');
-            let currentCat = "";
-            let currentSub = "";
-            let sectionHTML = "";
-
-            viciousQuestions.forEach((item) => {
-                if (item.cat !== currentCat) {
-                    currentCat = item.cat;
-                    sectionHTML += `<div class="mt-8"><h3 class="text-md font-bold text-slate-800 bg-slate-100 px-4 py-2 rounded shadow-sm">${currentCat}</h3>`;
-                    currentSub = "";
-                }
-                if (item.sub !== currentSub) {
-                    currentSub = item.sub;
-                    sectionHTML += `<h4 class="text-xs font-semibold text-blue-700 px-4 mt-3 mb-2">▼ ${currentSub}</h4><div class="space-y-4 px-4">`;
-                }
-
-                if (item.type === "percent") {
-                    sectionHTML += `
-                        <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200/60 gap-4">
-                            <span class="text-sm font-medium text-slate-700 md:max-w-[60%]">${item.q}</span>
-                            <div class="flex items-center gap-4 md:w-[35%] justify-end">
-                                <input type="range" id="${item.id}" min="0" max="100" value="0" oninput="updateRangeVal('${item.id}', this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
-                                <span id="val_${item.id}" class="text-sm font-bold text-blue-600 w-12 text-right">0%</span>
-                            </div>
-                        </div>
-                    `;
-                } else if (item.type === "count") {
-                    sectionHTML += `
-                        <div class="flex flex-col md:flex-row md:items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200/60 gap-4">
-                            <span class="text-sm font-medium text-slate-700 md:max-w-[60%]">${item.q}</span>
-                            <div class="flex items-center gap-2 md:w-[35%] justify-end">
-                                <input type="number" id="${item.id}" min="0" value="0" onchange="calculateResults()" class="w-20 border border-slate-300 rounded px-2 py-1 text-right text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                <span class="text-xs text-slate-500">${item.unit}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            container.innerHTML = sectionHTML;
-        }
-
-        // スライダー値の更新とリアルタイム計算
-        function updateRangeVal(id, value) {
-            document.getElementById('val_' + id).innerText = value + '%';
-            calculateResults();
-        }
-
-        // 臨床評価：吃音進展段階の自動ロジック計算
-        function calculateResults() {
-            // 工夫(kufu)の平均、回避(kaihi)の平均を抽出
-            let kufuTotal = 0, kufuCount = 0;
-            let kaihiTotal = 0, kaihiCount = 0;
-            let anxietyTotal = 0, anxietyCount = 0; // 不安要素 (ⅡのQ5, Q6)
-
-            viciousQuestions.forEach(item => {
-                const el = document.getElementById(item.id);
-                if (!el) return;
-                const val = parseFloat(el.value) || 0;
-
-                if (item.tags && item.tags.includes("kufu")) {
-                    kufuTotal += val;
-                    kufuCount++;
-                }
-                if (item.tags && item.tags.includes("kaihi")) {
-                    kaihiTotal += val;
-                    kaihiCount++;
-                }
-                if (item.id === "v_7_5" || item.id === "v_7_6") {
-                    anxietyTotal += val;
-                    anxietyCount++;
-                }
-            });
-
-            const kufuAvg = kufuCount > 0 ? (kufuTotal / kufuCount) : 0;
-            const kaihiAvg = kaihiCount > 0 ? (kaihiTotal / kaihiCount) : 0;
-            const anxietyAvg = anxietyCount > 0 ? (anxietyTotal / anxietyCount) : 0;
-
-            // 自己調査評価表の値
-            const selfQ1努力 = parseInt(document.getElementById('self_q1').value) || 0; 
-            const selfQ3満足 = parseInt(document.querySelector('name="self_q3"]:checked')?.value) || 2;
-
-            // 判定ロジック
-            let stageTitle = "";
-            let stageDesc = "";
-            let activeRowId = "";
-
-            if (kaihiAvg >= 25 || (kaihiAvg >= 10 && selfQ3満足 <= 2 && anxietyAvg >= 50)) {
-                stageTitle = "【第4層】 回避優位型・強固な慢性化状態";
-                stageDesc = "連発や伸発といった初期中核症状の表出はむしろ減少し、ことばが詰まる『ブロック』が高頻度化しています。最大の特徴として、語の置き換えに留まらず、発話そのものを諦める、あるいは場面から身を引く強固な『回避行動』が常態化しています。吃音への予期不安・恐怖感が非常に強く、否定的自己認識が強固に固定化しているため、心理面・環境面へアプローチしつつ、Van Riperの悪化要因（罰・不安・罪など）を丁寧に取り除く精神的脱感作が必要です。";
-                activeRowId = "row-layer-4";
-            } else if (kufuAvg >= 15 || kaihiAvg > 0 || selfQ1努力 >= 6) {
-                stageTitle = "【第3層】 工夫・意図的コントロール主体型";
-                stageDesc = "吃音症状を明確に自覚し、それを『欠点・問題』として強く捉えています。ブロックを力づくで乗り切ろうとする『解除反応』、言葉の前に余計な音を挟む『助走』、間を置いて言い淀む『延期』といった、発話の意図的コントロールスキルを巧妙かつ過剰に使用しています。特定の場面や特定の語音に対する恐れが固定化しており、発話への過剰な注目がさらなる悪循環を招いています。頭の中での間接的訓練法（RASS）の適応期です。";
-                activeRowId = "row-layer-3";
-            } else if (anxietyAvg >= 20 || selfQ1努力 >= 3) {
-                stageTitle = "【第2層】 ブロック自覚・慢性化移行期";
-                stageDesc = "吃音症状が慢性化し、本人が自らを『吃音者である』とはっきり認識し始めています。単なる音の繰り返しだけでなく、言葉が詰まって出てこない『阻止（ブロック）』や、それに伴う身体の力み（随伴症状）が現れ始めています。特定の場面に依存せずどこでも同じように吃るようになり、特定の瞬間には『ボクハ話セナイ』といった否定的な価値観が芽生えつつありますが、まだ本格的な回避や複雑な工夫には至っていません。";
-                activeRowId = "row-layer-2";
-            } else {
-                stageTitle = "【第1層】 中核症状中心型・初期層";
-                stageDesc = "音節や語の一部の繰り返し（連発）、または引き伸ばし（伸発）が主な症状です。コミュニケーション上の圧力や興奮時に一時的に症状が変動しますが、発話そのものに対する強い注目、自覚、恐怖心、および苦悩はまだ形成されていません。すべての場面において基本的には自由に発話しようとする意志が保たれており、もがきや工夫、回避は見られません。自然治癒の可能性も残されている段階です。";
-                activeRowId = "row-layer-1";
-            }
-
-            // 判定結果画面への反映
-            document.getElementById('detected-stage-title').innerText = stageTitle;
-            document.getElementById('detected-stage-desc').innerText = stageDesc;
-
-            // テーブル行のハイライト処理
-            document.querySelectorAll('tbody tr').forEach(row => {
-                row.classList.remove('bg-blue-50', 'border-l-4', 'border-blue-600', 'font-semibold');
-            });
-            const activeRow = document.getElementById(activeRowId);
-            if (activeRow) {
-                activeRow.classList.add('bg-blue-50', 'border-l-4', 'border-blue-600', 'font-semibold');
-            }
-        }
-
-        // 初期化処理
-        window.onload = function() {
-            buildViciousForm();
-            calculateResults();
-        };
-    </script>
 </body>
 </html>
