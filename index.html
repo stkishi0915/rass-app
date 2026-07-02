@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>吃音リハビリサポート - RASSセルフケアAI</title>
+    <style>
+      :root {
+        --primary-color: #1e3a8a; /* 吃音リハビリサポート風ディープブルー */
+        --bg-color: #f3f4f6;
+        --chat-bg: #ffffff;
+        --user-msg: #dbeafe; /* 爽やかなライトブルー */
+        --bot-msg: #f9fafb;
+        --accent-color: #ef4444; /* 注目・工夫の警告/気づき用 */
+      }
+      body {
+        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+          sans-serif;
+        background-color: var(--bg-color);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        color: #333;
+      }
+
+      /* ヘッダー */
+      .header {
+        background-color: var(--primary-color);
+        color: white;
+        text-align: center;
+        padding: 16px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        letter-spacing: 0.05em;
+      }
+      .header-sub {
+        font-size: 0.75rem;
+        font-weight: normal;
+        margin-top: 4px;
+        opacity: 0.9;
+      }
+
+      /* チャットエリア */
+      .chat-container {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background-color: #f8fafc;
+      }
+      .message {
+        max-width: 80%;
+        padding: 14px 18px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        word-break: break-all;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .user {
+        background-color: var(--user-msg);
+        color: #1e3a8a;
+        align-self: flex-end;
+        border-top-right-radius: 4px;
+        border: 1px solid #bfdbfe;
+      }
+      .bot {
+        background-color: var(--chat-bg);
+        color: #1f2937;
+        align-self: flex-start;
+        border-top-left-radius: 4px;
+        border: 1px solid #e5e7eb;
+      }
+
+      /* RASS専用 モニタリングカウンター */
+      .rass-counter-zone {
+        background-color: #fff;
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        gap: 10px;
+      }
+      .counter-btn {
+        flex: 1;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        padding: 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: all 0.2s;
+      }
+      .counter-btn:active {
+        transform: scale(0.95);
+        background-color: #f1f5f9;
+      }
+      .counter-btn.notice-btn {
+        border-color: #fca5a5;
+        color: #dc2626;
+      }
+      .counter-btn.notice-btn:active {
+        background-color: #fee2e2;
+      }
+      .counter-num {
+        font-size: 1.2rem;
+        margin-top: 2px;
+      }
+
+      /* 入力エリア */
+      .input-area {
+        background-color: #ffffff;
+        padding: 14px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+      }
+      input {
+        flex: 1;
+        padding: 14px 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 30px;
+        font-size: 1rem;
+        outline: none;
+        transition: border 0.2s;
+        background-color: #f8fafc;
+      }
+      input:focus {
+        border-color: var(--primary-color);
+        background-color: #fff;
+      }
+      button.send-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background 0.2s;
+      }
+      button.send-btn:hover {
+        background-color: #1d4ed8;
+      }
+      button.send-btn:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      吃音リハビリサポート
+      <div class="header-sub">RASSセルフケアAIシミュレーター</div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+      <div class="message bot">
+        こんにちは。「吃音リハビリサポート」へようこそ。<br /><br />このAIは、自然で無意識な発話を取り戻すアプローチ（RASS理論）に基づき、あなたの吃音の悪循環（注目や工夫）を一緒に紐解くセルフケアパートナーです。今、どのような場面でお困りですか？お気軽にお話しくださいね。
+      </div>
+    </div>
+
+    <div class="rass-counter-zone">
+      <div
+        style="
+          font-size: 0.75rem;
+          color: #64748b;
+          font-weight: bold;
+          width: 50px;
+          text-align: center;
+        "
+      >
+        RASS<br />ログ
+      </div>
+      <button class="counter-btn notice-btn" onclick="countRass('attention')">
+        ⚠️ 発話への「注目」に気づいた
+        <span class="counter-num" id="attentionCount">0</span>
+      </button>
+      <button class="counter-btn notice-btn" onclick="countRass('device')">
+        🛠️ 言い方の「工夫」に気づいた
+        <span class="counter-num" id="deviceCount">0</span>
+      </button>
+    </div>
+
+    <div class="input-area">
+      <input
+        type="text"
+        id="userInput"
+        placeholder="現在の状況や悩みを相談する..."
+        onkeypress="if(event.key==='Enter') sendMessage()"
+      />
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        送信
+      </button>
+    </div>
+
+    <script>
+      // --------- ⚙️ 先生のDify情報をここに貼り付けます ⚙️ ---------
+      const DIFY_API_KEY = "app-MjKxgSPzgVMEE7Nfl3S43hsg";
+      const DIFY_BASE_URL = "https://api.dify.ai"; // お使いの環境に合わせて変更してください
+      // --------------------------------------------------------
+
+      let conversationId = "";
+      let counts = { attention: 0, device: 0 };
+
+      // カウント機能
+      function countRass(type) {
+        counts[type]++;
+        document.getElementById(`${type}Count`).innerText = counts[type];
+        // ログが押されたらチャット欄にもサクッと通知メッセージを出す（任意）
+        appendMessage(
+          `（※セルフモニタリング：${
+            type === "attention" ? "発話への注目" : "言い方の工夫"
+          }を自覚しました）`,
+          "user",
+          true
+        );
+      }
+
+      async function sendMessage() {
+        const inputEl = document.getElementById("userInput");
+        const btnEl = document.getElementById("sendBtn");
+        const text = inputEl.value.trim();
+        if (!text) return;
+
+        inputEl.value = "";
+        inputEl.disabled = true;
+        btnEl.disabled = true;
+        appendMessage(text, "user");
+
+        try {
+          const response = await fetch(`${DIFY_BASE_URL}/v1/chat-messages`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${DIFY_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              inputs: {},
+              query: text,
+              response_mode: "blocking",
+              user: "rass-service-user",
+              conversation_id: conversationId,
+            }),
+          });
+          const data = await response.json();
+          if (data.conversation_id) conversationId = data.conversation_id;
+          appendMessage(data.answer, "bot");
+        } catch (error) {
+          appendMessage(
+            "通信エラーが発生しました。インターネット接続を確認するか、しばらく時間を置いてお試しください。",
+            "bot"
+          );
+        } finally {
+          inputEl.disabled = false;
+          btnEl.disabled = false;
+          inputEl.focus();
+        }
+      }
+
+      function appendMessage(text, sender, isLog = false) {
+        const container = document.getElementById("chatContainer");
+        let msgHtml = "";
+        if (isLog) {
+          msgHtml = `<div class="message user" style="background-color: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; font-size: 0.8rem; padding: 6px 12px; align-self: center; border-radius: 8px; box-shadow: none;">${text}</div>`;
+        } else {
+          msgHtml = `<div class="message ${sender}">${text.replace(
+            /\n/g,
+            "<br>"
+          )}</div>`;
+        }
+        container.insertAdjacentHTML("beforeend", msgHtml);
+        container.scrollTop = container.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
