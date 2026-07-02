@@ -1,290 +1,507 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>吃音リハビリサポート - RASSセルフケアAI</title>
-    <style>
-      :root {
-        --primary-color: #1e3a8a; /* 吃音リハビリサポート風ディープブルー */
-        --bg-color: #f3f4f6;
-        --chat-bg: #ffffff;
-        --user-msg: #dbeafe; /* 爽やかなライトブルー */
-        --bot-msg: #f9fafb;
-        --accent-color: #ef4444; /* 注目・工夫の警告/気づき用 */
-      }
-      body {
-        font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
-          sans-serif;
-        background-color: var(--bg-color);
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        color: #333;
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>吃音リハビリサポート - RASSセルフケア</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #eff6ff;
+      --secondary: #10b981;
+      --danger: #ef4444;
+      --text: #1f2937;
+      --bg: #f3f4f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    
+    /* ヘッダー */
+    header { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; padding: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 10; }
+    header h1 { font-size: 1.2rem; font-weight: bold; letter-spacing: 0.05em; }
+    header p { font-size: 0.8rem; opacity: 0.9; margin-top: 2px; }
 
-      /* ヘッダー */
-      .header {
-        background-color: var(--primary-color);
-        color: white;
-        text-align: center;
-        padding: 16px;
-        font-weight: bold;
-        font-size: 1.1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        letter-spacing: 0.05em;
-      }
-      .header-sub {
-        font-size: 0.75rem;
-        font-weight: normal;
-        margin-top: 4px;
-        opacity: 0.9;
-      }
+    /* タブナビゲーション */
+    .nav-tabs { display: flex; background: white; border-bottom: 2px solid #e5e7eb; z-index: 10; }
+    .tab-btn { flex: 1; padding: 12px 5px; text-align: center; border: none; background: none; font-size: 0.85rem; font-weight: bold; color: #6b7280; cursor: pointer; transition: all 0.2s; border-bottom: 3px solid transparent; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background-color: var(--primary-light); }
 
-      /* チャットエリア */
-      .chat-container {
-        flex: 1;
-        padding: 20px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        background-color: #f8fafc;
-      }
-      .message {
-        max-width: 80%;
-        padding: 14px 18px;
-        border-radius: 20px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        word-break: break-all;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      }
-      .user {
-        background-color: var(--user-msg);
-        color: #1e3a8a;
-        align-self: flex-end;
-        border-top-right-radius: 4px;
-        border: 1px solid #bfdbfe;
-      }
-      .bot {
-        background-color: var(--chat-bg);
-        color: #1f2937;
-        align-self: flex-start;
-        border-top-left-radius: 4px;
-        border: 1px solid #e5e7eb;
-      }
+    /* コンテンツエリア */
+    .tab-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
+    .tab-content { display: none; height: 100%; flex-direction: column; }
+    .tab-content.active { display: flex; }
 
-      /* RASS専用 モニタリングカウンター */
-      .rass-counter-zone {
-        background-color: #fff;
-        padding: 10px 15px;
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        border-top: 1px solid #e5e7eb;
-        border-bottom: 1px solid #e5e7eb;
-        gap: 10px;
-      }
-      .counter-btn {
-        flex: 1;
-        border: 1px solid #cbd5e1;
-        background: #fff;
-        padding: 8px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        transition: all 0.2s;
-      }
-      .counter-btn:active {
-        transform: scale(0.95);
-        background-color: #f1f5f9;
-      }
-      .counter-btn.notice-btn {
-        border-color: #fca5a5;
-        color: #dc2626;
-      }
-      .counter-btn.notice-btn:active {
-        background-color: #fee2e2;
-      }
-      .counter-num {
-        font-size: 1.2rem;
-        margin-top: 2px;
-      }
+    /* カード・汎用スタイル */
+    .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .card h2 { font-size: 1.05rem; color: var(--primary); margin-bottom: 12px; border-left: 4px solid var(--primary); padding-left: 8px; }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: #4b5563; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; }
 
-      /* 入力エリア */
-      .input-area {
-        background-color: #ffffff;
-        padding: 14px;
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
-      }
-      input {
-        flex: 1;
-        padding: 14px 20px;
-        border: 1px solid #cbd5e1;
-        border-radius: 30px;
-        font-size: 1rem;
-        outline: none;
-        transition: border 0.2s;
-        background-color: #f8fafc;
-      }
-      input:focus {
-        border-color: var(--primary-color);
-        background-color: #fff;
-      }
-      button.send-btn {
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 30px;
-        font-weight: bold;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.2s;
-      }
-      button.send-btn:hover {
-        background-color: #1d4ed8;
-      }
-      button.send-btn:disabled {
-        background-color: #9ca3af;
-        cursor: not-allowed;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      吃音リハビリサポート
-      <div class="header-sub">RASSセルフケアAIシミュレーター</div>
+    /* 評価用UI */
+    .radio-group, .check-grid { display: flex; flex-direction: column; gap: 8px; }
+    .radio-label { display: flex; align-items: flex-start; gap: 10px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; font-size: 0.85rem; transition: background 0.2s; }
+    .radio-label:hover { background: #f9fafb; }
+    .radio-label input { width: auto; margin-top: 3px; }
+    
+    /* 悪循環アコーディオン */
+    .accordion-header { background: #f8fafc; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; margin-top: 8px; cursor: pointer; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; }
+    .accordion-content { display: none; padding: 10px 5px; }
+    .matrix-row { margin-bottom: 12px; border-bottom: 1px dashed #e5e7eb; padding-bottom: 8px; }
+    .matrix-question { font-size: 0.85rem; margin-bottom: 6px; font-weight: 500; }
+    .matrix-options { display: flex; gap: 4px; justify-content: space-between; }
+    .btn-opt { flex: 1; padding: 6px 2px; font-size: 0.75rem; border: 1px solid #d1d5db; background: white; border-radius: 4px; cursor: pointer; text-align: center; }
+    .btn-opt.selected { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
+
+    /* 吃音教育用スタイル */
+    .edu-section { margin-bottom: 15px; }
+    .edu-header { background: #eff6ff; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; color: #1e40af; cursor: pointer; border-left: 4px solid #3b82f6; }
+    .edu-body { display: none; padding: 12px; font-size: 0.85rem; line-height: 1.6; background: white; border: 1px solid #eff6ff; border-radius: 0 0 8px 8px; }
+    .edu-body ul, .edu-body ol { padding-left: 18px; margin-top: 6px; }
+    .edu-body li { margin-bottom: 4px; }
+
+    /* チャットUI */
+    #chat-messages { flex: 1; overflow-y: auto; padding: 10px 5px; display: flex; flex-direction: column; gap: 12px; }
+    .message { max-width: 85%; padding: 12px 16px; border-radius: 16px; font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; }
+    .bot { background-color: white; align-self: flex-start; border-bottom-left-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .user { background-color: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+    .status-badge { font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 9999px; display: inline-block; margin-bottom: 10px; font-weight: bold; }
+
+    /* RASS操作パネル */
+    .rass-panel { background: white; padding: 12px; border-top: 1px solid #e5e7eb; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+    .log-btn-container { display: flex; gap: 8px; margin-bottom: 10px; }
+    .log-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: bold; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.1s; }
+    .log-btn:active { transform: scale(0.97); }
+    .btn-attention { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+    .btn-device { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .log-counter { font-size: 1.1rem; font-weight: 800; margin-top: 2px; }
+    .input-area { display: flex; gap: 8px; align-items: center; }
+    .input-area input { flex: 1; }
+    .send-btn { background: var(--primary); color: white; border: none; width: 44px; height: 44px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+    /* 送信・診断ボタン */
+    .action-btn { background: linear-gradient(135deg, var(--secondary), #059669); color: white; font-weight: bold; padding: 14px; text-align: center; border-radius: 8px; border: none; width: 100%; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 15px; }
+
+    /* ローディング */
+    .typing-indicator { display: flex; gap: 4px; padding: 4px 8px; }
+    .typing-indicator span { width: 8px; height: 8px; background: #9ca3af; border-radius: 50%; animation: bounce 1.3s infinite both; }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>吃音リハビリサポート</h1>
+    <p>RASS理論に基づく臨床評価 ＆ AIセルフケア</p>
+  </header>
+
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('evaluation')">① 臨床評価</button>
+    <button class="tab-btn" onclick="switchTab('education')">② 吃音教育</button>
+    <button class="tab-btn" onclick="switchTab('chat')">③ AI対話ケア</button>
+  </div>
+
+  <div class="tab-container">
+    
+    <div id="evaluation" class="tab-content active">
+      <div class="card">
+        <h2>1. 基本情報の収集（問診）</h2>
+        <div class="form-group">
+          <label>現在の年齢</label>
+          <input type="number" id="q-age" placeholder="例: 25">
+        </div>
+        <div class="form-group">
+          <label>吃音を自覚し始めた時期やきっかけ</label>
+          <textarea id="q-history" rows="2" placeholder="例: 小学校の国語の音読から、など"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. 吃音進展段階の確認（Bloodstein改変）</h2>
+        <p style="font-size:0.75rem; color:#6b7280; margin-bottom:10px;">現在の自分の症状や感覚に最も近いものを1つ選んでください。</p>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="progression" value="正常域">
+            <div><strong>正常域：</strong>吃音症状、変動性、困難な場面、注目や苦悩はすべて無し。</div>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="progression" value="第1層">
+            <div><strong>第1層：</strong>音節や語の繰り返し、引き伸ばし（一過性、変動大）。文頭の語。すべての場面で自由に話せ、注目や苦悩は無し。</div>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="progression" value="第2層">
+            <div><strong>第2層：</strong>繰り返しや引き伸ばしの慢性化（一時的消失あり）。家・学校等どこでも吃る。吃音者としての自覚はあるが、苦悩は無し。</div>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="progression" value="第3層">
+            <div><strong>第3層：</strong>特定の場面や語音への恐怖・予期。語の置き換え、解除反応、延期を巧みに使う。吃音に憤りや嫌悪を抱き、強い注目と苦悩あり。</div>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="progression" value="第4層">
+            <div><strong>第4層：</strong>ブロック（阻止）が主体。困難な場面・聞き手への持続的な予期。解除・延期・場面の回避が完全に定着し、深刻な悩み、強い恐れ・困惑あり。</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. 思考・感情・行動の悪循環チェック</h2>
+        <p style="font-size:0.75rem; color:#6b7280; margin-bottom:10px;">日頃、各項目をどの程度感じているか選んでください（複数可）。</p>
+        
+        <div class="accordion-header" onclick="toggleAccordion('acc-values')">Ⅰ. 価値観・考え方 <span class="arrow">▼</span></div>
+        <div id="acc-values" class="accordion-content"></div>
+
+        <div class="accordion-header" onclick="toggleAccordion('acc-emotions')">Ⅱ. 感情・情動（不安・恐怖など） <span class="arrow">▼</span></div>
+        <div id="acc-emotions" class="accordion-content"></div>
+
+        <div class="accordion-header" onclick="toggleAccordion('acc-attention')">Ⅲ-1. 発話への「注目・目的化」 <span class="arrow">▼</span></div>
+        <div id="acc-attention" class="accordion-content"></div>
+
+        <div class="accordion-header" onclick="toggleAccordion('acc-device')">Ⅲ-2. 発話の「工夫・コントロール・回避」 <span class="arrow">▼</span></div>
+        <div id="acc-device" class="accordion-content"></div>
+      </div>
+
+      <button class="action-btn" onclick="submitEvaluation()">この評価結果をAIに送信して相談する</button>
     </div>
 
-    <div class="chat-container" id="chatContainer">
-      <div class="message bot">
-        こんにちは。「吃音リハビリサポート」へようこそ。<br /><br />このAIは、自然で無意識な発話を取り戻すアプローチ（RASS理論）に基づき、あなたの吃音の悪循環（注目や工夫）を一緒に紐解くセルフケアパートナーです。今、どのような場面でお困りですか？お気軽にお話しくださいね。
+    <div id="education" class="tab-content">
+      <div class="card">
+        <h2>吃音教育・RASS臨床ガイド</h2>
+        <p style="font-size:0.8rem; color:#6b7280; margin-bottom:12px;">当事者としての理解を深め、自然な発話を取り戻すための知識ベースです。各項目をタップして解説を読めます。</p>
+        
+        <div class="edu-section">
+          <div class="edu-header" onclick="toggleEdu(this)">1. 吃音症状の正しい理解</div>
+          <div class="edu-body">
+            <ul>
+              <li><strong>中核症状（脳活動に由来）：</strong> 音節や語の部分的な「繰り返し」、音の「引き伸ばし」、声が詰まって出ない「ブロック（阻止）」は、脳の生体的な活動によって生じるもので、本人の努力不足ではありません。</li>
+              <li><strong>吃音に対する否定的価値観：</strong> 周囲からのからかいや指摘を経て、「吃ることは恥ずかしい、変だ、いけないことだ」と自分を否定する考え方を持ってしまうことが、悪循環の引き金になります。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="edu-section">
+          <div class="edu-header" onclick="toggleEdu(this)">2. 吃音の悪化要因と流暢性要因</div>
+          <div class="edu-body">
+            <ul>
+              <li><strong>悪化要因（意識的な操作）：</strong> 「上手く話そう」「吃らないようにコントロールしよう」と発声器官（口、舌、呼吸）を意図的に動かそうとすればするほど、本本来自動化されているはずの発話運動が妨げられ、症状が悪化（ブロック）します。</li>
+              <li><strong>流暢性要因（自動的な発話）：</strong> 独り言や動物に話しかけるとき、あるいは歌を歌うときなど、「話し方」に意識が向いていない状態では、脳はスムーズに言葉を紡ぎ出すことができます。</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="edu-section">
+          <div class="edu-header" onclick="toggleEdu(this)">3. RASS理論の概要</div>
+          <div class="edu-body">
+            <p>RASS理論では、吃音の二次的症状（解除反応、延期、語の置き換え、回避など）はすべて**「自分の意思で行っている行動（工夫）」**であると考えます。</p>
+            <p style="margin-top:6px;">リハビリの目的は、吃音を無理にコントロールすることではなく、発話への過剰な「注目」と「工夫」に自分で気づき（セルフモニタリング）、これらを手放すことで、脳が本来持っている**自然で無意識な発話**のシステムを取り戻すことにあります。</p>
+          </div>
+        </div>
+
+        <div class="edu-section">
+          <div class="edu-header" onclick="toggleEdu(this)">4. 年表方式メンタルリハーサル法</div>
+          <div class="edu-body">
+            <p>過去に経験した「吃って悔しかった場面」や「失敗した記憶」が脳内で何度も再生されることで、次の発話への予期不安が強化されます。</p>
+            <p style="margin-top:6px;">年表方式を用いることで、過去の記憶を客観的に整理し、「あれは過剰な注目と工夫による悪循環だった」と冷静に再解釈（リフレーミング）を行い、予期不安の呪縛を解いていきます。</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="rass-counter-zone">
-      <div
-        style="
-          font-size: 0.75rem;
-          color: #64748b;
-          font-weight: bold;
-          width: 50px;
-          text-align: center;
-        "
-      >
-        RASS<br />ログ
+    <div id="chat" class="tab-content">
+      <div id="current-status-area" style="display:none;">
+        <div class="status-badge" id="status-text">評価データ未送信</div>
       </div>
-      <button class="counter-btn notice-btn" onclick="countRass('attention')">
-        ⚠️ 発話への「注目」に気づいた
-        <span class="counter-num" id="attentionCount">0</span>
-      </button>
-      <button class="counter-btn notice-btn" onclick="countRass('device')">
-        🛠️ 言い方の「工夫」に気づいた
-        <span class="counter-num" id="deviceCount">0</span>
-      </button>
+      
+      <div id="chat-messages">
+        <div class="message bot">
+          こんにちは。私はRASS理論に基づくAI言語聴覚士です。まずは「① 臨床評価」タブからご自身の状態や悪循環チェックを入力して送信していただくか、このまま自由にお悩みをご相談くださいね。
+        </div>
+      </div>
+
+      <div class="rass-panel">
+        <div class="log-btn-container">
+          <button class="log-btn btn-attention" onclick="logRass('attention')">
+            <span>⚠️ 発話への「注目」に気づいた</span>
+            <span class="log-counter" id="count-attention">0</span>
+          </button>
+          <button class="log-btn btn-device" onclick="logRass('device')">
+            <span>⚙️ 話し方の「工夫」に気づいた</span>
+            <span class="log-counter" id="count-device">0</span>
+          </button>
+        </div>
+        <div class="input-area">
+          <input type="text" id="chat-input" placeholder="メッセージを入力...">
+          <button class="send-btn" onclick="sendMessage()">➔</button>
+        </div>
+      </div>
     </div>
 
-    <div class="input-area">
-      <input
-        type="text"
-        id="userInput"
-        placeholder="現在の状況や悩みを相談する..."
-        onkeypress="if(event.key==='Enter') sendMessage()"
-      />
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-        送信
-      </button>
-    </div>
+  </div>
 
-    <script>
-      // --------- ⚙️ 先生のDify情報をここに貼り付けます ⚙️ ---------
-      const DIFY_API_KEY = "app-MjKxgSPzgVMEE7Nfl3S43hsg";
-      const DIFY_BASE_URL = "https://api.dify.ai"; // お使いの環境に合わせて変更してください
-      // --------------------------------------------------------
+  <script>
+    // --- 悪循環チェックシートのデータ構造 ---
+    const checkSheetData = {
+      values: [
+        "吃ると他の人は笑うに違いない",
+        "吃ると他の人は変な話し方だと思っている",
+        "吃ることは恥ずかしい・いけないことである",
+        "他には知られたくない（孤立感）",
+        "話すとは口や言葉を意識してコントロールすることだと思う",
+        "自分はコミュニケーションが下手な人だという否定的認識"
+      ],
+      emotions: [
+        "吃って激しく悔やむ（後悔）",
+        "吃る瞬間に強い恥ずかしさを感じる",
+        "個別の場面や条件下で吃るかもしれないと不安（予期不安）",
+        "全般的に、またいつ吃るか分からず常に不安である",
+        "吃った記憶が何度も頭に浮かんできて気持ちが落ち込む"
+      ],
+      attention: [
+        "発話前に、特定の語音（言葉の音）に注目している",
+        "発話前に、言えるか言えないかを一瞬で判断・予測する",
+        "発話前、または発話中に口や舌、身体の緊張に注意が向く",
+        "発話後、上手く言えたか言えなかったかを細かく分析する",
+        "自分の話し方に対する他者の視線や反応が過剰に気になる"
+      ],
+      device: [
+        "速度を落として、ゆっくり話そうと意識的にコントロールする",
+        "息を深く吸ったり、少し吐き出してから話し始める（構音制御）",
+        "「えーと」「まー」などの言葉（助走）を意識的に入れる",
+        "詰まりそうな時に、少し間を置いたり、言うのを後に延ばす（延期）",
+        "詰まって出ない時に、力を強く入れて無理やり乗り切る（解除反応）",
+        "言えそうもない言葉を、別の言いやすい言葉に代える（語の置き換え）",
+        "自分からはなるべく話さず、相手に話させて返答だけで済ます（回避）"
+      ]
+    };
 
-      let conversationId = "";
-      let counts = { attention: 0, device: 0 };
+    // カウンターの初期化
+    let attentionCount = 0;
+    let deviceCount = 0;
+    let evaluationSubmitted = false;
 
-      // カウント機能
-      function countRass(type) {
-        counts[type]++;
-        document.getElementById(`${type}Count`).innerText = counts[type];
-        // ログが押されたらチャット欄にもサクッと通知メッセージを出す（任意）
-        appendMessage(
-          `（※セルフモニタリング：${
-            type === "attention" ? "発話への注目" : "言い方の工夫"
-          }を自覚しました）`,
-          "user",
-          true
-        );
+    // --- 画面初期化とアコーディオン・マトリクスの生成 ---
+    window.onload = function() {
+      renderMatrix('acc-values', checkSheetData.values, 'V');
+      renderMatrix('acc-emotions', checkSheetData.emotions, 'E');
+      renderMatrix('acc-attention', checkSheetData.attention, 'A');
+      renderMatrix('acc-device', checkSheetData.device, 'D');
+      
+      // Enterキーでチャット送信
+      document.getElementById('chat-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+      });
+    };
+
+    function renderMatrix(containerId, items, prefix) {
+      const container = document.getElementById(containerId);
+      items.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = 'matrix-row';
+        row.innerHTML = `
+          <div class="matrix-question">${idx + 1}. ${item}</div>
+          <div class="matrix-options">
+            <button class="btn-opt" onclick="selectOpt(this, '${prefix}', ${idx}, 0)">0%</button>
+            <button class="btn-opt" onclick="selectOpt(this, '${prefix}', ${idx}, 25)">25%</button>
+            <button class="btn-opt" onclick="selectOpt(this, '${prefix}', ${idx}, 50)">50%</button>
+            <button class="btn-opt" onclick="selectOpt(this, '${prefix}', ${idx}, 75)">75%</button>
+            <button class="btn-opt" onclick="selectOpt(this, '${prefix}', ${idx}, 100)">100%</button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    function selectOpt(btn, prefix, qIdx, value) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      btn.dataset.score = value;
+    }
+
+    // --- UI操作系 ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    function toggleAccordion(id) {
+      const content = document.getElementById(id);
+      const isVisible = content.style.display === 'block';
+      content.style.display = isVisible ? 'none' : 'block';
+      event.currentTarget.querySelector('.arrow').innerText = isVisible ? '▼' : '▲';
+    }
+
+    function toggleEdu(element) {
+      const body = element.nextElementSibling;
+      const isVisible = body.style.display === 'block';
+      body.style.display = isVisible ? 'none' : 'block';
+    }
+
+    // --- RASSログ機能 ---
+    function logRass(type) {
+      const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      let msgText = "";
+      if (type === 'attention') {
+        attentionCount++;
+        document.getElementById('count-attention').innerText = attentionCount;
+        msgText = `（※セルフモニタリング：発話への【注目】を自覚しました [${timestamp}]）`;
+      } else {
+        deviceCount++;
+        document.getElementById('count-device').innerText = deviceCount;
+        msgText = `（※セルフモニタリング：話し方の【工夫・コントロール】を自覚しました [${timestamp}]）`;
+      }
+      appendMessage(msgText, 'user');
+      sendToDify(msgText);
+    }
+
+    // --- 評価結果の集計とAI連携 ---
+    function getSelectedScores(containerId) {
+      const selected = [];
+      document.getElementById(containerId).querySelectorAll('.matrix-row').forEach(row => {
+        const q = row.querySelector('.matrix-question').innerText;
+        const selBtn = row.querySelector('.btn-opt.selected');
+        const score = selBtn ? selBtn.dataset.score + '%' : '未回答';
+        selected.push(`${q}: ${score}`);
+      });
+      return selected.join('\n');
+    }
+
+    function submitEvaluation() {
+      const age = document.getElementById('q-age').value || '未入力';
+      const history = document.getElementById('q-history').value || '未入力';
+      
+      const progEl = document.querySelector('input[name="progression"]:checked');
+      const progression = progEl ? progEl.value : '未選択';
+
+      const valScores = getSelectedScores('acc-values');
+      const emoScores = getSelectedScores('acc-emotions');
+      const attScores = getSelectedScores('acc-attention');
+      const devScores = getSelectedScores('acc-device');
+
+      // AIに送るプロンプト文脈を生成
+      const evaluationSummary = `
+【自動送信：臨床評価・セルフチェックデータ】
+■ 基本情報
+・年齢: ${age}歳
+・吃音の履歴・自覚のきっかけ: ${history}
+
+■ 吃音進展段階の自己診断
+・${progression}
+
+■ 悪循環チェックシート回答
+[価値観・考え方]
+${valScores}
+
+[感情・情動]
+${emoScores}
+
+[発話への注目・目的化]
+${attScores}
+
+[発話の工夫・コントロール・回避]
+${devScores}
+
+上記の評価結果を深く分析し、RASS理論に基づいて、私の進展段階とどのような悪循環に陥っているかを優しく解説し、今後のセルフケアの方向性を提示してください。
+`;
+
+      // チャットタブへ移動し、バッジを更新
+      switchTab('chat');
+      document.getElementById('current-status-area').style.display = 'block';
+      document.getElementById('status-text').innerText = `分析中: ${progression} / 履歴送信済`;
+      
+      appendMessage("📋 臨床評価データをAI言語聴覚士に送信しました。分析を待っています...", "user");
+      sendToDify(evaluationSummary);
+      evaluationSubmitted = true;
+    }
+
+    // --------- ⚙️ 先生のアプリ設定情報 ⚙️ ---------
+    // アプリ公開用URL: https://stkishi0915.github.io/rass-app/
+    
+    // 【重要】"ここを消して..." の部分に、CodeSandboxの時と同じ先生のDify APIキーを貼り付けてください。
+    const DIFY_API_KEY = "app-MjKxgSPzgVMEE7Nfl3S43hsg";
+    
+    // DifyのベースURL
+    const DIFY_BASE_URL = "https://api.dify.ai";
+    // --------------------------------------------------------
+
+    let conversationId = "";
+
+    function appendMessage(text, sender) {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `message ${sender}`;
+      div.innerText = text;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+      return div;
+    }
+
+    function showTypingIndicator() {
+      const container = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'message bot id-typing';
+      div.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const indicator = document.querySelector('.id-typing');
+      if (indicator) indicator.remove();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage(text, 'user');
+      input.value = '';
+      
+      showTypingIndicator();
+      sendToDify(text);
+    }
+
+    async function sendToDify(messageText) {
+      if (DIFY_API_KEY.includes("ここを消して")) {
+        removeTypingIndicator();
+        appendMessage("⚠️ エラー: コードの494行目付近にあるDifyのAPIキーを設定してください。", "bot");
+        return;
       }
 
-      async function sendMessage() {
-        const inputEl = document.getElementById("userInput");
-        const btnEl = document.getElementById("sendBtn");
-        const text = inputEl.value.trim();
-        if (!text) return;
+      try {
+        const response = await fetch(`${DIFY_BASE_URL}/v1/chat-messages`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${DIFY_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            inputs: {},
+            query: messageText,
+            user: "rass-patient-user",
+            response_mode: "blocking",
+            conversation_id: conversationId
+          })
+        });
 
-        inputEl.value = "";
-        inputEl.disabled = true;
-        btnEl.disabled = true;
-        appendMessage(text, "user");
+        const data = await response.json();
+        removeTypingIndicator();
 
-        try {
-          const response = await fetch(`${DIFY_BASE_URL}/v1/chat-messages`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${DIFY_API_KEY}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              inputs: {},
-              query: text,
-              response_mode: "blocking",
-              user: "rass-service-user",
-              conversation_id: conversationId,
-            }),
-          });
-          const data = await response.json();
-          if (data.conversation_id) conversationId = data.conversation_id;
-          appendMessage(data.answer, "bot");
-        } catch (error) {
-          appendMessage(
-            "通信エラーが発生しました。インターネット接続を確認するか、しばらく時間を置いてお試しください。",
-            "bot"
-          );
-        } finally {
-          inputEl.disabled = false;
-          btnEl.disabled = false;
-          inputEl.focus();
-        }
-      }
-
-      function appendMessage(text, sender, isLog = false) {
-        const container = document.getElementById("chatContainer");
-        let msgHtml = "";
-        if (isLog) {
-          msgHtml = `<div class="message user" style="background-color: #f1f5f9; color: #64748b; border: 1px dashed #cbd5e1; font-size: 0.8rem; padding: 6px 12px; align-self: center; border-radius: 8px; box-shadow: none;">${text}</div>`;
+        if (response.ok) {
+          conversationId = data.conversation_id;
+          appendMessage(data.answer, 'bot');
         } else {
-          msgHtml = `<div class="message ${sender}">${text.replace(
-            /\n/g,
-            "<br>"
-          )}</div>`;
+          appendMessage(`⚠️ エラーが発生しました (${data.status_code}): ${data.message}`, 'bot');
         }
-        container.insertAdjacentHTML("beforeend", msgHtml);
-        container.scrollTop = container.scrollHeight;
+      } catch (error) {
+        removeTypingIndicator();
+        appendMessage("⚠️ サーバー通信エラーが発生しました。URLや接続を確認してください。", 'bot');
       }
-    </script>
-  </body>
+    }
+  </script>
+</body>
 </html>
