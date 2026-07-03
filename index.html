@@ -1,936 +1,453 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RASSパートナー - 吃音リカバリー伴走システム</title>
-  <!-- Tailwind CSS (Play CDN) -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts (Noto Sans JP) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Noto Sans JP', sans-serif;
-      background-color: #fdfbf7;
-    }
-    /* カスタムスクロールバー非表示 */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    /* 音声波形シミュレーターのアニメーション */
-    @keyframes wavePlay {
-      0%, 100% { transform: scaleY(0.2); }
-      50% { transform: scaleY(1.0); }
-    }
-    .wave-bar {
-      animation: wavePlay 1.2s ease-in-out infinite;
-    }
-    .wave-bar:nth-child(2) { animation-delay: 0.15s; }
-    .wave-bar:nth-child(3) { animation-delay: 0.3s; }
-    .wave-bar:nth-child(4) { animation-delay: 0.45s; }
-    .wave-bar:nth-child(5) { animation-delay: 0.6s; }
-  </style>
-</head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
-
-  <!-- ヘッダー：ステップ付きロードマップ -->
-  <header class="bg-white border-b border-rose-100 shadow-sm sticky top-0 z-50 px-4 py-3">
-    <div class="max-w-md mx-auto">
-      <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1.5">
-        <span class="text-rose-600 flex items-center gap-1">🌸 RASSパートナー</span>
-        <span id="roadmap-progress">Step 1 / 11</span>
-      </div>
-      <!-- 11ステップインジケーター -->
-      <div class="flex items-center justify-between relative mt-1">
-        <div class="absolute left-0 right-0 top-1/2 h-[3px] bg-slate-100 -translate-y-1/2 z-0 rounded-full"></div>
-        <div id="roadmap-line" class="absolute left-0 top-1/2 h-[3px] bg-rose-400 -translate-y-1/2 z-0 transition-all duration-300 rounded-full" style="width: 0%;"></div>
-        
-        <div class="flex items-center justify-between w-full relative z-10">
-          <script>
-            for (let i = 1; i <= 11; i++) {
-              document.write(`
-                <div id="dot-${i}" class="w-6 h-6 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-400 transition-all duration-300 shadow-xs">
-                  ${i}
-                </div>
-              `);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RASS (自然で無意識な発話への遡及的アプローチ) インタラクティブレポート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'sans-serif'],
+                    },
+                    colors: {
+                        rassbg: '#Fdfcfb',
+                        rasstext: '#334155',
+                        rassprimary: '#d97706',
+                        rasssecondary: '#f43f5e',
+                        rassmuted: '#94a3b8',
+                        rasscard: '#ffffff'
+                    }
+                }
             }
-          </script>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- メインコンテンツ -->
-  <main class="flex-1 w-full max-w-md mx-auto px-4 py-6 flex flex-col justify-start">
-    
-    <!-- さくら先生メッセージ吹き出し -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-rose-50 flex items-start gap-3.5 mb-5">
-      <div class="w-11 h-11 rounded-full bg-rose-50 flex items-center justify-center text-xl shrink-0 border border-rose-100 shadow-inner">🌸</div>
-      <div class="flex-1 min-w-0">
-        <h3 class="text-xs font-bold text-rose-500 mb-0.5">担当ST：さくら先生</h3>
-        <p id="sakura-bubble" class="text-xs leading-relaxed text-slate-700 font-medium">
-          はじめまして！言語聴覚士のさくらです。あなた本来の「自然でリラックスしたお話し方」を一緒にゆっくり取り戻していきましょうね。よろしくお願いいたします。
-        </p>
-      </div>
-    </div>
-
-    <!-- メイン表示カード -->
-    <div id="step-content" class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 min-h-[420px] flex flex-col justify-between transition-all duration-300">
-      <!-- 動的ロード -->
-    </div>
-
-  </main>
-
-  <!-- 固定フッター：ナビゲーションボタン -->
-  <footer class="bg-white border-t border-slate-100 p-4 sticky bottom-0 z-40">
-    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
-      <button id="btn-back" onclick="prevStep()" class="px-5 py-3 rounded-2xl font-bold text-sm bg-slate-50 text-slate-500 hover:bg-slate-100 active:scale-95 transition disabled:opacity-40" disabled>
-        戻る
-      </button>
-      <button id="btn-next" onclick="nextStep()" class="flex-1 py-3 rounded-2xl font-bold text-sm bg-rose-500 text-white shadow-md shadow-rose-200/50 hover:bg-rose-600 active:scale-95 transition disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none">
-        次に進む
-      </button>
-    </div>
-  </footer>
-
-  <!-- カスタムモーダル（alert等のブラウザ標準UIの代替） -->
-  <div id="custom-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center hidden px-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100">
-      <h3 id="modal-title" class="text-sm font-bold text-slate-800 mb-2">確認</h3>
-      <p id="modal-message" class="text-xs text-slate-500 leading-relaxed mb-5"></p>
-      <div class="text-right">
-        <button onclick="closeModal()" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl transition">確定</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // 状態管理
-    const state = {
-      currentStep: 1,
-      profile: {
-        name: '',
-        age: '',
-        belonging: '',
-        familyHistory: 'unknown',
-        trainingHistory: 'no',
-        trainingDetails: '',
-        motherName: 'お母さん',
-        fatherName: 'お父さん'
-      },
-      selfSurvey: {
-        effort: 5,
-        rating: 5,
-        satisfaction: 2
-      },
-      currentQuestionIndex: 0,
-      answers: {}, // questionId: score
-      mrProgress: {}, // s_id: count
-      audioPlaying: false,
-      audioTime: 0,
-      audioInterval: null,
-      attentionShiftChecked: [false, false, false, false]
-    };
-
-    // 悪循環チェックシート全55項目
-    const allQuestions = [
-      { id: 1, cat: "他者の推測", text: "吃ると他の人は笑うに違いない。" },
-      { id: 2, cat: "他者の推測", text: "吃ると他の人は変な話し方だと思っている。" },
-      { id: 3, cat: "他者の推測", text: "吃る人は劣っていると他の人は考えている。" },
-      { id: 4, cat: "他者の推測", text: "皆が自分の話し方に注目している。" },
-      { id: 5, cat: "自分への考え", text: "吃ることは恥ずかしいことである。" },
-      { id: 6, cat: "自分への考え", text: "吃ることはいけないことである。" },
-      { id: 7, cat: "自分への考え", text: "吃ることは変な話し方である。" },
-      { id: 8, cat: "自分への考え", text: "吃ると他の人から笑われるに違いない。" },
-      { id: 9, cat: "自分への考え", text: "吃ると馬鹿にされるに違いない。" },
-      { id: 10, cat: "孤立感", text: "他の人には知られたくない。" },
-      { id: 11, cat: "孤立感", text: "吃るのは自分だけだ。" },
-      { id: 12, cat: "発話への考え", text: "話すとは意識して言葉を出すことである。" },
-      { id: 13, cat: "発話への考え", text: "話すとは口を動かして声を出すことである。" },
-      { id: 14, cat: "発話への考え", text: "特定の場面では言うべき表現が決まっていると思う。（セリフ、シナリオ）。" },
-      { id: 15, cat: "自己認識", text: "自分は普通の話し方ができない人である。" },
-      { id: 16, cat: "自己認識", text: "自分は劣った（駄目な）人である。" },
-      { id: 17, cat: "自己認識", text: "自分は価値が低い人だ。" },
-      { id: 18, cat: "自己認識", text: "今の自分は嫌だ。" },
-      { id: 19, cat: "自己認識", text: "自分は健常者でないから駄目だ。" },
-      { id: 20, cat: "自己認識", text: "自分はコミュニケーションが下手な人だ。" },
-      { id: 21, cat: "感情・情動", text: "吃って悔やむ（後悔）。" },
-      { id: 22, cat: "感情・情動", text: "吃ると恥ずかしい。" },
-      { id: 23, cat: "感情・情動", text: "吃ることが辛い。" },
-      { id: 24, cat: "感情・情動", text: "吃ることが悲しい。" },
-      { id: 25, cat: "感情・情動", text: "個別の場面・条件下で吃るかもしれないと不安である（不安、恐怖感）。" },
-      { id: 26, cat: "感情・情動", text: "全般的な、また吃るかもしれないと不安である。" },
-      { id: 27, cat: "感情・情動", text: "自分は孤独であり、寂しい。" },
-      { id: 28, cat: "注目・監視", text: "発話前に、語音（言葉の音）に注目している。" },
-      { id: 29, cat: "注目・監視", text: "発話前に、発話中に言葉に注目している。" },
-      { id: 30, cat: "注目・監視", text: "発話前に、言える、言えないと判断する。" },
-      { id: 31, cat: "注目・監視", text: "発話前または発話中に口、舌の状態に注意が向く。" },
-      { id: 32, cat: "注目・監視", text: "発話前または発話中に自分の身体の状態を感じている。" },
-      { id: 33, cat: "注目・監視", text: "発話後、上手く言えた、言えなかったと分析する（発話結果が気になる）。" },
-      { id: 34, cat: "注目・監視", text: "自分の話し方への他者の反応が気になる。" },
-      { id: 35, cat: "注目・監視", text: "発話時、その前後に緊張、不安へ注意を向ける。" },
-      { id: 36, cat: "目的化", text: "上手く話そうと意識する（目的化）。" },
-      { id: 37, cat: "目的化", text: "話そうと（話す事自体を）意図的に考える。" },
-      { id: 38, cat: "目的化", text: "言葉を出そうと意図している（言葉を意識的に出そうとしている）。" },
-      { id: 39, cat: "工夫（制御）", text: "発話中に舌、口、呼吸器官の動きを意識的に行おうとする。" },
-      { id: 40, cat: "工夫（制御）", text: "発話中に、口を意図的に大きく動かし話す。" },
-      { id: 41, cat: "工夫（制御）", text: "口の形を自分が言いやすいように工夫する。" },
-      { id: 42, cat: "工夫（制御）", text: "口を大きく開けて話す。" },
-      { id: 43, cat: "工夫（制御）", text: "お腹に力を入れて話す（お腹から声を出す）。" },
-      { id: 44, cat: "工夫（制御）", text: "息をゆっくり吐きながら話す。" },
-      { id: 45, cat: "工夫（制御）", text: "他の人には分からない様にリズムを取って話す。" },
-      { id: 46, cat: "工夫（制御）", text: "速度を落として、ゆっくり話す。" },
-      { id: 47, cat: "工夫（制御）", text: "発話前に息を深く吸う。" },
-      { id: 48, cat: "工夫（制御）", text: "息を少し吐いてから（途中まで吐いてから）話す。" },
-      { id: 49, cat: "工夫（制御）", text: "話す直前に、口を少し動かして言い易くする。" },
-      { id: 50, cat: "工夫（回避）", text: "もう一度言わなければならない時は言わない。" },
-      { id: 51, cat: "工夫（回避）", text: "吃りそうな時は、分からないふりをして言わない。" },
-      { id: 52, cat: "工夫（回避）", text: "自分からはなるべく言わないようにし、相手が話すようにし向け、返答だけで済むようにする。" },
-      { id: 53, cat: "工夫（回避）", text: "詰まりそうな時は言わないことがある。" },
-      { id: 54, cat: "工夫（回避）", text: "笑われそうな時は、言わないことがある。" },
-      { id: 55, cat: "行動", text: "自分が話すことを考えることが精一杯で、相手の話を聞き漏らすことがある。" }
-    ];
-
-    // 年表方式 M・R シナリオ（⑨対立内容ベース）
-    const mrScenarios = [
-      { id: 1, age: "3歳", tag: "幼児期", count: 5, text: "<1>母にだっことねだる場面\n<2>母にだっこと言っている。\n<3>母はだっこして家の中をあちこちと歩いている。" },
-      { id: 2, age: "3歳", tag: "幼児期", count: 10, text: "<1>父（母）に本を読んでもらっている場面\n<2>自分が思ったことを沢山言い、質問もしている。\n<3>父（母）は嬉しそうにニコニコして答えてくれている。" },
-      { id: 3, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>母から手伝ってと言われた場面\n<2>今TVが良いところだから嫌という。\n<3>母はじゃ良いよといった。" },
-      { id: 4, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>店で母に買ってくれとねだっている場面\n<2>母に○○と○○を買ってと言っている。\n<3>母はニコニコして全部いいよと受け入れてくれている。" },
-      { id: 5, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>家で用事をしている母に話す場面\n<2>一緒に遊ぼうと自分のペースで(母)を誘っている。\n<3>(母)はニコニコして、すぐ一緒に遊び始める。" },
-      { id: 6, age: "7－9歳", tag: "学童期", count: 5, text: "<1>学校で友達と遊んでいる場面\n<2>遊びに誘ったり、ルールを説明したり、自分のペースで気軽に話したりしている。\n<3>みんなで楽しく遊んでいる。" },
-      { id: 7, age: "7－9歳", tag: "学童期", count: 5, text: "<1>教室で休み時間に数人が集まってワイワイやっている場面\n<2>自分から輪の中に入り、話しを聞き、質問に答え、話題を提供したり、質問したりしている。\n<3>皆が楽しんでいる。" },
-      { id: 8, age: "10-11歳", tag: "学童期", count: 5, text: "<1>クラスで自己紹介している場面\n<2>自分の番が回ってくるまで周囲を良く観察してまっている。" },
-      { id: 9, age: "10-11歳", tag: "学童期", count: 5, text: "<1>自己紹介で自分の番が回ってきた場面\n<2>周囲を良く観察しながら、自分のペースで自己紹介をしている。\n<3>周囲から拍手で受け入れられた。" },
-      { id: 10, age: "12歳", tag: "思春期・成人期", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
-      { id: 11, age: "15歳", tag: "思春期・成人期", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
-      { id: 12, age: "17歳", tag: "思春期・成人期", count: 5, text: "<1>休み時間にクラスメイトと話す場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
-      { id: 13, age: "17歳", tag: "思春期・成人期", count: 5, text: "<1>授業で当てられる順番を待っている場面\n<2>教室や先生の様子を良く観察して待っており、順番が来て当てられたら、立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" }
-    ];
-
-    // 各ステップの「さくら先生」ガイドメッセージ
-    const sakuraSpeech = {
-      1: "こんにちは！お名前やご家族の普段の呼び名を教えてください。あなた専用にカスタマイズされた伴走メニューを自動合成します。",
-      2: "普段感じている、こころとお話し方のバランス（悪循環パターン）を1問ずつ教えてください。スマホでの文字潰れや不自然な改行は起きませんので、リラックスしてタップしてくださいね。",
-      3: "チェックお疲れ様でした。あなたのお話しパターンの個性・特徴が見えてきました。身構えが起きるメカニズムを解説しますね。",
-      4: "吃音のメカニズムを正しく知る「吃音教育」のステップです。中核症状と工夫・回避の違いを理解し、お話しが自動的に滑らかに流れる理由を学びましょう。",
-      5: "悪循環（吃音者意識）を減らすことと並んで大切な「注意転換（シフト）」の練習です。今日起きた心のモヤモヤから注意をそらせたかチェックしましょう。",
-      6: "リハーサル（M・R法）の目的と進め方を説明します。過去の身構えた経験を「自分目線のイメージ」で大成功体験に塗り替えていく非常に有効な訓練です。",
-      7: "M・R法に入る前に、お腹や体の力を抜く「リラクセーション」と、静かな砂浜や青空を思い浮かべる「中性イメージ」を音声ガイドで体験しましょう。",
-      8: "【幼児期（3〜6歳）】のメンタルリハーサルを始めます。親御さんの呼び方があなた専用に調整されています。各回数を終えたらボタンを押して記録しましょう！",
-      9: "【学童期（7〜11歳）】のリハーサルです。学校や教室で、周囲を穏やかに見つめながら、ご自身の気楽なペースで話して成功している景色を描きます。",
-      10: "【思春期・成人期（12〜17歳）】です。複雑な電話や当てられる場面の身構えをすっかり脱感作（リセット）していきます。ここを終えればゴールは目の前です！",
-      11: "伴走プログラムをすべて修了しました！素晴らしい継続ですね。これからは肩の力を抜き、あなた本来の自然な話し方で、のびのびと日常を歩んでいってくださいね。🌸"
-    };
-
-    // 初回読み込み
-    window.onload = function() {
-      // 進行記録ゼロクリア
-      mrScenarios.forEach(scen => {
-        state.mrProgress[scen.id] = 0;
-      });
-      renderStep();
-    };
-
-    // ステップ描画メイン処理
-    function renderStep() {
-      const stepContainer = document.getElementById('step-content');
-      const bubble = document.getElementById('sakura-bubble');
-      const progressText = document.getElementById('roadmap-progress');
-      const roadmapLine = document.getElementById('roadmap-line');
-
-      // ナビゲーションおよび進捗バー更新
-      progressText.innerText = `Step ${state.currentStep} / 11`;
-      bubble.innerText = sakuraSpeech[state.currentStep];
-      roadmapLine.style.width = `${((state.currentStep - 1) / 10) * 100}%`;
-
-      // 上部インジケータードットの表示更新
-      for (let i = 1; i <= 11; i++) {
-        const dot = document.getElementById(`dot-${i}`);
-        if (i < state.currentStep) {
-          dot.className = "w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-black z-10 border border-rose-500 shadow-xs";
-          dot.innerHTML = "✓";
-        } else if (i === state.currentStep) {
-          dot.className = "w-6 h-6 rounded-full bg-white text-rose-500 flex items-center justify-center text-[10px] font-black z-10 border-2 border-rose-400 scale-115 shadow-sm ring-4 ring-rose-100";
-          dot.innerHTML = String(i);
-        } else {
-          dot.className = "w-6 h-6 rounded-full bg-white text-slate-400 flex items-center justify-center text-[10px] font-medium z-10 border border-slate-200";
-          dot.innerHTML = String(i);
         }
-      }
+    </script>
+    <style>
+        body {
+            background-color: #Fdfcfb;
+            color: #334155;
+            -webkit-font-smoothing: antialiased;
+        }
+        .chart-container-donut {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 300px;
+        }
+        .chart-container-radar {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        .tab-active {
+            border-bottom-width: 4px;
+            border-color: #d97706;
+            color: #d97706;
+            font-weight: 700;
+        }
+        .tab-inactive {
+            border-bottom-width: 4px;
+            border-color: transparent;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .filter-active {
+            background-color: #d97706;
+            color: #ffffff;
+        }
+        .filter-inactive {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+    </style>
+</head>
+<body>
 
-      // ナビボタンの基本状態
-      document.getElementById('btn-back').disabled = (state.currentStep === 1);
-      document.getElementById('btn-next').disabled = false;
-      document.getElementById('btn-next').innerText = "次に進む";
+    <!-- Chosen Palette: Warm Neutrals (Beige/Slate) with Amber and Rose Accents -->
+    <!-- Application Structure Plan: A single-page dashboard designed for exploratory learning. It transitions logically from the 'Why' (Efficacy & Theory) to the 'What' (Progression Stages & Vicious Cycle), and finally to the 'How' (Interactive Mental Rehearsal Scenarios). This structure allows users (therapists or patients) to non-linearly explore the holistic RASS framework, transforming a dense clinical manual into an engaging, interactive narrative. -->
+    <!-- Visualization & Content Choices: Report Info -> Goal -> Viz/Presentation -> Interaction -> Justification -> Library: 1) Efficacy Data -> Inform -> Donut Chart (Chart.js) -> Hover tooltips -> Clearly shows success rates visually. 2) Progression Stages -> Compare/Organize -> Interactive Tabs (HTML/JS) -> Click to switch content -> Prevents cognitive overload by chunking dense text. 3) Vicious Cycle -> Relationships -> Radar Chart (Chart.js) -> Hover & dataset toggling -> Effectively visualizes the multi-dimensional psychological burden. 4) M.R. Scenarios -> Organize -> Filterable Grid (HTML/JS) -> Category buttons -> Allows users to easily browse therapy content by age group. NO SVG or Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-      // 音声シミュレーター強制リセット（ステップ7以外）
-      if (state.currentStep !== 7) {
-        clearInterval(state.audioInterval);
-        state.audioPlaying = false;
-        state.audioTime = 0;
-      }
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="text-xl font-black tracking-tight text-rassprimary">🗣️ RASS DATA EXPLORER</div>
+            <div class="text-sm font-medium text-rassmuted hidden sm:block">自然で無意識な発話への遡及的アプローチ</div>
+        </div>
+    </nav>
 
-      // ステップごとの動的コンテンツ挿入
-      let html = "";
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
 
-      switch (state.currentStep) {
-        case 1:
-          // --- STEP 1: 問診と呼称確認 ---
-          html = `
-            <div class="space-y-4">
-              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                <span>📋</span> 1. お話しカルテの作成
-              </h2>
-              <div class="space-y-3">
+        <section id="overview" class="scroll-mt-20">
+            <div class="mb-8">
+                <h1 class="text-3xl sm:text-4xl font-black text-rasstext mb-4">RASS 臨床データと理論構造</h1>
+                <p class="text-lg text-rassmuted max-w-3xl leading-relaxed">
+                    本ダッシュボードは、成人吃音治療における「自然で無意識な発話への遡及的アプローチ（RASS）」の臨床的エビデンス、吃音の進展メカニズム、および年表方式メンタルリハーサル（M.R法）の実践的シナリオをインタラクティブに探索・学習するためのプラットフォームです。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+                <div class="space-y-6">
+                    <div class="inline-flex items-center justify-center p-3 bg-amber-50 rounded-2xl text-2xl mb-2">📊</div>
+                    <h2 class="text-2xl font-bold">RASSアプローチの改善実績</h2>
+                    <p class="text-rasstext leading-relaxed">
+                        約3年間の訓練経過において、全体で<strong class="text-rassprimary text-xl">74%</strong>の改善率が報告されています（都筑, 2012）。直接法（流暢性形成法）とは異なり、発話の意図的なコントロールを手放し、脳の無意識な発話システムを再獲得することを目的としています。
+                    </p>
+                    <ul class="space-y-3 mt-4">
+                        <li class="flex items-center text-sm font-medium"><span class="text-green-500 mr-2 text-lg">■</span> 正常域に到達: 36% (10例)</li>
+                        <li class="flex items-center text-sm font-medium"><span class="text-blue-400 mr-2 text-lg">■</span> 第1〜第2層に改善: 38% (6例)</li>
+                        <li class="flex items-center text-sm font-medium"><span class="text-slate-300 mr-2 text-lg">■</span> 第3層に留まる: 26% (5例)</li>
+                    </ul>
+                </div>
                 <div>
-                  <label class="block text-[11px] font-bold text-slate-400 mb-1">お名前 (ニックネーム)</label>
-                  <input type="text" id="prof-name" value="${state.profile.name}" oninput="state.profile.name=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：たろう">
+                    <div class="chart-container-donut">
+                        <canvas id="efficacyChart"></canvas>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">現在の年齢</label>
-                    <input type="number" id="prof-age" value="${state.profile.age}" oninput="state.profile.age=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：25">
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">所属 (職業・学年)</label>
-                    <input type="text" id="prof-belonging" value="${state.profile.belonging}" oninput="state.profile.belonging=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：会社員">
-                  </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">ご家族の吃音歴</label>
-                    <select onchange="state.profile.familyHistory=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden bg-white">
-                      <option value="unknown" ${state.profile.familyHistory==='unknown'?'selected':''}>不明</option>
-                      <option value="yes" ${state.profile.familyHistory==='yes'?'selected':''}>あり</option>
-                      <option value="no" ${state.profile.familyHistory==='no'?'selected':''}>なし</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">過去の訓練歴</label>
-                    <select id="prof-training" onchange="toggleTraining(this.value)" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden bg-white">
-                      <option value="no" ${state.profile.trainingHistory==='no'?'selected':''}>なし</option>
-                      <option value="yes" ${state.profile.trainingHistory==='yes'?'selected':''}>あり</option>
-                    </select>
-                  </div>
-                </div>
-                <div id="training-desc-area" class="${state.profile.trainingHistory === 'yes' ? '' : 'hidden'}">
-                  <label class="block text-[11px] font-bold text-slate-400 mb-1">訓練内容や期間（覚えている範囲で）</label>
-                  <textarea oninput="state.profile.trainingDetails=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" rows="2" placeholder="例：小学生のころ週1回など">${state.profile.trainingDetails}</textarea>
-                </div>
-                <div class="border-t border-slate-100 pt-3 grid grid-cols-2 gap-3">
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">お母さんの当時の呼び名</label>
-                    <input type="text" value="${state.profile.motherName}" oninput="state.profile.motherName=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：お母さん、ママ">
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-400 mb-1">お父さんの当時の呼び名</label>
-                    <input type="text" value="${state.profile.fatherName}" oninput="state.profile.fatherName=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：お父さん、パパ">
-                  </div>
-                </div>
-              </div>
             </div>
-          `;
-          break;
+        </section>
 
-        case 2:
-          // --- STEP 2: 悪循環チェックシート＆発話自己調査（1問1カード） ---
-          document.getElementById('btn-next').disabled = true; // 回答必須
-          
-          if (state.currentQuestionIndex < 3) {
-            // 最初は発話に関する自己調査評価表3項目
-            html = renderSelfSurvey();
-          } else {
-            // 次に55の悪循環項目
-            html = renderViciousCheck();
-          }
-          break;
+        <section id="stages" class="scroll-mt-20">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <div class="inline-flex items-center justify-center p-3 bg-rose-50 rounded-2xl text-2xl mb-4">📈</div>
+                <h2 class="text-3xl font-bold mb-4">吃音の進展段階（第1層〜第4層）</h2>
+                <p class="text-rassmuted leading-relaxed">
+                    吃音の最大の問題は「進展」することです。中核症状（連発・伸発）から始まり、他者の反応や自己否定的な価値観を通じて、どのように回避や意図的コントロール（二次的症状）が形成されていくかを確認します。
+                </p>
+            </div>
 
-        case 3:
-          // --- STEP 3: 自動判定結果表示 ---
-          const calc = runDiagnostic();
-          html = `
-            <div class="space-y-4">
-              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                <span>📊</span> 3. お話しパターンの個性・特徴
-              </h2>
-              
-              <div class="bg-rose-50/50 rounded-2xl p-4 text-center border border-rose-100/50">
-                <span class="text-[10px] font-bold text-slate-500 block mb-1">自動判定された現在の進展状態</span>
-                <span class="text-xl font-black text-rose-500">${calc.stage}</span>
-              </div>
-
-              <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1 no-scrollbar text-xs leading-relaxed text-slate-600">
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                  <p class="font-bold text-slate-800 mb-1">💡 さくら先生からの臨床解説</p>
-                  <p>${calc.explanation}</p>
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="flex overflow-x-auto border-b border-slate-200" id="stage-tabs">
+                    <button class="flex-1 py-5 px-4 text-center whitespace-nowrap transition-all duration-200 tab-active" onclick="switchStage(1)">第1層 (初期)</button>
+                    <button class="flex-1 py-5 px-4 text-center whitespace-nowrap transition-all duration-200 tab-inactive" onclick="switchStage(2)">第2層 (慢性化)</button>
+                    <button class="flex-1 py-5 px-4 text-center whitespace-nowrap transition-all duration-200 tab-inactive" onclick="switchStage(3)">第3層 (工夫・自覚)</button>
+                    <button class="flex-1 py-5 px-4 text-center whitespace-nowrap transition-all duration-200 tab-inactive" onclick="switchStage(4)">第4層 (回避・恐怖)</button>
                 </div>
-                <div class="p-3 bg-white rounded-xl border border-slate-200 space-y-1.5">
-                  <p class="font-bold text-slate-700">【臨床スコア詳細】</p>
-                  <p>・発話制御（工夫）への身構え：<span class="font-bold text-slate-900">${calc.kufu}%</span></p>
-                  <p>・お話しを避ける行動（回避）：<span class="font-bold text-slate-900">${calc.kaihi}%</span></p>
-                  <p>・予期不安や感情の揺れ：<span class="font-bold text-slate-900">${calc.emo}%</span></p>
+                <div class="p-8 md:p-12 min-h-[300px]" id="stage-content">
                 </div>
-              </div>
             </div>
-          `;
-          break;
+        </section>
 
-        case 4:
-          // --- STEP 4: 吃音教育と同意 ---
-          html = `
-            <div class="space-y-4">
-              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                <span>📖</span> 4. 吃音教育マニュアル
-              </h2>
-              <div class="space-y-3 max-h-[260px] overflow-y-auto pr-1 text-xs text-slate-600 leading-relaxed no-scrollbar">
-                <div class="space-y-2">
-                  <p class="font-bold text-slate-800 text-sm">吃音症状の本質</p>
-                  <p>● <strong>中核症状（自動的な現象）：</strong> 繰り返し、引き伸ばし、ブロック（阻止）は、脳の生体的なシステム活動によって生じるものです。本人の努力不足ではありません。</p>
-                  <p>● <strong>二次的症状（ご自身の意思の工夫）：</strong> どもりを避けようと口を大きく動かしたり、先延ばしにする「工夫」や、話さない「回避」は、ご自身の意思で行う行動です。これが余計な身構えと難発を引き起こします。</p>
+        <section id="vicious-cycle" class="scroll-mt-20">
+            <div class="mb-10 text-center max-w-2xl mx-auto">
+                <div class="inline-flex items-center justify-center p-3 bg-slate-100 rounded-2xl text-2xl mb-4">🔄</div>
+                <h2 class="text-3xl font-bold mb-4">思考・感情・行動の悪循環</h2>
+                <p class="text-rassmuted leading-relaxed">
+                    第3層以降の当事者を苦しめる「悪循環チェックシート（全55項目）」の次元構造です。発話への過剰な監視（注目）と、コントロールしようとする工夫が、いかにして脳の自動的な発話を妨発しているかを可視化します。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center bg-rasscard p-8 rounded-3xl shadow-sm border border-slate-100">
+                <div>
+                    <div class="chart-container-radar">
+                        <canvas id="cycleRadarChart"></canvas>
+                    </div>
                 </div>
-                <div class="space-y-2 border-t border-slate-100 pt-2">
-                  <p class="font-bold text-slate-800 text-sm">自然で無意識な発話へ</p>
-                  <p>本来の言葉は、呼吸や舌の動きをまったく「監視・コントロール」せず、思ったことが自動的に口から滑らかに流れ出すものです（自動的なお話し状態）。</p>
-                  <p>このプログラムでは、過剰な工夫と回避をゆっくりと手放し、脳の自然な発話自動化システムを再稼働させます。</p>
+                <div class="space-y-6">
+                    <h3 class="text-xl font-bold border-b border-slate-100 pb-3">悪循環の5つの次元</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="group p-4 rounded-2xl hover:bg-slate-50 transition cursor-default border border-transparent hover:border-slate-200">
+                            <div class="font-bold text-rassprimary mb-1">1. 発話への注目・監視</div>
+                            <div class="text-sm text-rasstext">「発話前に言えるか判断する」「上手く言えたか細かく分析する」など、本来無意識な発話器官の運動を過剰に意識・監視してしまう状態。</div>
+                        </div>
+                        <div class="group p-4 rounded-2xl hover:bg-slate-50 transition cursor-default border border-transparent hover:border-slate-200">
+                            <div class="font-bold text-rasssecondary mb-1">2. 工夫とコントロール</div>
+                            <div class="text-sm text-rasstext">「えーと、を挟む（助走）」「言いやすい言葉に変える（置き換え）」「息を深く吸う」など、ブロックから脱出するための意図的な操作。</div>
+                        </div>
+                        <div class="group p-4 rounded-2xl hover:bg-slate-50 transition cursor-default border border-transparent hover:border-slate-200">
+                            <div class="font-bold text-blue-500 mb-1">3. 回避行動</div>
+                            <div class="text-sm text-rasstext">「もう一度言わなければならない時は言わない」「相手が話すようにし向ける」など、発話や場面そのものから逃避する行動。</div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100 flex items-center gap-2">
-                <input type="checkbox" id="edu-agree" onchange="toggleAgree(this.checked)" class="accent-rose-500 rounded-sm w-4 h-4 shrink-0">
-                <label for="edu-agree" class="text-[11px] font-bold text-rose-700 cursor-pointer">プログラムの内容を理解し、お話しアプローチに同意します。</label>
-              </div>
             </div>
-          `;
-          // 同意するまで次へを無効化
-          document.getElementById('btn-next').disabled = true;
-          break;
+        </section>
 
-        case 5:
-          // --- STEP 5: 注意シフト＆反芻禁止ログ ---
-          html = `
-            <div class="space-y-4">
-              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                <span>🔄</span> 5. お話しへの注目から離れるケア
-              </h2>
-              <p class="text-xs text-slate-500 leading-relaxed">吃音のことを考えて身構えている自分に気付いたら、すぐに「外の音」や「目の前の景色」に注意を切り替える（注意シフト）ことが片輪の重要なトレーニングです。今日の出来事を振り返りましょう。</p>
-              
-              <div class="space-y-2 pt-1.5">
-                ${[
-                  "どもってしまった失敗を、夜に一人で悔やんだり反芻するのをやめられた",
-                  "「吃りそう」と意識した瞬間、そっと部屋の音や景色の観察に注意をそらせた",
-                  "どんなに回避や工夫をしてしまっても、自分を責めず受け入れられた",
-                  "お話し器官の動き（呼吸や舌）を自分の力で監視せずに任せられた"
-                ].map((item, idx) => {
-                  const isChecked = state.attentionShiftChecked[idx];
-                  return `
-                    <label class="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/50 cursor-pointer hover:bg-slate-100/50 active:scale-[0.99] transition">
-                      <input type="checkbox" onchange="toggleShiftCheck(${idx}, this.checked)" ${isChecked ? 'checked' : ''} class="mt-0.5 accent-rose-500 rounded-sm w-4 h-4 shrink-0">
-                      <span class="text-xs text-slate-700 font-medium leading-tight">${item}</span>
-                    </label>
-                  `;
-                }).join('')}
-              </div>
+        <section id="mental-rehearsal" class="scroll-mt-20">
+            <div class="mb-10 text-center max-w-3xl mx-auto">
+                <div class="inline-flex items-center justify-center p-3 bg-amber-50 rounded-2xl text-2xl mb-4">🧠</div>
+                <h2 class="text-3xl font-bold mb-4">年表方式メンタルリハーサル（M.R法）シナリオ</h2>
+                <p class="text-rassmuted leading-relaxed">
+                    自然で無意識な発話の再獲得を目指すためのコア・トレーニングです。吃音の悪化要因（罰・不安・フラストレーション）が少ない幼少期の記憶から開始し、段階的に年齢を上げていくことで、脳内の予期不安を脱感作します。
+                </p>
             </div>
-          `;
-          break;
 
-        case 6:
-          // --- STEP 6: M・R法（メンタルリハーサル）解説 ---
-          html = `
-            <div class="space-y-4">
-              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-                <span>🧘</span> 6. 年表方式メンタルリハーサル法とは
-              </h2>
-              <div class="bg-rose-50/50 rounded-2xl p-4 text-xs leading-relaxed text-slate-600 space-y-2 border border-rose-100/50">
-                <p class="font-bold text-rose-700 text-sm">流暢さの記憶を増やすアプローチ</p>
-                <p>過去に苦手意識を持った場面を、リラックスした状態で、一切の「発話のコントロールや回避」をせずに、自分の心地よいペースで喋りきり、快く受け入れられるシーンを頭の中に疑似体験します。</p>
-                <p>恐怖や身構えの生じにくい「幼少期の親御さんとの場面」から開始し、段階的に学童期、思春期、現在へと遡ることで、脳の恐怖反応（予期不安）をきれいに脱感作（リセット）していきます。</p>
-              </div>
-              <p class="text-[10px] text-slate-400 font-semibold text-center">※毎日寝る前、布団の中で静かに行ってください。</p>
+            <div class="flex flex-wrap gap-3 justify-center mb-10" id="filter-buttons">
+                <button class="px-6 py-2.5 rounded-full text-sm font-bold transition filter-active" onclick="filterScenarios('all')">すべての年齢</button>
+                <button class="px-6 py-2.5 rounded-full text-sm font-bold transition filter-inactive" onclick="filterScenarios('toddler')">幼児期 (3〜6歳)</button>
+                <button class="px-6 py-2.5 rounded-full text-sm font-bold transition filter-inactive" onclick="filterScenarios('school')">学童期 (7〜11歳)</button>
+                <button class="px-6 py-2.5 rounded-full text-sm font-bold transition filter-inactive" onclick="filterScenarios('teen')">思春期以降 (12〜17歳)</button>
             </div>
-          `;
-          break;
 
-        case 7:
-          // --- STEP 7: リラクセーション＆中性イメージ音声シミュレーター ---
-          html = renderAudioPlayer();
-          break;
-
-        case 8:
-          // --- STEP 8: 幼児期編 M・R実践 ---
-          html = renderMRStage(["幼児期"]);
-          break;
-
-        case 9:
-          // --- STEP 9: 学童期編 M・R実践 ---
-          html = renderMRStage(["学童期"]);
-          break;
-
-        case 10:
-          // --- STEP 10: 思春期・成人期編 M・R実践 ---
-          html = renderMRStage(["思春期・成人期"]);
-          break;
-
-        case 11:
-          // --- STEP 11: 終了・フィードバック ---
-          document.getElementById('btn-next').innerText = "最初からやり直す";
-          html = `
-            <div class="text-center space-y-5 py-4">
-              <span class="text-5xl block animate-bounce">🌸</span>
-              <h2 class="text-lg font-black text-rose-500">伴走ロードマップを修了しました</h2>
-              <p class="text-xs text-slate-600 leading-relaxed px-1">
-                おめでとうございます！すべての臨床プロセスと、年代別の遡及的メンタルリハーサルを完了しました。ご自身の中に「自然にお話しできた大成功シーン」が温かく定着しています。
-              </p>
-              
-              <div class="bg-rose-50 border border-rose-100 rounded-2xl p-4 text-left">
-                <span class="text-xs font-bold text-rose-700 block mb-1">🌸 さくら先生からの最後の約束</span>
-                <span class="text-xs text-slate-700 leading-relaxed block">
-                  「日常生活でお話しに注目しそうになったら、すぐにそっと注意をそらす。そしていつでもこのさくら先生のところへ、リラックス体験をしに帰ってきてくださいね。あなたはすでに十分お話しできていますよ。のびのびと日常を楽しんでいきましょう！」
-                </span>
-              </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="scenario-grid">
             </div>
-          `;
-          break;
-      }
+        </section>
 
-      stepContainer.innerHTML = html;
-    }
+    </div>
 
-    // 呼称ありの訓練歴のトグル
-    function toggleTraining(val) {
-      state.profile.trainingHistory = val;
-      const descArea = document.getElementById('training-desc-area');
-      if (val === 'yes') {
-        descArea.classList.remove('hidden');
-      } else {
-        descArea.classList.add('hidden');
-      }
-    }
+    <footer class="bg-white border-t border-slate-200 mt-20">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-center text-sm text-rassmuted font-medium">
+            RASS Clinical Data Interactive Explorer | Built for Therapeutic Analysis
+        </div>
+    </footer>
 
-    // 同意トグル
-    function toggleAgree(checked) {
-      document.getElementById('btn-next').disabled = !checked;
-    }
-
-    // 注意シフトチェックトグル
-    function toggleShiftCheck(idx, checked) {
-      state.attentionShiftChecked[idx] = checked;
-    }
-
-    // 自己調査Q1〜Q3レンダラー
-    function renderSelfSurvey() {
-      const idx = state.currentQuestionIndex;
-      let promptTitle = "";
-      let subDesc = "";
-      let optionsHtml = "";
-
-      if (idx === 0) {
-        promptTitle = "1. しゃべる時に必要な努力のうち何割をなめらかにしゃべることに使っていますか？";
-        subDesc = "(0 = 0% / 全く努力していない、10 = 100% / すべての努力を使っている)";
-        optionsHtml = `
-          <select id="survey-effort" onchange="state.selfSurvey.effort=parseInt(this.value)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:outline-hidden focus:border-rose-400">
-            ${[0,1,2,3,4,5,6,7,8,9,10].map(v => `<option value="${v}" ${state.selfSurvey.effort===v?'selected':''}>${v}割 (${v*10}%)</option>`).join('')}
-          </select>
-        `;
-      } else if (idx === 1) {
-        promptTitle = "2. 自分の話し方に1〜10の得点をつけるとしたら、あなたは何点をつけますか？";
-        subDesc = "(1 = とても悪い、10 = とてもよい)";
-        optionsHtml = `
-          <select id="survey-rating" onchange="state.selfSurvey.rating=parseInt(this.value)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:outline-hidden focus:border-rose-400">
-            ${[1,2,3,4,5,6,7,8,9,10].map(v => `<option value="${v}" ${state.selfSurvey.rating===v?'selected':''}>${v}点</option>`).join('')}
-          </select>
-        `;
-      } else if (idx === 2) {
-        promptTitle = "3. あなたは自分の話し方にどのくらい満足していますか？";
-        subDesc = "当てはまるものを選んでください";
-        const satisfactionLabels = {
-          1: "1：全く満足していない",
-          2: "2：満足していない",
-          3: "3：どちらでもない",
-          4: "4：満足している",
-          5: "5：非常に満足している"
+    <script>
+        const efficacyData = {
+            labels: ['正常域に到達', '第1層・第2層に改善', '第3層に留まる'],
+            datasets: [{
+                data: [36, 38, 26],
+                backgroundColor: ['#22c55e', '#60a5fa', '#cbd5e1'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
         };
-        optionsHtml = `
-          <div class="space-y-2">
-            ${[1,2,3,4,5].map(v => `
-              <label class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer text-xs text-slate-700">
-                <input type="radio" name="survey-sat" value="${v}" onchange="state.selfSurvey.satisfaction=${v}" ${state.selfSurvey.satisfaction===v?'checked':''} class="accent-rose-500 w-4 h-4">
-                <span>${satisfactionLabels[v]}</span>
-              </label>
-            `).join('')}
-          </div>
-        `;
-      }
 
-      return `
-        <div class="flex flex-col justify-between h-full min-h-[380px]">
-          <div>
-            <div class="flex items-center justify-between text-[11px] font-bold text-rose-500 mb-1.5">
-              <span>[発話に関する自己調査]</span>
-              <span>Q${idx + 1} / 3</span>
-            </div>
-            <div class="w-full bg-slate-100 h-[3px] rounded-full mb-4 overflow-hidden">
-              <div class="bg-rose-400 h-full transition-all duration-300" style="width: ${((idx + 1) / 3) * 100}%"></div>
-            </div>
-            <p class="text-sm font-bold text-slate-800 leading-normal mb-1">${promptTitle}</p>
-            <p class="text-[10px] text-slate-400 mb-5 font-semibold">${subDesc}</p>
-            <div class="py-2">
-              ${optionsHtml}
-            </div>
-          </div>
+        const efficacyConfig = {
+            type: 'doughnut',
+            data: efficacyData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        padding: 16,
+                        titleFont: { size: 14, family: '"Noto Sans JP", sans-serif' },
+                        bodyFont: { size: 14, family: '"Noto Sans JP", sans-serif', weight: 'bold' },
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.parsed + '% のケース';
+                            }
+                        }
+                    }
+                }
+            }
+        };
 
-          <div class="flex justify-end pt-4">
-            <button onclick="nextSurveyItem()" class="px-5 py-2.5 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition active:scale-95">
-              ${idx === 2 ? "次へ（チェックシートへ）" : "次の質問へ"}
-            </button>
-          </div>
-        </div>
-      `;
-    }
+        const stagesData = {
+            1: {
+                title: "第1層（初期層）",
+                symptoms: "音節や語の部分の繰り返し、引き伸ばし。一過性に吃り、変動性が大きい。",
+                situations: "コミュニケーション上の圧力下（興奮時や長い話をする時）。",
+                awareness: "すべての場面で自由に話す。まれに瞬間的なもがきがある程度。",
+                focus: "発話への注目や苦悩は「無し」。"
+            },
+            2: {
+                title: "第2層（慢性化）",
+                symptoms: "繰り返し、引き伸ばしに加え、（阻止）ブロックが出現する。慢性化しているが一時的な消失もある。",
+                situations: "家、学校、友人など場所を問わず同じように吃る。",
+                awareness: "自身が「吃音者である」と思っている。非常に困難な瞬間に「ボクハ話セナイ」と表明することも。",
+                focus: "発話への注目は「あり」。しかしまだ苦悩には至っていない。"
+            },
+            3: {
+                title: "第3層（工夫と自覚）",
+                symptoms: "回避以外の症状が出そろう。解除反応、助走、延期を巧みに使い、語の置き換えを行う。",
+                situations: "いくつかの特定の場面が特に困難で、それを自覚している。困難な語音が存在する。",
+                awareness: "吃音を自覚し、欠点・問題として把握する。吃音に憤り、嫌悪感、フラストレーションをもつ。",
+                focus: "発話への注目「あり」、深刻な苦悩「あり」。"
+            },
+            4: {
+                title: "第4層（回避と強固な恐怖）",
+                symptoms: "繰り返しや引き伸ばしが減り、ブロックが主体となる。発話回避や場面回避が完全に定着する。",
+                situations: "困難な場面への持続的なはっきりとした予期があり、多くの語音が困難となる。",
+                awareness: "吃音を深刻な個人的問題とみなす。強い情緒性反応（恐れ・困惑）。",
+                focus: "発話への注目「あり」、苦悩は「強くあり」。"
+            }
+        };
 
-    function nextSurveyItem() {
-      state.currentQuestionIndex++;
-      renderStep();
-    }
+        const radarData = {
+            labels: [
+                ['発話への', '注目・監視'],
+                ['意図的', 'コントロール'],
+                ['発話・場面の', '回避'],
+                ['否定的', '自己価値観'],
+                ['恐怖・', '予期不安']
+            ],
+            datasets: [
+                {
+                    label: '第4層の典型プロファイル',
+                    data: [95, 80, 100, 90, 95],
+                    fill: true,
+                    backgroundColor: 'rgba(244, 63, 94, 0.2)',
+                    borderColor: 'rgba(244, 63, 94, 1)',
+                    pointBackgroundColor: 'rgba(244, 63, 94, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(244, 63, 94, 1)',
+                    borderWidth: 2,
+                },
+                {
+                    label: '第2層の典型プロファイル',
+                    data: [40, 20, 5, 30, 45],
+                    fill: true,
+                    backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    pointBackgroundColor: 'rgba(217, 119, 6, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(217, 119, 6, 1)',
+                    borderWidth: 2,
+                }
+            ]
+        };
 
-    // 悪循環55項目カードレンダラー
-    function renderViciousCheck() {
-      // 55問中何問目か (index 3〜57)
-      const listIndex = state.currentQuestionIndex - 3;
-      const q = allQuestions[listIndex];
-      const savedAns = state.answers[q.id] || "";
+        const radarConfig = {
+            type: 'radar',
+            data: radarData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(0, 0, 0, 0.05)' },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        pointLabels: {
+                            font: { family: '"Noto Sans JP", sans-serif', size: 12, weight: 'bold' },
+                            color: '#475569'
+                        },
+                        ticks: { display: false, min: 0, max: 100 }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { font: { family: '"Noto Sans JP", sans-serif', size: 12 }, usePointStyle: true, padding: 20 }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleFont: { family: '"Noto Sans JP", sans-serif' },
+                        bodyFont: { family: '"Noto Sans JP", sans-serif' }
+                    }
+                }
+            }
+        };
 
-      return `
-        <div class="flex flex-col justify-between h-full min-h-[380px]">
-          <div>
-            <div class="flex items-center justify-between text-[11px] font-bold text-rose-500 mb-1.5">
-              <span>[${q.cat}]</span>
-              <span>${listIndex + 1} / 55</span>
-            </div>
-            <div class="w-full bg-slate-100 h-[3px] rounded-full mb-4 overflow-hidden">
-              <div class="bg-rose-400 h-full transition-all duration-150" style="width: ${((listIndex + 1) / 55) * 100}%"></div>
-            </div>
-            <p class="text-sm font-bold text-slate-800 leading-normal pt-2 mb-1">
-              ${q.text}
-            </p>
-            <p class="text-[10px] text-slate-400 mb-6 font-semibold">このお話し感覚が日頃思い当たる割合は？</p>
-          </div>
+        const scenarios = [
+            { age: "3歳", group: "toddler", target: "母", context: "母にだっことねだる場面", interaction: "母にだっこと言っている。母はだっこして家の中をあちこちと歩いている。" },
+            { age: "3歳", group: "toddler", target: "父（母）", context: "父（母）に本を読んでもらっている場面", interaction: "自分が思ったことを沢山言い、質問もしている。父（母）は嬉しそうにニコニコして答えてくれている。" },
+            { age: "4-6歳", group: "toddler", target: "友達", context: "園で友達と遊んでいる場面", interaction: "遊びについて、自分のペースで気楽に話したり、相手の話を聞いたりしている。みんなで楽しく遊んでいる。" },
+            { age: "4-6歳", group: "toddler", target: "先生", context: "登園した場面", interaction: "先生を見つけて気軽にお早うございますと言っている。先生もニコニコして応じている。" },
+            { age: "7-9歳", group: "school", target: "クラスメイト", context: "教室で休み時間に数人が集まってワイワイやっている場面", interaction: "自分から輪の中に入り、話しを聞き、質問に答え、話題を提供したり、質問したりしている。皆が楽しんでいる。" },
+            { age: "7-9歳", group: "school", target: "先生", context: "授業中にふいに当てられて本を読む場面", interaction: "先生や周囲の状況を良く観察しながら、自分のペースで読んでいる。クラスで一番上手いと先生からほめられた。" },
+            { age: "10-11歳", group: "school", target: "クラス", context: "自己紹介で自分の番が回ってきた場面", interaction: "周囲を良く観察しながら、自分のペースで自己紹介をしている。周囲から拍手で受け入れられた。" },
+            { age: "12歳", group: "teen", target: "クラスメイト", context: "登下校時にクラスメイトと歩いている場面", interaction: "勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。皆が楽しんでいる。" },
+            { age: "15歳", group: "teen", target: "先生", context: "先生に声を掛け、質問する場面", interaction: "先生の様子を良く観察しながら、自分のペースで質問している。先生は丁寧に教えてくれた。" },
+            { age: "17歳", group: "teen", target: "美容院", context: "美容院へ電話を掛けている場面", interaction: "美容院の様子と相手の姿を想起しながら、相手に自分のペースで名乗って交渉をしながら話を進めている。相手の対応も快く、予約ができた。" },
+            { age: "17歳", group: "teen", target: "友人", context: "電話に出たら相手が名乗っている場面", interaction: "気楽に自分なりに名乗り挨拶して、話し出す。用件がすみ、電話を切った。" }
+        ];
 
-          <div>
-            <!-- タップしやすい2行5列グリッド：1文字改行や潰れは100%発生しません -->
-            <div class="grid grid-cols-5 gap-2 max-w-xs mx-auto pb-4">
-              ${[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(val => {
-                const isSelected = state.answers[q.id] === val;
-                // 100%などの表記、0%は文言付き
-                let valLabel = `${val}%`;
-                if (val === 0) valLabel = "0%<br><span class='text-[8px] font-normal'>無</span>";
-                if (val === 100) valLabel = "100%<br><span class='text-[8px] font-normal'>強</span>";
+        let efficacyChartInstance;
+        let radarChartInstance;
 
-                return `
-                  <button onclick="answerVicious(${q.id}, ${val})" class="w-10 h-11 text-xs rounded-full font-bold flex flex-col items-center justify-center transition-all ${isSelected ? 'bg-rose-500 text-white ring-4 ring-rose-100 scale-105 border-transparent' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/50'}">
-                    ${valLabel}
-                  </button>
+        function initCharts() {
+            const ctxEfficacy = document.getElementById('efficacyChart').getContext('2d');
+            efficacyChartInstance = new Chart(ctxEfficacy, efficacyConfig);
+
+            const ctxRadar = document.getElementById('cycleRadarChart').getContext('2d');
+            radarChartInstance = new Chart(ctxRadar, radarConfig);
+        }
+
+        function switchStage(stageNum) {
+            const tabs = document.getElementById('stage-tabs').children;
+            for(let i=0; i<tabs.length; i++) {
+                tabs[i].className = `flex-1 py-5 px-4 text-center whitespace-nowrap transition-all duration-200 cursor-pointer ${i+1 === stageNum ? 'tab-active' : 'tab-inactive hover:bg-slate-50'}`;
+            }
+
+            const data = stagesData[stageNum];
+            const contentDiv = document.getElementById('stage-content');
+            
+            contentDiv.style.opacity = 0;
+            
+            setTimeout(() => {
+                contentDiv.innerHTML = `
+                    <h3 class="text-2xl font-black text-rassprimary mb-6">${data.title}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <div class="text-xs font-bold text-rassmuted uppercase tracking-wider mb-1">吃音症状</div>
+                                <div class="text-rasstext font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">${data.symptoms}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-rassmuted uppercase tracking-wider mb-1">困難な場面・語音</div>
+                                <div class="text-rasstext font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">${data.situations}</div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="text-xs font-bold text-rassmuted uppercase tracking-wider mb-1">自覚および情緒性反応</div>
+                                <div class="text-rasstext font-medium leading-relaxed bg-rose-50 p-4 rounded-2xl border border-rose-100 text-rose-900">${data.awareness}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-rassmuted uppercase tracking-wider mb-1">注目と苦悩</div>
+                                <div class="text-rasstext font-medium leading-relaxed bg-amber-50 p-4 rounded-2xl border border-amber-100 text-amber-900">${data.focus}</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
-              }).join('')}
-            </div>
-
-            <div class="flex items-center justify-between border-t border-slate-100 pt-3 text-[11px] font-bold text-slate-400">
-              <button onclick="prevVicious()" class="hover:text-slate-600">前の質問に戻る</button>
-              <span>選択すると自動で次に進みます</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function answerVicious(qId, val) {
-      state.answers[qId] = val;
-      
-      // 自動的に次の質問へ（0.15秒の心地よいウェイト）
-      setTimeout(() => {
-        const listIndex = state.currentQuestionIndex - 3;
-        if (listIndex < 54) {
-          state.currentQuestionIndex++;
-          renderStep();
-        } else {
-          // すべて終われば自動的に Step 3 (判定結果) へ進む
-          state.currentStep = 3;
-          renderStep();
-        }
-      }, 150);
-    }
-
-    function prevVicious() {
-      if (state.currentQuestionIndex > 3) {
-        state.currentQuestionIndex--;
-        renderStep();
-      } else {
-        // 自己調査評価に戻る
-        state.currentQuestionIndex = 2;
-        renderStep();
-      }
-    }
-
-    // 診断ロジック
-    function runDiagnostic() {
-      let kufuSum = 0, kufuCount = 0;
-      let kaihiSum = 0, kaihiCount = 0;
-      let emoSum = 0, emoCount = 0;
-
-      allQuestions.forEach(q => {
-        const score = state.answers[q.id] || 0;
-        if (q.cat.includes("工夫") && !q.cat.includes("回避")) {
-          kufuSum += score;
-          kufuCount++;
-        }
-        if (q.cat.includes("回避")) {
-          kaihiSum += score;
-          kaihiCount++;
-        }
-        if (q.cat.includes("感情")) {
-          emoSum += score;
-          emoCount++;
-        }
-      });
-
-      const kufuAvg = kufuCount > 0 ? Math.round(kufuSum / kufuCount) : 0;
-      const kaihiAvg = kaihiCount > 0 ? Math.round(kaihiSum / kaihiCount) : 0;
-      const emoAvg = emoCount > 0 ? Math.round(emoSum / emoCount) : 0;
-
-      // 各臨床指標と自己調査努力度から特定
-      let stage = "";
-      let explanation = "";
-
-      if (kaihiAvg >= 30) {
-        stage = "第4層（身構え・お話し回避が強い段階）";
-        explanation = "お話しすることそのものを避けたり、特定の音・ことばから徹底して言い換える『回避行動』が定着しています。吃音への予期不安が非常に強く、心身の身構えが慢性化しています。RASSのアプローチによって、回避のプレッシャーを優しく解き放ち、幼児期の気楽な発話感覚へ脱感作することが最も優先されます。焦る必要は一切ありませんよ。";
-      } else if (kufuAvg >= 30) {
-        stage = "第3層（お話しを意識的に制御しようとする段階）";
-        explanation = "言葉を無理に押し出そうとしたり、言葉の前にえーとなどを挟む『工夫・コントロール』が多く現れています。『上手く話そう』と意図的に構音器官を動かそうとすることで、逆に発声の自動化がブロックされています。工夫を手放し、脳に本来備わっている「自然で無意識な発話」を呼び起こすリハーサル法（M・R）が絶大な効果を示します。";
-      } else if (emoAvg >= 30) {
-        stage = "第2層（吃音への強い自覚・予期不安の移行期）";
-        explanation = "お話しすることへの部分的な不安や、吃った後の悔しさ、吃音者としての強い自覚が高まっています。工夫や回避といった二次的行動はまだ定着していませんが、不安や吃音への過剰な「注目・監視」がこの先の身構えを誘発しやすくなっています。M・R法で成功記憶を頭の中に上書きしていきましょう。";
-      } else {
-        stage = "第1層・正常域（中核症状中心の自然な段階）";
-        explanation = "繰り返しや引き伸ばしといった軽度の中核症状のみで、お話しに対する過剰な工夫や回避、強い苦悩には至っていません。当事者本来の自然な話し方に非常に近く、心配しすぎる必要はありません。RASSを片輪として行うことで、今のうちに吃音の悪化要因を防ぐことができます。";
-      }
-
-      return {
-        stage: stage,
-        explanation: explanation,
-        kufu: kufuAvg,
-        kaihi: kaihiAvg,
-        emo: emoAvg
-      };
-    }
-
-    // M・R法（メンタルリハーサル）実践ブロック生成
-    function renderMRStage(targetTags) {
-      // 指定されたタグ（幼児期・学童期・思春期など）に合致するシナリオを取得
-      const filterScen = mrScenarios.filter(s => targetTags.includes(s.tag));
-
-      let allCleared = true;
-
-      const listHtml = filterScen.map(s => {
-        const currentCount = state.mrProgress[s.id] || 0;
-        const isScenCleared = currentCount >= s.count;
-        if (!isScenCleared) allCleared = false;
-
-        // 家族の呼び名の置換
-        let personalText = s.text;
-        personalText = personalText.replace(/母|お母さん/g, state.profile.motherName);
-        personalText = personalText.replace(/父|お父さん/g, state.profile.fatherName);
-
-        // 回数達成ボタンの出力
-        let circleBtnsHtml = "";
-        for (let i = 1; i <= s.count; i++) {
-          const isChecked = i <= currentCount;
-          circleBtnsHtml += `
-            <button onclick="toggleScenCount(${s.id}, ${i})" class="w-6 h-6 rounded-full text-[9px] font-black transition-all flex items-center justify-center ${isChecked ? 'bg-rose-500 text-white shadow-xs' : 'bg-slate-100 text-slate-400 border border-slate-200'}" style="font-family: monospace;">
-              ${i}
-            </button>
-          `;
+                contentDiv.style.opacity = 1;
+                contentDiv.style.transition = "opacity 0.3s ease-in-out";
+            }, 150);
         }
 
-        return `
-          <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/50 space-y-2 text-xs">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-sm">No.${s.id} [対象：${s.age}]</span>
-              <span class="text-[10px] font-bold ${isScenCleared ? 'text-green-600' : 'text-slate-400'}">
-                ${isScenCleared ? '✓ 達成' : `必要数: ${currentCount}/${s.count}回`}
-              </span>
-            </div>
-            <p class="text-slate-700 leading-relaxed bg-white p-2.5 rounded-xl border border-slate-100 whitespace-pre-wrap font-medium">${personalText}</p>
-            <div class="flex items-center justify-end gap-1.5 pt-1">
-              <span class="text-[9px] font-bold text-slate-400 mr-1">実施記録：</span>
-              ${circleBtnsHtml}
-            </div>
-          </div>
-        `;
-      }).join('');
+        function renderScenarios(filterGroup = 'all') {
+            const grid = document.getElementById('scenario-grid');
+            grid.innerHTML = '';
 
-      // すべて完了（クリア）するまで次に進むを無効化
-      document.getElementById('btn-next').disabled = !allCleared;
+            const filtered = filterGroup === 'all' ? scenarios : scenarios.filter(s => s.group === filterGroup);
 
-      return `
-        <div class="flex flex-col h-full justify-between min-h-[380px]">
-          <div>
-            <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
-              <h2 class="text-sm font-bold text-slate-800">M・R法：${targetTags[0]}編</h2>
-              ${targetTags.includes("学童期") || targetTags.includes("思春期・成人期") ? `
-                <button onclick="state.currentStep=7;renderStep();" class="text-[10px] font-bold text-rose-500 bg-rose-50 border border-rose-100 px-2 py-1 rounded-lg">🧘 音声ガイド</button>
-              ` : ''}
-            </div>
+            filtered.forEach(s => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow duration-300 flex flex-col";
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">${s.age}</span>
+                        <span class="text-xl">🎬</span>
+                    </div>
+                    <h4 class="text-lg font-bold text-rasstext mb-2">${s.context}</h4>
+                    <p class="text-sm text-rassmuted flex-grow mb-4 leading-relaxed">${s.interaction}</p>
+                    <div class="mt-auto pt-4 border-t border-slate-100 flex items-center">
+                        <span class="text-xs font-bold text-rassprimary bg-amber-50 px-2 py-1 rounded-md">対象: ${s.target}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterScenarios(group) {
+            const buttons = document.getElementById('filter-buttons').children;
+            const groups = ['all', 'toddler', 'school', 'teen'];
             
-            <div class="space-y-3.5 max-h-[260px] overflow-y-auto pr-1 no-scrollbar">
-              ${listHtml}
-            </div>
-          </div>
-          ${!allCleared ? `
-            <p class="text-[10px] text-center font-bold text-rose-500 bg-rose-50 rounded-xl p-2.5 mt-2">⚠️ 各シナリオの回数をすべて達成すると、ロックが外れます</p>
-          ` : ''}
-        </div>
-      `;
-    }
-
-    // M・R法回数カウント操作
-    function toggleScenCount(scenId, idx) {
-      const current = state.mrProgress[scenId] || 0;
-      if (current === idx) {
-        state.mrProgress[scenId] = idx - 1;
-      } else {
-        state.mrProgress[scenId] = idx;
-      }
-      renderStep();
-    }
-
-    // STEP 7: 音声ガイドの描画
-    function renderAudioPlayer() {
-      const minutes = Math.floor(state.audioTime / 60);
-      const seconds = state.audioTime % 60;
-      const progressPercent = (state.audioTime / 60) * 100;
-
-      // 時間ごとの連動字幕テキスト
-      let subtitles = "目を静かに閉じ、椅子の背もたれに体をゆだねていきましょう。";
-      if (state.audioTime > 10) subtitles = "鼻からゆっくり温かい空気を吸い込み、口からふーーっと細く長く吐き出します...";
-      if (state.audioTime > 25) subtitles = "頭の中で、誰もいない静かな砂浜や青空をイメージしてください。必ず【主観的（自分目線）】な景色にしてくださいね。";
-      if (state.audioTime > 45) subtitles = "雑念が浮かんだら、戦おうとせず、そっと砂浜の景色に意識を戻します...";
-      if (state.audioTime >= 60) subtitles = "素晴らしいリラックス状態です。準備が整いました。次のステップへ進みましょう。";
-
-      return `
-        <div class="space-y-4">
-          <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
-            <span>🧘</span> 7. リラクセーション＆中性イメージ
-          </h2>
-          
-          <!-- 音声プレイヤー風グラフィック -->
-          <div class="bg-slate-900 rounded-2xl p-5 text-white flex flex-col items-center justify-center space-y-4 shadow-inner">
-            
-            <!-- 波形アニメーション -->
-            <div class="flex items-center justify-center gap-1 h-10 w-full max-w-[200px]">
-              ${[1,2,3,4,5,6,7].map(() => `
-                <div class="w-1.5 bg-rose-400 rounded-full h-full wave-bar" style="${state.audioPlaying ? '' : 'animation: none; transform: scaleY(0.2);'}"></div>
-              `).join('')}
-            </div>
-
-            <!-- 時間カウント表示 -->
-            <div class="text-xs font-mono font-bold text-slate-400">
-              ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / 01:00
-            </div>
-
-            <!-- 擬似再生バー -->
-            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-rose-400 h-full transition-all duration-300" style="width: ${progressPercent}%;"></div>
-            </div>
-
-            <!-- 再生制御 -->
-            <button onclick="controlAudio()" class="w-12 h-14 rounded-full bg-rose-500 hover:bg-rose-600 active:scale-95 transition flex items-center justify-center shadow-lg shadow-rose-500/20 text-sm font-black">
-              ${state.audioPlaying ? '一時停止' : '再生'}
-            </button>
-          </div>
-
-          <!-- 字幕エリア -->
-          <div class="p-3.5 bg-slate-50 border border-slate-200/50 rounded-2xl text-center min-h-[64px] flex items-center justify-center">
-            <p class="text-[11px] text-slate-700 leading-relaxed font-semibold">${subtitles}</p>
-          </div>
-        </div>
-      `;
-    }
-
-    // 音声擬似再生処理
-    function controlAudio() {
-      if (state.audioPlaying) {
-        clearInterval(state.audioInterval);
-        state.audioPlaying = false;
-      } else {
-        state.audioPlaying = true;
-        state.audioInterval = setInterval(() => {
-          state.audioTime++;
-          if (state.audioTime >= 60) {
-            clearInterval(state.audioInterval);
-            state.audioPlaying = false;
-            showModal("練習完了", "素晴らしいリラクセーション体験でした。雑念をコントロールし、自分目線のイメージを意識できましたか？問題なければ『次に進む』をタップしてください。");
-          }
-          renderStep();
-        }, 1000);
-      }
-      renderStep();
-    }
-
-    // カスタムモーダルの制御
-    function showModal(title, msg) {
-      document.getElementById('modal-title').innerText = title;
-      document.getElementById('modal-message').innerText = msg;
-      document.getElementById('custom-modal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('custom-modal').classList.add('hidden');
-    }
-
-    // ナビゲーション：次へ
-    function nextStep() {
-      if (state.currentStep === 1) {
-        // Step 1での簡単な未入力バリデーション（優しいポップアップ）
-        if (!state.profile.name || !state.profile.age) {
-          showModal("プロフィール設定", "お名前とご年齢を簡単に入力していただくと、よりあなたに合った伴走アドバイスができますよ。🌸");
-          return;
+            for(let i=0; i<buttons.length; i++) {
+                if(groups[i] === group) {
+                    buttons[i].className = "px-6 py-2.5 rounded-full text-sm font-bold transition filter-active shadow-sm";
+                } else {
+                    buttons[i].className = "px-6 py-2.5 rounded-full text-sm font-bold transition filter-inactive hover:bg-slate-200";
+                }
+            }
+            renderScenarios(group);
         }
-      }
 
-      if (state.currentStep < 11) {
-        state.currentStep++;
-        renderStep();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        // 最初に戻ってリセット
-        state.currentStep = 1;
-        state.currentQuestionIndex = 0;
-        state.answers = {};
-        state.attentionShiftChecked = [false, false, false, false];
-        mrScenarios.forEach(scen => state.mrProgress[scen.id] = 0);
-        renderStep();
-      }
-    }
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            switchStage(3);
+            renderScenarios('all');
+        });
 
-    // ナビゲーション：戻る
-    function prevStep() {
-      if (state.currentStep > 1) {
-        state.currentStep--;
-        // 悪循環カードインデックスの調整
-        if (state.currentStep === 2) {
-          state.currentQuestionIndex = 0; // 最初から再チェック
-        }
-        renderStep();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-  </script>
+    </script>
 </body>
 </html>
