@@ -3,23 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>吃音臨床伴走システム - さくら先生の伴走ロードマップ</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>RASSパートナー - 吃音リカバリー伴走システム</title>
+  <!-- Tailwind CSS (Play CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts (Noto Sans JP) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Noto Sans JP', sans-serif;
-      background-color: #fcf8f6;
+      background-color: #fdfbf7;
     }
-    /* 音声波形アニメーション */
-    @keyframes wave {
-      0%, 100% { transform: scaleY(0.3); }
-      50% { transform: scaleY(1); }
+    /* カスタムスクロールバー非表示 */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* 音声波形シミュレーターのアニメーション */
+    @keyframes wavePlay {
+      0%, 100% { transform: scaleY(0.2); }
+      50% { transform: scaleY(1.0); }
     }
     .wave-bar {
-      animation: wave 1.2s ease-in-out infinite;
+      animation: wavePlay 1.2s ease-in-out infinite;
     }
     .wave-bar:nth-child(2) { animation-delay: 0.15s; }
     .wave-bar:nth-child(3) { animation-delay: 0.3s; }
@@ -29,74 +39,106 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-  <header class="bg-white border-b border-pink-100 shadow-xs sticky top-0 z-50 px-4 py-3">
+  <!-- ヘッダー：ステップ付きロードマップ -->
+  <header class="bg-white border-b border-rose-100 shadow-sm sticky top-0 z-50 px-4 py-3">
     <div class="max-w-md mx-auto">
-      <div class="flex items-center justify-between text-xs font-bold text-slate-400 mb-2">
-        <span>伴走ロードマップ</span>
+      <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-1.5">
+        <span class="text-rose-600 flex items-center gap-1">🌸 RASSパートナー</span>
         <span id="roadmap-progress">Step 1 / 11</span>
       </div>
-      <div class="flex items-center justify-between relative">
-        <div class="absolute left-0 right-0 top-1/2 h-0.5 bg-slate-200 -translate-y-1/2 z-0"></div>
-        <div id="roadmap-line" class="absolute left-0 top-1/2 h-0.5 bg-pink-400 -translate-y-1/2 z-0 transition-all duration-300" style="width: 0%;"></div>
+      <!-- 11ステップインジケーター -->
+      <div class="flex items-center justify-between relative mt-1">
+        <div class="absolute left-0 right-0 top-1/2 h-[3px] bg-slate-100 -translate-y-1/2 z-0 rounded-full"></div>
+        <div id="roadmap-line" class="absolute left-0 top-1/2 h-[3px] bg-rose-400 -translate-y-1/2 z-0 transition-all duration-300 rounded-full" style="width: 0%;"></div>
         
-        <script>
-          for (let i = 1; i <= 11; i++) {
-            document.write(`
-              <div id="dot-${i}" class="w-6 h-6 rounded-full bg-white border-2 border-slate-300 flex items-center justify-center text-xs font-bold text-slate-400 z-10 transition-all duration-300">
-                ${i}
-              </div>
-            `);
-          }
-        </script>
+        <div class="flex items-center justify-between w-full relative z-10">
+          <script>
+            for (let i = 1; i <= 11; i++) {
+              document.write(`
+                <div id="dot-${i}" class="w-6 h-6 rounded-full bg-white border-2 border-slate-200 flex items-center justify-center text-[10px] font-black text-slate-400 transition-all duration-300 shadow-xs">
+                  ${i}
+                </div>
+              `);
+            }
+          </script>
+        </div>
       </div>
     </div>
   </header>
 
-  <main class="flex-1 w-full max-w-md mx-auto px-4 py-6">
+  <!-- メインコンテンツ -->
+  <main class="flex-1 w-full max-w-md mx-auto px-4 py-6 flex flex-col justify-start">
     
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-pink-50 flex items-start gap-3 mb-6">
-      <div class="w-12 h-12 rounded-full bg-pink-100 flex items-center justify-center text-2xl shrink-0 border border-pink-200">🌸</div>
-      <div class="flex-1">
-        <h3 class="text-xs font-bold text-pink-500 mb-0.5">さくら先生 (ST)</h3>
-        <p id="sakura-bubble" class="text-sm leading-relaxed text-slate-700 font-medium">
-          こんにちは！言語聴覚士のさくらです。あなたに寄り添い、お話しがもっと楽になるよう最後までしっかり伴走しますね。まずは準備から始めましょう！
+    <!-- さくら先生メッセージ吹き出し -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-rose-50 flex items-start gap-3.5 mb-5">
+      <div class="w-11 h-11 rounded-full bg-rose-50 flex items-center justify-center text-xl shrink-0 border border-rose-100 shadow-inner">🌸</div>
+      <div class="flex-1 min-w-0">
+        <h3 class="text-xs font-bold text-rose-500 mb-0.5">担当ST：さくら先生</h3>
+        <p id="sakura-bubble" class="text-xs leading-relaxed text-slate-700 font-medium">
+          はじめまして！言語聴覚士のさくらです。あなた本来の「自然でリラックスしたお話し方」を一緒にゆっくり取り戻していきましょうね。よろしくお願いいたします。
         </p>
       </div>
     </div>
 
-    <div id="step-content" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 min-h-[380px] flex flex-col justify-between">
-      </div>
+    <!-- メイン表示カード -->
+    <div id="step-content" class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 min-h-[420px] flex flex-col justify-between transition-all duration-300">
+      <!-- 動的ロード -->
+    </div>
 
   </main>
 
-  <footer class="bg-white border-t border-slate-100 p-4 sticky bottom-0 z-50">
-    <div class="max-w-md mx-auto flex items-center justify-between gap-4">
-      <button id="btn-back" onclick="prevStep()" class="px-5 py-3 rounded-xl font-bold text-sm bg-slate-100 text-slate-600 active:scale-95 transition disabled:opacity-50" disabled>
+  <!-- 固定フッター：ナビゲーションボタン -->
+  <footer class="bg-white border-t border-slate-100 p-4 sticky bottom-0 z-40">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      <button id="btn-back" onclick="prevStep()" class="px-5 py-3 rounded-2xl font-bold text-sm bg-slate-50 text-slate-500 hover:bg-slate-100 active:scale-95 transition disabled:opacity-40" disabled>
         戻る
       </button>
-      <button id="btn-next" onclick="nextStep()" class="flex-1 py-3 rounded-xl font-bold text-sm bg-pink-500 text-white shadow-md shadow-pink-100 active:scale-95 transition disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none">
+      <button id="btn-next" onclick="nextStep()" class="flex-1 py-3 rounded-2xl font-bold text-sm bg-rose-500 text-white shadow-md shadow-rose-200/50 hover:bg-rose-600 active:scale-95 transition disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none">
         次に進む
       </button>
     </div>
   </footer>
+
+  <!-- カスタムモーダル（alert等のブラウザ標準UIの代替） -->
+  <div id="custom-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center hidden px-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-xl border border-slate-100">
+      <h3 id="modal-title" class="text-sm font-bold text-slate-800 mb-2">確認</h3>
+      <p id="modal-message" class="text-xs text-slate-500 leading-relaxed mb-5"></p>
+      <div class="text-right">
+        <button onclick="closeModal()" class="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl transition">確定</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     // 状態管理
     const state = {
       currentStep: 1,
       profile: {
+        name: '',
+        age: '',
+        belonging: '',
+        familyHistory: 'unknown',
+        trainingHistory: 'no',
+        trainingDetails: '',
         motherName: 'お母さん',
         fatherName: 'お父さん'
       },
+      selfSurvey: {
+        effort: 5,
+        rating: 5,
+        satisfaction: 2
+      },
       currentQuestionIndex: 0,
       answers: {}, // questionId: score
-      mrProgress: {}, // scenarioId: checkCount
+      mrProgress: {}, // s_id: count
       audioPlaying: false,
       audioTime: 0,
-      audioInterval: null
+      audioInterval: null,
+      attentionShiftChecked: [false, false, false, false]
     };
 
-    // 悪循環チェックシート全55項目データ
+    // 悪循環チェックシート全55項目
     const allQuestions = [
       { id: 1, cat: "他者の推測", text: "吃ると他の人は笑うに違いない。" },
       { id: 2, cat: "他者の推測", text: "吃ると他の人は変な話し方だと思っている。" },
@@ -111,469 +153,718 @@
       { id: 11, cat: "孤立感", text: "吃るのは自分だけだ。" },
       { id: 12, cat: "発話への考え", text: "話すとは意識して言葉を出すことである。" },
       { id: 13, cat: "発話への考え", text: "話すとは口を動かして声を出すことである。" },
-      { id: 14, cat: "発話への考え", text: "特定の場面では言うべき表現が決まっていると思う。" },
-      { id: 15, cat: "注目・監視", text: "発話前に、語音（言葉の音）に注目している。" },
-      { id: 16, cat: "注目・監視", text: "発話前に、発話中に言葉に注目している。" },
-      { id: 17, cat: "注目・監視", text: "発話前に、言える、言えないと判断する。" },
-      { id: 18, cat: "注目・監視", text: "自分の体の緊張状態に注意が向く。" },
-      { id: 19, cat: "注目・監視", text: "音が上手く出たか、吃ったか意識している。" },
-      { id: 20, cat: "注目・監視", text: "発話前または発話中に口、舌の状態に注意がいってしまう。" },
-      { id: 21, cat: "注目・監視", text: "発話前または発話中に自分の身体の状態（こわばり等）を感じている。" },
-      { id: 22, cat: "注目・監視", text: "発話後、上手く言えた、言えなかったと分析・反省する。" },
-      { id: 23, cat: "工夫・コントロール", text: "発話中に舌、口、呼吸器官の動きを意識的に行おうとする。" },
-      { id: 24, cat: "工夫・コントロール", text: "発話中に、口を意図的に大きく動かし話そうとする。" },
-      { id: 25, cat: "工夫・コントロール", text: "口の形を自分が言いやすいように調整・工夫する。" },
-      { id: 26, cat: "工夫・コントロール", text: "口を大きく開けて話すように意識する。" },
-      { id: 27, cat: "工夫・コントロール", text: "お腹に力を入れて話す（お腹から声を出す）。" },
-      { id: 28, cat: "工夫・コントロール", text: "息をゆっくり吐きながら話すようにコントロールする。" },
-      { id: 29, cat: "工夫・コントロール", text: "他の人には分からない様に体でリズムを取って話す。" },
-      { id: 30, cat: "工夫・コントロール", text: "話す速度を無理にゆっくりにして話す（ゆっくり話す）。" },
-      { id: 31, cat: "工夫・コントロール", text: "発話前に息をわざと深く吸う。" },
-      { id: 32, cat: "助走行動", text: "詰まらないように事前に咳払いをする。" },
-      { id: 33, cat: "助走行動", text: "深呼吸をしてから話す（一度深く吸って吐いてから再度吸い話す）。" },
-      { id: 34, cat: "助走行動", text: "「えーと」「まー」等の言葉を、意識的に言葉の頭に入れる。" },
-      { id: 35, cat: "助走行動", text: "勢いを付ける（わざと怒った様な感情・テンションを持つ）。" },
-      { id: 36, cat: "助走行動", text: "発話中に、色々姿勢を変えて、言いやすい体勢を取ろうとする。" },
-      { id: 37, cat: "助走行動", text: "詰まると身体を動かす（身振りと見せかける）。" },
-      { id: 38, cat: "助走行動", text: "話すとき意識的に身体の一部（手や足）を動かしながら話す。" },
-      { id: 39, cat: "助走行動", text: "意識的に相手の言った言葉に続けて話す。" },
-      { id: 40, cat: "助走行動", text: "相手の言葉の一部を自分の言葉に取り込んで話す。" },
-      { id: 41, cat: "助走行動", text: "他の言葉を目的の言葉の前にいれる（例：その、あの）。" },
-      { id: 42, cat: "延期行動", text: "詰まったときに少し間をおく。" },
-      { id: 43, cat: "延期行動", text: "詰まりそうな時、詰まって出ないときは、言うのを後に延ばす。" },
-      { id: 44, cat: "延期行動", text: "相手に先に言わせてから、それに乗じて言う。" },
-      { id: 45, cat: "延期行動", text: "詰まって出ない時は考えているふりをして言うのを先に延ばす。" },
-      { id: 46, cat: "解除反応", text: "詰まって出ない時に意識的に一時止めて、再度話し始める。" },
-      { id: 47, cat: "解除反応", text: "詰まると姿勢を意識的に変えてロックを外そうとする。" },
-      { id: 48, cat: "解除反応", text: "詰まって出ない時に、さらに力を入れて無理やり乗り切る。" },
-      { id: 49, cat: "感情・反芻", text: "吃ってしまった後、激しく悔やんだり恥ずかしいと感じる。" },
-      { id: 50, cat: "感情・反芻", text: "特定の場面（電話、発表など）で強い不安・恐怖・緊張を感じる。" },
-      { id: 51, cat: "感情・反芻", text: "日常生活の全般で「また吃るかもしれない」と恐怖を感じる。" },
-      { id: 52, cat: "感情・反芻", text: "失敗した発話場面を、後から何度も思い出して思い悩む。" },
-      { id: 53, cat: "回避行動", text: "話すこと自体を諦めたり、その場面を避けて通る（回避）。" },
-      { id: 54, cat: "環境要因", text: "周囲の人間関係や場面、プレッシャーによって話しやすさが激しく変わる。" },
-      { id: 55, cat: "自己意識", text: "自分が吃音者であることを四六時中意識し、身構えてしまう。" }
+      { id: 14, cat: "発話への考え", text: "特定の場面では言うべき表現が決まっていると思う。（セリフ、シナリオ）。" },
+      { id: 15, cat: "自己認識", text: "自分は普通の話し方ができない人である。" },
+      { id: 16, cat: "自己認識", text: "自分は劣った（駄目な）人である。" },
+      { id: 17, cat: "自己認識", text: "自分は価値が低い人だ。" },
+      { id: 18, cat: "自己認識", text: "今の自分は嫌だ。" },
+      { id: 19, cat: "自己認識", text: "自分は健常者でないから駄目だ。" },
+      { id: 20, cat: "自己認識", text: "自分はコミュニケーションが下手な人だ。" },
+      { id: 21, cat: "感情・情動", text: "吃って悔やむ（後悔）。" },
+      { id: 22, cat: "感情・情動", text: "吃ると恥ずかしい。" },
+      { id: 23, cat: "感情・情動", text: "吃ることが辛い。" },
+      { id: 24, cat: "感情・情動", text: "吃ることが悲しい。" },
+      { id: 25, cat: "感情・情動", text: "個別の場面・条件下で吃るかもしれないと不安である（不安、恐怖感）。" },
+      { id: 26, cat: "感情・情動", text: "全般的な、また吃るかもしれないと不安である。" },
+      { id: 27, cat: "感情・情動", text: "自分は孤独であり、寂しい。" },
+      { id: 28, cat: "注目・監視", text: "発話前に、語音（言葉の音）に注目している。" },
+      { id: 29, cat: "注目・監視", text: "発話前に、発話中に言葉に注目している。" },
+      { id: 30, cat: "注目・監視", text: "発話前に、言える、言えないと判断する。" },
+      { id: 31, cat: "注目・監視", text: "発話前または発話中に口、舌の状態に注意が向く。" },
+      { id: 32, cat: "注目・監視", text: "発話前または発話中に自分の身体の状態を感じている。" },
+      { id: 33, cat: "注目・監視", text: "発話後、上手く言えた、言えなかったと分析する（発話結果が気になる）。" },
+      { id: 34, cat: "注目・監視", text: "自分の話し方への他者の反応が気になる。" },
+      { id: 35, cat: "注目・監視", text: "発話時、その前後に緊張、不安へ注意を向ける。" },
+      { id: 36, cat: "目的化", text: "上手く話そうと意識する（目的化）。" },
+      { id: 37, cat: "目的化", text: "話そうと（話す事自体を）意図的に考える。" },
+      { id: 38, cat: "目的化", text: "言葉を出そうと意図している（言葉を意識的に出そうとしている）。" },
+      { id: 39, cat: "工夫（制御）", text: "発話中に舌、口、呼吸器官の動きを意識的に行おうとする。" },
+      { id: 40, cat: "工夫（制御）", text: "発話中に、口を意図的に大きく動かし話す。" },
+      { id: 41, cat: "工夫（制御）", text: "口の形を自分が言いやすいように工夫する。" },
+      { id: 42, cat: "工夫（制御）", text: "口を大きく開けて話す。" },
+      { id: 43, cat: "工夫（制御）", text: "お腹に力を入れて話す（お腹から声を出す）。" },
+      { id: 44, cat: "工夫（制御）", text: "息をゆっくり吐きながら話す。" },
+      { id: 45, cat: "工夫（制御）", text: "他の人には分からない様にリズムを取って話す。" },
+      { id: 46, cat: "工夫（制御）", text: "速度を落として、ゆっくり話す。" },
+      { id: 47, cat: "工夫（制御）", text: "発話前に息を深く吸う。" },
+      { id: 48, cat: "工夫（制御）", text: "息を少し吐いてから（途中まで吐いてから）話す。" },
+      { id: 49, cat: "工夫（制御）", text: "話す直前に、口を少し動かして言い易くする。" },
+      { id: 50, cat: "工夫（回避）", text: "もう一度言わなければならない時は言わない。" },
+      { id: 51, cat: "工夫（回避）", text: "吃りそうな時は、分からないふりをして言わない。" },
+      { id: 52, cat: "工夫（回避）", text: "自分からはなるべく言わないようにし、相手が話すようにし向け、返答だけで済むようにする。" },
+      { id: 53, cat: "工夫（回避）", text: "詰まりそうな時は言わないことがある。" },
+      { id: 54, cat: "工夫（回避）", text: "笑われそうな時は、言わないことがある。" },
+      { id: 55, cat: "行動", text: "自分が話すことを考えることが精一杯で、相手の話を聞き漏らすことがある。" }
     ];
 
-    // ⑨対立内容 シナリオ（M・R用パーソナライズ元データ）
+    // 年表方式 M・R シナリオ（⑨対立内容ベース）
     const mrScenarios = [
-      { id: 1, round: 4, age: "3歳", count: 5, text: "<1>母にだっことねだる場面\n<2>母にだっこと言っている。\n<3>母はだっこして家の中をあちこちと歩いている。" },
-      { id: 2, round: 4, age: "3歳", count: 10, text: "<1>父（母）に本を読んでもらっている場面\n<2>自分が思ったことを沢山言い、質問もしている。\n<3>父（母）は嬉しそうにニコニコして答えてくれている。" },
-      { id: 5, round: 5, age: "4－6歳", count: 5, text: "<1>母から手伝ってと言われた場面\n<2>今TVが良いところだから嫌という。\n<3>母はじゃ良いよといった。" },
-      { id: 6, round: 5, age: "4－6歳", count: 5, text: "<1>店で母に買ってくれとねだっている場面\n<2>母に○○と○○を買ってと言っている。\n<3>母はニコニコして全部いいよと受け入れてくれている。" },
-      { id: 10, round: 5, age: "4－6歳", count: 5, text: "<1>家で用事をしている母に話す場面\n<2>一緒に遊ぼうと自分のペースで(母)を誘っている。\n<3>(母)はニコニコして、すぐ一緒に遊び始める。" },
-      { id: 13, round: 6, age: "4－6歳", count: 5, text: "<1>帰宅した場面\n<2>上着を居間に放り出したまま家で遊び始める。\n<3>親から片付けるようにと指示されたら、お母さん片付けるしておいてと頼む。\n<4>お母さんはニコニコして片付けた。" },
-      { id: 14, round: 6, age: "4－6歳", count: 5, text: "<1>寝る前にテレビをみている場面\n<2>お母さんから歯磨きを促され、後でという。\n<3>テレビを見た後、もう眠いから歯磨きやめたと言う。\n<4>お母さんは良いよと了承する。" },
-      { id: 21, round: 7, age: "4－6歳", count: 5, text: "<1>園で友達と遊んでいる場面\n<2>遊びについて、自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>みんなで楽しく遊んでいる。" },
-      { id: 22, round: 7, age: "4－6歳", count: 5, text: "<1>園の部屋にいる場面\n<2>皆に○○して遊ぼうと呼び掛ける。\n<3>皆が入れて入れてと集まってきた。" },
-      { id: 29, round: 8, age: "7－9歳", count: 5, text: "<1>学校で友達と遊んでいる場面\n<2>遊びに誘ったり、ルールを説明したり、自分のペースで気軽に話したりしている。\n<3>みんなで楽しく遊んでいる。" },
-      { id: 30, round: 8, age: "7－9歳", count: 5, text: "<1>教室で休み時間に数人が集まってワイワイやっている場面\n<2>自分から輪の中に入り、話しを聞き、質問に答え、話題を提供したり、質問したりしている。\n<3>皆が楽しんでいる。" },
-      { id: 37, round: 9, age: "7－9歳", count: 5, text: "<1>家で家族がいる部屋で本を読む場面\n<2>本を見ながら自分のペースで読む。（本には書いてない内容を勝手に自発話で言う。）" },
-      { id: 38, round: 9, age: "7－9歳", count: 5, text: "<1>授業中にふいに当てられて本を読む場面\n<2>先生や周囲の状況を良く観察しながら、自分のペースで読んでいる。\n<3>クラスで一番上手いと先生からほめられた。" },
-      { id: 45, round: 10, age: "10-11歳", count: 5, text: "<1>クラスで自己紹介している場面\n<2>自分の番が回ってくるまで周囲を良く観察してまっている" },
-      { id: 46, round: 10, age: "10-11歳", count: 5, text: "<1>自己紹介で自分の番が回ってきた場面\n<2>周囲を良く観察しながら、自分のペースで自己紹介をしている。\n<3>周囲から拍手で受け入れられた。" },
-      { id: 53, round: 11, age: "12歳", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
-      { id: 54, round: 11, age: "12歳", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
-      { id: 61, round: 12, age: "15歳", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
-      { id: 62, round: 12, age: "15歳", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
-      { id: 69, round: 13, age: "17歳", count: 5, text: "<1>休み時間にクラスメイトと話す場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
-      { id: 70, round: 13, age: "17歳", count: 5, text: "<1>○○の授業で当てられる順番を待っている場面\n<2>教室や先生の様子を良く観察して待っており、順番が来て当てられたら、立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
-      { id: 77, round: 14, age: "6歳", count: 5, text: "<1>友達と玩具の電話で遊んでいる場面\n<2>目の前の友達に電話を掛け、話したり、相手からの電話に出て名乗ったり、話したり、質問したり、質問に答えたり、聞いたりしている。\n<3>相手も楽しく遊んでいる。" },
-      { id: 78, round: 14, age: "10-12歳", count: 5, text: "<1>友達に電話を掛け、友達が出た場面\n<2>友達の姿を勝手に想像し、その姿に向かって自分のペースで名乗っている。\n<3>友達は電話があったことを喜んでいる。" }
+      { id: 1, age: "3歳", tag: "幼児期", count: 5, text: "<1>母にだっことねだる場面\n<2>母にだっこと言っている。\n<3>母はだっこして家の中をあちこちと歩いている。" },
+      { id: 2, age: "3歳", tag: "幼児期", count: 10, text: "<1>父（母）に本を読んでもらっている場面\n<2>自分が思ったことを沢山言い、質問もしている。\n<3>父（母）は嬉しそうにニコニコして答えてくれている。" },
+      { id: 3, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>母から手伝ってと言われた場面\n<2>今TVが良いところだから嫌という。\n<3>母はじゃ良いよといった。" },
+      { id: 4, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>店で母に買ってくれとねだっている場面\n<2>母に○○と○○を買ってと言っている。\n<3>母はニコニコして全部いいよと受け入れてくれている。" },
+      { id: 5, age: "4－6歳", tag: "幼児期", count: 5, text: "<1>家で用事をしている母に話す場面\n<2>一緒に遊ぼうと自分のペースで(母)を誘っている。\n<3>(母)はニコニコして、すぐ一緒に遊び始める。" },
+      { id: 6, age: "7－9歳", tag: "学童期", count: 5, text: "<1>学校で友達と遊んでいる場面\n<2>遊びに誘ったり、ルールを説明したり、自分のペースで気軽に話したりしている。\n<3>みんなで楽しく遊んでいる。" },
+      { id: 7, age: "7－9歳", tag: "学童期", count: 5, text: "<1>教室で休み時間に数人が集まってワイワイやっている場面\n<2>自分から輪の中に入り、話しを聞き、質問に答え、話題を提供したり、質問したりしている。\n<3>皆が楽しんでいる。" },
+      { id: 8, age: "10-11歳", tag: "学童期", count: 5, text: "<1>クラスで自己紹介している場面\n<2>自分の番が回ってくるまで周囲を良く観察してまっている。" },
+      { id: 9, age: "10-11歳", tag: "学童期", count: 5, text: "<1>自己紹介で自分の番が回ってきた場面\n<2>周囲を良く観察しながら、自分のペースで自己紹介をしている。\n<3>周囲から拍手で受け入れられた。" },
+      { id: 10, age: "12歳", tag: "思春期・成人期", count: 5, text: "<1>登下校時にクラスメイトと歩いている場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
+      { id: 11, age: "15歳", tag: "思春期・成人期", count: 5, text: "<1>授業中に先生から当てられて答える場面\n<2>立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" },
+      { id: 12, age: "17歳", tag: "思春期・成人期", count: 5, text: "<1>休み時間にクラスメイトと話す場面\n<2>クラスメイトに勉強や遊びの事などを自分のペースで気楽に話したり、相手の話を聞いたりしている。\n<3>皆が楽しんでいる。" },
+      { id: 13, age: "17歳", tag: "思春期・成人期", count: 5, text: "<1>授業で当てられる順番を待っている場面\n<2>教室や先生の様子を良く観察して待っており、順番が来て当てられたら、立って正しい答を自分のペースで答えている。\n<3>先生から良くできたとほめられた。" }
     ];
 
-    // さくら先生のメッセージ辞書
-    const sakuraMessages = {
-      1: "こんにちは！お名前やご家族の普段の呼び方を設定して、あなた専用のプログラムを作りましょう！",
-      2: "今のあなたのお話し習慣を振り返ってみましょう。1問ずつ、体感の割合（％）を大きめのボタンでタップしてくださいね。文字潰れは起きませんので安心してください。",
-      3: "チェックありがとうございました！あなたを苦しめている『お話しパターンの個性・特徴（悪循環）』が可視化されました。原因がわかれば怖くありませんよ！",
-      4: "ここからは吃音アプローチ（RASS）について解説します。進展段階を昔に遡ることで、あなた本来の“自然で無意識な発話”を取り戻していきます。",
-      5: "最も効果的な『年表方式メンタルリハーサル法（M・R法）』に入ります。毎日寝る前に、頭の中で『理想のお話し』をリハーサルする手法です。",
-      6: "【幼児期編（3〜6歳）】のシナリオです。ご家族の呼称があなた専用に合成されています。指定回数（5回/10回）を完了するまでクリアボタンをタップしてくださいね。",
-      7: "M・R法をより深めるために、心身をリラックスさせ、中性的なイメージを心に描くトレーニング音声ガイドシミュレーターです。ぜひ目を閉じて聞いてみてください。",
-      8: "【学童期編（7〜11歳）】に進みます。場面が学校や教室に広がります。緊張しそうになったら、いつでも前のリラクセーションガイドに戻ってくださいね。",
-      9: "【思春期・成人期編（12〜17歳）】です。複雑な電話対応や自己紹介の場面をリハーサルし、かつての恐怖や身構えを完全に脱感作（リセット）しましょう！",
-      10: "素晴らしい継続力です！日常生活で『否定的感情の反芻』を禁止できているか、毎日の実施チェックシートを記録していきましょう。",
-      11: "全ステップを修了しました！素晴らしい努力の成果です。これからは不安に囚われず、あなた本来の自然な発話で、豊かにお話ししていきましょうね！🌸"
+    // 各ステップの「さくら先生」ガイドメッセージ
+    const sakuraSpeech = {
+      1: "こんにちは！お名前やご家族の普段の呼び名を教えてください。あなた専用にカスタマイズされた伴走メニューを自動合成します。",
+      2: "普段感じている、こころとお話し方のバランス（悪循環パターン）を1問ずつ教えてください。スマホでの文字潰れや不自然な改行は起きませんので、リラックスしてタップしてくださいね。",
+      3: "チェックお疲れ様でした。あなたのお話しパターンの個性・特徴が見えてきました。身構えが起きるメカニズムを解説しますね。",
+      4: "吃音のメカニズムを正しく知る「吃音教育」のステップです。中核症状と工夫・回避の違いを理解し、お話しが自動的に滑らかに流れる理由を学びましょう。",
+      5: "悪循環（吃音者意識）を減らすことと並んで大切な「注意転換（シフト）」の練習です。今日起きた心のモヤモヤから注意をそらせたかチェックしましょう。",
+      6: "リハーサル（M・R法）の目的と進め方を説明します。過去の身構えた経験を「自分目線のイメージ」で大成功体験に塗り替えていく非常に有効な訓練です。",
+      7: "M・R法に入る前に、お腹や体の力を抜く「リラクセーション」と、静かな砂浜や青空を思い浮かべる「中性イメージ」を音声ガイドで体験しましょう。",
+      8: "【幼児期（3〜6歳）】のメンタルリハーサルを始めます。親御さんの呼び方があなた専用に調整されています。各回数を終えたらボタンを押して記録しましょう！",
+      9: "【学童期（7〜11歳）】のリハーサルです。学校や教室で、周囲を穏やかに見つめながら、ご自身の気楽なペースで話して成功している景色を描きます。",
+      10: "【思春期・成人期（12〜17歳）】です。複雑な電話や当てられる場面の身構えをすっかり脱感作（リセット）していきます。ここを終えればゴールは目の前です！",
+      11: "伴走プログラムをすべて修了しました！素晴らしい継続ですね。これからは肩の力を抜き、あなた本来の自然な話し方で、のびのびと日常を歩んでいってくださいね。🌸"
     };
 
-    // 初期化
+    // 初回読み込み
     window.onload = function() {
-      // M・R法の進行状態をゼロクリア初期化
-      mrScenarios.forEach(s => {
-        state.mrProgress[s.id] = 0;
+      // 進行記録ゼロクリア
+      mrScenarios.forEach(scen => {
+        state.mrProgress[scen.id] = 0;
       });
       renderStep();
     };
 
-    // ステップ描画コアロジック
+    // ステップ描画メイン処理
     function renderStep() {
-      const container = document.getElementById('step-content');
+      const stepContainer = document.getElementById('step-content');
       const bubble = document.getElementById('sakura-bubble');
       const progressText = document.getElementById('roadmap-progress');
       const roadmapLine = document.getElementById('roadmap-line');
-      
-      // ヘッダー・さくら先生アップデート
+
+      // ナビゲーションおよび進捗バー更新
       progressText.innerText = `Step ${state.currentStep} / 11`;
-      bubble.innerText = sakuraMessages[state.currentStep];
+      bubble.innerText = sakuraSpeech[state.currentStep];
       roadmapLine.style.width = `${((state.currentStep - 1) / 10) * 100}%`;
 
-      // ロードマップ丸のハイライト処理
+      // 上部インジケータードットの表示更新
       for (let i = 1; i <= 11; i++) {
         const dot = document.getElementById(`dot-${i}`);
         if (i < state.currentStep) {
-          dot.className = "w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold z-10 border-2 border-pink-500 shadow-xs";
+          dot.className = "w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] font-black z-10 border border-rose-500 shadow-xs";
           dot.innerHTML = "✓";
         } else if (i === state.currentStep) {
-          dot.className = "w-6 h-6 rounded-full bg-white text-pink-500 flex items-center justify-center text-xs font-bold z-10 border-2 border-pink-500 scale-110 shadow-md ring-4 ring-pink-100";
-          dot.innerHTML = i;
+          dot.className = "w-6 h-6 rounded-full bg-white text-rose-500 flex items-center justify-center text-[10px] font-black z-10 border-2 border-rose-400 scale-115 shadow-sm ring-4 ring-rose-100";
+          dot.innerHTML = String(i);
         } else {
-          dot.className = "w-6 h-6 rounded-full bg-white text-slate-400 flex items-center justify-center text-xs font-bold z-10 border-2 border-slate-200";
-          dot.innerHTML = i;
+          dot.className = "w-6 h-6 rounded-full bg-white text-slate-400 flex items-center justify-center text-[10px] font-medium z-10 border border-slate-200";
+          dot.innerHTML = String(i);
         }
       }
 
-      // ナビゲーションボタンの基本制御
+      // ナビボタンの基本状態
       document.getElementById('btn-back').disabled = (state.currentStep === 1);
       document.getElementById('btn-next').disabled = false;
       document.getElementById('btn-next').innerText = "次に進む";
 
-      // 音声タイマー停止
+      // 音声シミュレーター強制リセット（ステップ7以外）
       if (state.currentStep !== 7) {
         clearInterval(state.audioInterval);
         state.audioPlaying = false;
         state.audioTime = 0;
       }
 
-      // ステップごとのUI条件分岐
+      // ステップごとの動的コンテンツ挿入
       let html = "";
-      
-      if (state.currentStep === 1) {
-        // --- STEP 1: プロフィール設定 ---
-        html = `
-          <div>
-            <h2 class="text-base font-bold text-slate-800 mb-4 border-b border-slate-100 pb-2">基本プロフィール設定</h2>
-            <div class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">お母さんの普段の呼び方</label>
-                <select id="select-mother" onchange="state.profile.motherName=this.value" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:border-pink-400 focus:outline-hidden">
-                  <option value="お母さん">お母さん</option>
-                  <option value="ママ">ママ</option>
-                  <option value="おかん">おかん</option>
-                  <option value="ハハ">ハハ</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">お父さんの普段の呼び方</label>
-                <select id="select-father" onchange="state.profile.fatherName=this.value" class="w-full p-2.5 rounded-xl border border-slate-200 text-sm focus:border-pink-400 focus:outline-hidden">
-                  <option value="お父さん">お父さん</option>
-                  <option value="パパ">パパ</option>
-                  <option value="おやじ">おやじ</option>
-                  <option value="チチ">チチ</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <p class="text-xs text-slate-400 mt-6 leading-relaxed">※設定した呼び名は、後半のメンタルリハーサル法のシナリオへ自動的にリアルタイム合成されます。</p>
-        `;
-      } 
-      else if (state.currentStep === 2) {
-        // --- STEP 2: 悪循環チェックシート（1問1カード） ---
-        document.getElementById('btn-next').disabled = true; // 回答するまで進めない
-        const q = allQuestions[state.currentQuestionIndex];
-        const savedAns = state.answers[q.id] || "";
-        
-        html = `
-          <div class="flex flex-col justify-between h-full">
-            <div>
-              <div class="flex items-center justify-between text-xs font-bold text-pink-500 mb-2">
-                <span>[${q.cat}]</span>
-                <span>${state.currentQuestionIndex + 1} / 55</span>
-              </div>
-              <div class="w-full bg-slate-100 h-1 rounded-full mb-4 overflow-hidden">
-                <div class="bg-pink-400 h-full" style="width: ${((state.currentQuestionIndex + 1) / 55) * 100}%"></div>
-              </div>
-              <p class="text-base font-bold text-slate-800 leading-normal mb-6 pt-2">
-                ${q.text}
-              </p>
-            </div>
 
-            <div>
-              <label class="block text-center text-xs font-bold text-slate-400 mb-3">あなたに当てはまる度合い（％）をタップ</label>
-              <div class="grid grid-cols-5 gap-2 max-w-xs mx-auto">
-                ${[10,20,30,40,50,60,70,80,90,100].map(val => {
-                  const isSelected = state.answers[q.id] === val;
+      switch (state.currentStep) {
+        case 1:
+          // --- STEP 1: 問診と呼称確認 ---
+          html = `
+            <div class="space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <span>📋</span> 1. お話しカルテの作成
+              </h2>
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-[11px] font-bold text-slate-400 mb-1">お名前 (ニックネーム)</label>
+                  <input type="text" id="prof-name" value="${state.profile.name}" oninput="state.profile.name=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：たろう">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">現在の年齢</label>
+                    <input type="number" id="prof-age" value="${state.profile.age}" oninput="state.profile.age=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：25">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">所属 (職業・学年)</label>
+                    <input type="text" id="prof-belonging" value="${state.profile.belonging}" oninput="state.profile.belonging=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：会社員">
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">ご家族の吃音歴</label>
+                    <select onchange="state.profile.familyHistory=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden bg-white">
+                      <option value="unknown" ${state.profile.familyHistory==='unknown'?'selected':''}>不明</option>
+                      <option value="yes" ${state.profile.familyHistory==='yes'?'selected':''}>あり</option>
+                      <option value="no" ${state.profile.familyHistory==='no'?'selected':''}>なし</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">過去の訓練歴</label>
+                    <select id="prof-training" onchange="toggleTraining(this.value)" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden bg-white">
+                      <option value="no" ${state.profile.trainingHistory==='no'?'selected':''}>なし</option>
+                      <option value="yes" ${state.profile.trainingHistory==='yes'?'selected':''}>あり</option>
+                    </select>
+                  </div>
+                </div>
+                <div id="training-desc-area" class="${state.profile.trainingHistory === 'yes' ? '' : 'hidden'}">
+                  <label class="block text-[11px] font-bold text-slate-400 mb-1">訓練内容や期間（覚えている範囲で）</label>
+                  <textarea oninput="state.profile.trainingDetails=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" rows="2" placeholder="例：小学生のころ週1回など">${state.profile.trainingDetails}</textarea>
+                </div>
+                <div class="border-t border-slate-100 pt-3 grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">お母さんの当時の呼び名</label>
+                    <input type="text" value="${state.profile.motherName}" oninput="state.profile.motherName=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：お母さん、ママ">
+                  </div>
+                  <div>
+                    <label class="block text-[11px] font-bold text-slate-400 mb-1">お父さんの当時の呼び名</label>
+                    <input type="text" value="${state.profile.fatherName}" oninput="state.profile.fatherName=this.value" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 focus:border-rose-400 focus:outline-hidden" placeholder="例：お父さん、パパ">
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 2:
+          // --- STEP 2: 悪循環チェックシート＆発話自己調査（1問1カード） ---
+          document.getElementById('btn-next').disabled = true; // 回答必須
+          
+          if (state.currentQuestionIndex < 3) {
+            // 最初は発話に関する自己調査評価表3項目
+            html = renderSelfSurvey();
+          } else {
+            // 次に55の悪循環項目
+            html = renderViciousCheck();
+          }
+          break;
+
+        case 3:
+          // --- STEP 3: 自動判定結果表示 ---
+          const calc = runDiagnostic();
+          html = `
+            <div class="space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <span>📊</span> 3. お話しパターンの個性・特徴
+              </h2>
+              
+              <div class="bg-rose-50/50 rounded-2xl p-4 text-center border border-rose-100/50">
+                <span class="text-[10px] font-bold text-slate-500 block mb-1">自動判定された現在の進展状態</span>
+                <span class="text-xl font-black text-rose-500">${calc.stage}</span>
+              </div>
+
+              <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1 no-scrollbar text-xs leading-relaxed text-slate-600">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p class="font-bold text-slate-800 mb-1">💡 さくら先生からの臨床解説</p>
+                  <p>${calc.explanation}</p>
+                </div>
+                <div class="p-3 bg-white rounded-xl border border-slate-200 space-y-1.5">
+                  <p class="font-bold text-slate-700">【臨床スコア詳細】</p>
+                  <p>・発話制御（工夫）への身構え：<span class="font-bold text-slate-900">${calc.kufu}%</span></p>
+                  <p>・お話しを避ける行動（回避）：<span class="font-bold text-slate-900">${calc.kaihi}%</span></p>
+                  <p>・予期不安や感情の揺れ：<span class="font-bold text-slate-900">${calc.emo}%</span></p>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 4:
+          // --- STEP 4: 吃音教育と同意 ---
+          html = `
+            <div class="space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <span>📖</span> 4. 吃音教育マニュアル
+              </h2>
+              <div class="space-y-3 max-h-[260px] overflow-y-auto pr-1 text-xs text-slate-600 leading-relaxed no-scrollbar">
+                <div class="space-y-2">
+                  <p class="font-bold text-slate-800 text-sm">吃音症状の本質</p>
+                  <p>● <strong>中核症状（自動的な現象）：</strong> 繰り返し、引き伸ばし、ブロック（阻止）は、脳の生体的なシステム活動によって生じるものです。本人の努力不足ではありません。</p>
+                  <p>● <strong>二次的症状（ご自身の意思の工夫）：</strong> どもりを避けようと口を大きく動かしたり、先延ばしにする「工夫」や、話さない「回避」は、ご自身の意思で行う行動です。これが余計な身構えと難発を引き起こします。</p>
+                </div>
+                <div class="space-y-2 border-t border-slate-100 pt-2">
+                  <p class="font-bold text-slate-800 text-sm">自然で無意識な発話へ</p>
+                  <p>本来の言葉は、呼吸や舌の動きをまったく「監視・コントロール」せず、思ったことが自動的に口から滑らかに流れ出すものです（自動的なお話し状態）。</p>
+                  <p>このプログラムでは、過剰な工夫と回避をゆっくりと手放し、脳の自然な発話自動化システムを再稼働させます。</p>
+                </div>
+              </div>
+              <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100 flex items-center gap-2">
+                <input type="checkbox" id="edu-agree" onchange="toggleAgree(this.checked)" class="accent-rose-500 rounded-sm w-4 h-4 shrink-0">
+                <label for="edu-agree" class="text-[11px] font-bold text-rose-700 cursor-pointer">プログラムの内容を理解し、お話しアプローチに同意します。</label>
+              </div>
+            </div>
+          `;
+          // 同意するまで次へを無効化
+          document.getElementById('btn-next').disabled = true;
+          break;
+
+        case 5:
+          // --- STEP 5: 注意シフト＆反芻禁止ログ ---
+          html = `
+            <div class="space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <span>🔄</span> 5. お話しへの注目から離れるケア
+              </h2>
+              <p class="text-xs text-slate-500 leading-relaxed">吃音のことを考えて身構えている自分に気付いたら、すぐに「外の音」や「目の前の景色」に注意を切り替える（注意シフト）ことが片輪の重要なトレーニングです。今日の出来事を振り返りましょう。</p>
+              
+              <div class="space-y-2 pt-1.5">
+                ${[
+                  "どもってしまった失敗を、夜に一人で悔やんだり反芻するのをやめられた",
+                  "「吃りそう」と意識した瞬間、そっと部屋の音や景色の観察に注意をそらせた",
+                  "どんなに回避や工夫をしてしまっても、自分を責めず受け入れられた",
+                  "お話し器官の動き（呼吸や舌）を自分の力で監視せずに任せられた"
+                ].map((item, idx) => {
+                  const isChecked = state.attentionShiftChecked[idx];
                   return `
-                    <button onclick="answerQuestion(${q.id}, ${val})" class="w-11 h-11 text-xs rounded-full font-bold flex items-center justify-center transition-all duration-150 ${isSelected ? 'bg-pink-500 text-white ring-4 ring-pink-100' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-100'}">
-                      ${val}%
-                    </button>
+                    <label class="flex items-start gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200/50 cursor-pointer hover:bg-slate-100/50 active:scale-[0.99] transition">
+                      <input type="checkbox" onchange="toggleShiftCheck(${idx}, this.checked)" ${isChecked ? 'checked' : ''} class="mt-0.5 accent-rose-500 rounded-sm w-4 h-4 shrink-0">
+                      <span class="text-xs text-slate-700 font-medium leading-tight">${item}</span>
+                    </label>
                   `;
                 }).join('')}
               </div>
             </div>
-          </div>
-        `;
-      } 
-      else if (state.currentStep === 3) {
-        // --- STEP 3: お話しパターンの個性・特徴（結果） ---
-        // ダミー集計ロジック（回答済みの平均、未回答なら初期値）
-        let sum = 0, count = 0;
-        Object.values(state.answers).forEach(v => { sum += v; count++; });
-        const score = count > 0 ? Math.round(sum / count) : 65;
+          `;
+          break;
 
-        html = `
-          <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">分析結果：お話しパターンの個性・特徴</h2>
-            
-            <div class="bg-pink-50/50 rounded-xl p-4 text-center">
-              <span class="text-xs font-bold text-slate-500 block mb-1">現在の身構え・悪循環レベル</span>
-              <span class="text-3xl font-black text-pink-500">${score}%</span>
+        case 6:
+          // --- STEP 6: M・R法（メンタルリハーサル）解説 ---
+          html = `
+            <div class="space-y-4">
+              <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+                <span>🧘</span> 6. 年表方式メンタルリハーサル法とは
+              </h2>
+              <div class="bg-rose-50/50 rounded-2xl p-4 text-xs leading-relaxed text-slate-600 space-y-2 border border-rose-100/50">
+                <p class="font-bold text-rose-700 text-sm">流暢さの記憶を増やすアプローチ</p>
+                <p>過去に苦手意識を持った場面を、リラックスした状態で、一切の「発話のコントロールや回避」をせずに、自分の心地よいペースで喋りきり、快く受け入れられるシーンを頭の中に疑似体験します。</p>
+                <p>恐怖や身構えの生じにくい「幼少期の親御さんとの場面」から開始し、段階的に学童期、思春期、現在へと遡ることで、脳の恐怖反応（予期不安）をきれいに脱感作（リセット）していきます。</p>
+              </div>
+              <p class="text-[10px] text-slate-400 font-semibold text-center">※毎日寝る前、布団の中で静かに行ってください。</p>
             </div>
+          `;
+          break;
 
-            <div class="space-y-2.5 text-xs text-slate-600 leading-relaxed">
-              <p class="font-bold text-slate-700 text-sm">💡 さくら先生からのフィードバック</p>
-              <p>「話す前に無意識に『吃るかも』と予測し、口や呼吸を意図的にコントロール（工夫）しようとする強い身構えが見られます。」</p>
-              <p>「この身構えこそが、中核症状をブロック（難発）へ悪化させてしまう最大の要因です。次のステップから、この認知と行動の悪循環を優しく紐解いていきましょうね。」</p>
-            </div>
-          </div>
-        `;
-      } 
-      else if (state.currentStep === 4) {
-        // --- STEP 4: 吃音アプローチ・ロードマップ解説 ---
-        html = `
-          <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">遡及的アプローチ（RASS）の仕組み</h2>
-            
-            <div class="border-l-4 border-pink-400 pl-3 space-y-3 text-xs leading-relaxed text-slate-600">
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">1. 吃音の中核症状</h4>
-                <p>自分の意思と関係なく生じる「連発」「伸発」「阻止（難発）」。本来はこれだけなら軽度です。</p>
+        case 7:
+          // --- STEP 7: リラクセーション＆中性イメージ音声シミュレーター ---
+          html = renderAudioPlayer();
+          break;
+
+        case 8:
+          // --- STEP 8: 幼児期編 M・R実践 ---
+          html = renderMRStage(["幼児期"]);
+          break;
+
+        case 9:
+          // --- STEP 9: 学童期編 M・R実践 ---
+          html = renderMRStage(["学童期"]);
+          break;
+
+        case 10:
+          // --- STEP 10: 思春期・成人期編 M・R実践 ---
+          html = renderMRStage(["思春期・成人期"]);
+          break;
+
+        case 11:
+          // --- STEP 11: 終了・フィードバック ---
+          document.getElementById('btn-next').innerText = "最初からやり直す";
+          html = `
+            <div class="text-center space-y-5 py-4">
+              <span class="text-5xl block animate-bounce">🌸</span>
+              <h2 class="text-lg font-black text-rose-500">伴走ロードマップを修了しました</h2>
+              <p class="text-xs text-slate-600 leading-relaxed px-1">
+                おめでとうございます！すべての臨床プロセスと、年代別の遡及的メンタルリハーサルを完了しました。ご自身の中に「自然にお話しできた大成功シーン」が温かく定着しています。
+              </p>
+              
+              <div class="bg-rose-50 border border-rose-100 rounded-2xl p-4 text-left">
+                <span class="text-xs font-bold text-rose-700 block mb-1">🌸 さくら先生からの最後の約束</span>
+                <span class="text-xs text-slate-700 leading-relaxed block">
+                  「日常生活でお話しに注目しそうになったら、すぐにそっと注意をそらす。そしていつでもこのさくら先生のところへ、リラックス体験をしに帰ってきてくださいね。あなたはすでに十分お話しできていますよ。のびのびと日常を楽しんでいきましょう！」
+                </span>
               </div>
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">2. 二次的症状（工夫・回避）</h4>
-                <p>どもるのを恐れて「言い換え」「助走」「力を入れて乗り切る」行動。これが症状を慢性化・重症化させます。</p>
-              </div>
-              <div>
-                <h4 class="font-bold text-slate-800 text-sm">3. 改善へのゴール</h4>
-                <p>健常者と同じ<span class="font-bold text-pink-500">“自然で無意識な発話”</span>を目指します。進展段階を幼児期へと過去に遡り、身構えの記憶をリセットします。</p>
-              </div>
             </div>
-          </div>
+          `;
+          break;
+      }
+
+      stepContainer.innerHTML = html;
+    }
+
+    // 呼称ありの訓練歴のトグル
+    function toggleTraining(val) {
+      state.profile.trainingHistory = val;
+      const descArea = document.getElementById('training-desc-area');
+      if (val === 'yes') {
+        descArea.classList.remove('hidden');
+      } else {
+        descArea.classList.add('hidden');
+      }
+    }
+
+    // 同意トグル
+    function toggleAgree(checked) {
+      document.getElementById('btn-next').disabled = !checked;
+    }
+
+    // 注意シフトチェックトグル
+    function toggleShiftCheck(idx, checked) {
+      state.attentionShiftChecked[idx] = checked;
+    }
+
+    // 自己調査Q1〜Q3レンダラー
+    function renderSelfSurvey() {
+      const idx = state.currentQuestionIndex;
+      let promptTitle = "";
+      let subDesc = "";
+      let optionsHtml = "";
+
+      if (idx === 0) {
+        promptTitle = "1. しゃべる時に必要な努力のうち何割をなめらかにしゃべることに使っていますか？";
+        subDesc = "(0 = 0% / 全く努力していない、10 = 100% / すべての努力を使っている)";
+        optionsHtml = `
+          <select id="survey-effort" onchange="state.selfSurvey.effort=parseInt(this.value)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:outline-hidden focus:border-rose-400">
+            ${[0,1,2,3,4,5,6,7,8,9,10].map(v => `<option value="${v}" ${state.selfSurvey.effort===v?'selected':''}>${v}割 (${v*10}%)</option>`).join('')}
+          </select>
         `;
-      } 
-      else if (state.currentStep === 5) {
-        // --- STEP 5: M・R法完全統合の解説 ---
-        html = `
-          <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">年表方式メンタルリハーサル法（M・R法）</h2>
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-xs leading-relaxed text-slate-600 space-y-2">
-              <p class="font-bold text-slate-800">【実施ルール】</p>
-              <p>① 毎日寝る前に、リラックスした状態で行います。</p>
-              <p>② 各年齢のシナリオを頭の中で「ありありとイメージ」します。</p>
-              <p>③ 吃る工夫を一切せず、自分のペースで気楽に話し、相手に快く受け入れられる大成功イメージを固定します。</p>
-            </div>
-            <p class="text-xs font-bold text-pink-500 bg-pink-50 p-2.5 rounded-lg text-center">※各年齢ステージのシナリオ指定回数を全て完了するまで、次のステップはロックされます。</p>
-          </div>
+      } else if (idx === 1) {
+        promptTitle = "2. 自分の話し方に1〜10の得点をつけるとしたら、あなたは何点をつけますか？";
+        subDesc = "(1 = とても悪い、10 = とてもよい)";
+        optionsHtml = `
+          <select id="survey-rating" onchange="state.selfSurvey.rating=parseInt(this.value)" class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-white focus:outline-hidden focus:border-rose-400">
+            ${[1,2,3,4,5,6,7,8,9,10].map(v => `<option value="${v}" ${state.selfSurvey.rating===v?'selected':''}>${v}点</option>`).join('')}
+          </select>
         `;
-      } 
-      else if (state.currentStep === 6) {
-        // --- STEP 6: M・R法【幼児期編 (3〜6歳)】 ---
-        html = renderMrStage(["3歳", "4－6歳", "6歳"]);
-      } 
-      else if (state.currentStep === 7) {
-        // --- STEP 7: リラクセーション音声ガイドシミュレーター ---
-        html = renderAudioPlayer();
-      } 
-      else if (state.currentStep === 8) {
-        // --- STEP 8: M・R法【学童期編 (7〜11歳)】 ---
-        html = renderMrStage(["7－9歳", "10-11歳", "10-12歳"]);
-      } 
-      else if (state.currentStep === 9) {
-        // --- STEP 9: M・R法【思春期・成人期編 (12〜17歳)】 ---
-        html = renderMrStage(["12歳", "13歳", "15歳", "17歳"]);
-      } 
-      else if (state.currentStep === 10) {
-        // --- STEP 10: 日常生活での実施記録 ---
-        html = `
-          <div class="space-y-4">
-            <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">日常生活での行動チェック</h2>
-            <p class="text-xs text-slate-500 leading-relaxed">吃音の悪化要因を防ぐため、日々の生活態度を自己チェックしましょう。</p>
-            
-            <div class="space-y-3 pt-2">
-              ${[
-                "毎日寝る前にM.R法を実施した",
-                "吃ってしまった失敗を、後からグルグル反芻するのを禁止できた",
-                "話すテクニックや工夫に注目せず、自然に任せて話した",
-                "話す場面を回避せず、自分の意思で行動できた"
-              ].map((item, idx) => `
-                <label class="flex items-start gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-100 cursor-pointer active:bg-slate-100 transition">
-                  <input type="checkbox" class="mt-0.5 accent-pink-500 w-4 h-4 rounded-sm">
-                  <span class="text-xs text-slate-700 font-medium leading-tight">${item}</span>
-                </label>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      } 
-      else if (state.currentStep === 11) {
-        // --- STEP 11: 終了画面 ---
-        document.getElementById('btn-next').innerText = "最初からやり直す";
-        html = `
-          <div class="text-center space-y-4 py-4">
-            <span class="text-5xl block">🎉</span>
-            <h2 class="text-lg font-black text-pink-500">伴走ロードマップ修了</h2>
-            <p class="text-xs text-slate-600 leading-relaxed px-2">
-              すべてのステップ、および進展段階の遡及メンタルリハーサルを完了しました！あなたの中に「自然に話せた」という成功記憶が強く上書きされました。
-            </p>
-            <div class="bg-pink-50 border border-pink-100 rounded-xl p-4 text-left max-w-xs mx-auto">
-              <span class="text-xs font-bold text-pink-700 block mb-1">🌸 さくら先生からの最後の約束</span>
-              <span class="text-xs text-slate-700 leading-relaxed block">
-                「お話しへの過剰な注目や身構えを手放せたあなたなら大丈夫。これからも深呼吸を忘れず、リラックスしてあなたらしい毎日を楽しんでくださいね。ずっと応援しています！」
-              </span>
-            </div>
+      } else if (idx === 2) {
+        promptTitle = "3. あなたは自分の話し方にどのくらい満足していますか？";
+        subDesc = "当てはまるものを選んでください";
+        const satisfactionLabels = {
+          1: "1：全く満足していない",
+          2: "2：満足していない",
+          3: "3：どちらでもない",
+          4: "4：満足している",
+          5: "5：非常に満足している"
+        };
+        optionsHtml = `
+          <div class="space-y-2">
+            ${[1,2,3,4,5].map(v => `
+              <label class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 cursor-pointer text-xs text-slate-700">
+                <input type="radio" name="survey-sat" value="${v}" onchange="state.selfSurvey.satisfaction=${v}" ${state.selfSurvey.satisfaction===v?'checked':''} class="accent-rose-500 w-4 h-4">
+                <span>${satisfactionLabels[v]}</span>
+              </label>
+            `).join('')}
           </div>
         `;
       }
 
-      container.innerHTML = html;
+      return `
+        <div class="flex flex-col justify-between h-full min-h-[380px]">
+          <div>
+            <div class="flex items-center justify-between text-[11px] font-bold text-rose-500 mb-1.5">
+              <span>[発話に関する自己調査]</span>
+              <span>Q${idx + 1} / 3</span>
+            </div>
+            <div class="w-full bg-slate-100 h-[3px] rounded-full mb-4 overflow-hidden">
+              <div class="bg-rose-400 h-full transition-all duration-300" style="width: ${((idx + 1) / 3) * 100}%"></div>
+            </div>
+            <p class="text-sm font-bold text-slate-800 leading-normal mb-1">${promptTitle}</p>
+            <p class="text-[10px] text-slate-400 mb-5 font-semibold">${subDesc}</p>
+            <div class="py-2">
+              ${optionsHtml}
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-4">
+            <button onclick="nextSurveyItem()" class="px-5 py-2.5 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition active:scale-95">
+              ${idx === 2 ? "次へ（チェックシートへ）" : "次の質問へ"}
+            </button>
+          </div>
+        </div>
+      `;
     }
 
-    // 悪循環チェックの回答アクション
-    function answerQuestion(qId, value) {
-      state.answers[qId] = value;
+    function nextSurveyItem() {
+      state.currentQuestionIndex++;
+      renderStep();
+    }
+
+    // 悪循環55項目カードレンダラー
+    function renderViciousCheck() {
+      // 55問中何問目か (index 3〜57)
+      const listIndex = state.currentQuestionIndex - 3;
+      const q = allQuestions[listIndex];
+      const savedAns = state.answers[q.id] || "";
+
+      return `
+        <div class="flex flex-col justify-between h-full min-h-[380px]">
+          <div>
+            <div class="flex items-center justify-between text-[11px] font-bold text-rose-500 mb-1.5">
+              <span>[${q.cat}]</span>
+              <span>${listIndex + 1} / 55</span>
+            </div>
+            <div class="w-full bg-slate-100 h-[3px] rounded-full mb-4 overflow-hidden">
+              <div class="bg-rose-400 h-full transition-all duration-150" style="width: ${((listIndex + 1) / 55) * 100}%"></div>
+            </div>
+            <p class="text-sm font-bold text-slate-800 leading-normal pt-2 mb-1">
+              ${q.text}
+            </p>
+            <p class="text-[10px] text-slate-400 mb-6 font-semibold">このお話し感覚が日頃思い当たる割合は？</p>
+          </div>
+
+          <div>
+            <!-- タップしやすい2行5列グリッド：1文字改行や潰れは100%発生しません -->
+            <div class="grid grid-cols-5 gap-2 max-w-xs mx-auto pb-4">
+              ${[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map(val => {
+                const isSelected = state.answers[q.id] === val;
+                // 100%などの表記、0%は文言付き
+                let valLabel = `${val}%`;
+                if (val === 0) valLabel = "0%<br><span class='text-[8px] font-normal'>無</span>";
+                if (val === 100) valLabel = "100%<br><span class='text-[8px] font-normal'>強</span>";
+
+                return `
+                  <button onclick="answerVicious(${q.id}, ${val})" class="w-10 h-11 text-xs rounded-full font-bold flex flex-col items-center justify-center transition-all ${isSelected ? 'bg-rose-500 text-white ring-4 ring-rose-100 scale-105 border-transparent' : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/50'}">
+                    ${valLabel}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <div class="flex items-center justify-between border-t border-slate-100 pt-3 text-[11px] font-bold text-slate-400">
+              <button onclick="prevVicious()" class="hover:text-slate-600">前の質問に戻る</button>
+              <span>選択すると自動で次に進みます</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function answerVicious(qId, val) {
+      state.answers[qId] = val;
       
-      // 1カード形式：タップしたら0.2秒後に自動で次の質問へ
+      // 自動的に次の質問へ（0.15秒の心地よいウェイト）
       setTimeout(() => {
-        if (state.currentQuestionIndex < allQuestions.length - 1) {
+        const listIndex = state.currentQuestionIndex - 3;
+        if (listIndex < 54) {
           state.currentQuestionIndex++;
           renderStep();
         } else {
-          // 55問すべて回答し終えたら自動的に次のステップ（Step 3）へ
+          // すべて終われば自動的に Step 3 (判定結果) へ進む
           state.currentStep = 3;
           renderStep();
         }
-      }, 200);
+      }, 150);
     }
 
-    // M・R法ステージの表示生成ロジック（ロック制御含む）
-    function renderMrStage(ages) {
-      // 対象年齢に合致するシナリオを抽出
-      const filterScenarios = mrScenarios.filter(s => ages.includes(s.age));
-      
-      // ロック条件判定：このステージの全シナリオが規定回数に達しているか
+    function prevVicious() {
+      if (state.currentQuestionIndex > 3) {
+        state.currentQuestionIndex--;
+        renderStep();
+      } else {
+        // 自己調査評価に戻る
+        state.currentQuestionIndex = 2;
+        renderStep();
+      }
+    }
+
+    // 診断ロジック
+    function runDiagnostic() {
+      let kufuSum = 0, kufuCount = 0;
+      let kaihiSum = 0, kaihiCount = 0;
+      let emoSum = 0, emoCount = 0;
+
+      allQuestions.forEach(q => {
+        const score = state.answers[q.id] || 0;
+        if (q.cat.includes("工夫") && !q.cat.includes("回避")) {
+          kufuSum += score;
+          kufuCount++;
+        }
+        if (q.cat.includes("回避")) {
+          kaihiSum += score;
+          kaihiCount++;
+        }
+        if (q.cat.includes("感情")) {
+          emoSum += score;
+          emoCount++;
+        }
+      });
+
+      const kufuAvg = kufuCount > 0 ? Math.round(kufuSum / kufuCount) : 0;
+      const kaihiAvg = kaihiCount > 0 ? Math.round(kaihiSum / kaihiCount) : 0;
+      const emoAvg = emoCount > 0 ? Math.round(emoSum / emoCount) : 0;
+
+      // 各臨床指標と自己調査努力度から特定
+      let stage = "";
+      let explanation = "";
+
+      if (kaihiAvg >= 30) {
+        stage = "第4層（身構え・お話し回避が強い段階）";
+        explanation = "お話しすることそのものを避けたり、特定の音・ことばから徹底して言い換える『回避行動』が定着しています。吃音への予期不安が非常に強く、心身の身構えが慢性化しています。RASSのアプローチによって、回避のプレッシャーを優しく解き放ち、幼児期の気楽な発話感覚へ脱感作することが最も優先されます。焦る必要は一切ありませんよ。";
+      } else if (kufuAvg >= 30) {
+        stage = "第3層（お話しを意識的に制御しようとする段階）";
+        explanation = "言葉を無理に押し出そうとしたり、言葉の前にえーとなどを挟む『工夫・コントロール』が多く現れています。『上手く話そう』と意図的に構音器官を動かそうとすることで、逆に発声の自動化がブロックされています。工夫を手放し、脳に本来備わっている「自然で無意識な発話」を呼び起こすリハーサル法（M・R）が絶大な効果を示します。";
+      } else if (emoAvg >= 30) {
+        stage = "第2層（吃音への強い自覚・予期不安の移行期）";
+        explanation = "お話しすることへの部分的な不安や、吃った後の悔しさ、吃音者としての強い自覚が高まっています。工夫や回避といった二次的行動はまだ定着していませんが、不安や吃音への過剰な「注目・監視」がこの先の身構えを誘発しやすくなっています。M・R法で成功記憶を頭の中に上書きしていきましょう。";
+      } else {
+        stage = "第1層・正常域（中核症状中心の自然な段階）";
+        explanation = "繰り返しや引き伸ばしといった軽度の中核症状のみで、お話しに対する過剰な工夫や回避、強い苦悩には至っていません。当事者本来の自然な話し方に非常に近く、心配しすぎる必要はありません。RASSを片輪として行うことで、今のうちに吃音の悪化要因を防ぐことができます。";
+      }
+
+      return {
+        stage: stage,
+        explanation: explanation,
+        kufu: kufuAvg,
+        kaihi: kaihiAvg,
+        emo: emoAvg
+      };
+    }
+
+    // M・R法（メンタルリハーサル）実践ブロック生成
+    function renderMRStage(targetTags) {
+      // 指定されたタグ（幼児期・学童期・思春期など）に合致するシナリオを取得
+      const filterScen = mrScenarios.filter(s => targetTags.includes(s.tag));
+
       let allCleared = true;
-      
-      let itemsHtml = filterScenarios.map(s => {
+
+      const listHtml = filterScen.map(s => {
         const currentCount = state.mrProgress[s.id] || 0;
-        const isScenarioCleared = currentCount >= s.count;
-        if (!isScenarioCleared) allCleared = false;
+        const isScenCleared = currentCount >= s.count;
+        if (!isScenCleared) allCleared = false;
 
-        // 家族の呼び名をパーソナライズ置換
-        let text = s.text;
-        text = text.replace(/母|お母さん/g, state.profile.motherName);
-        text = text.replace(/父|お父さん/g, state.profile.fatherName);
+        // 家族の呼び名の置換
+        let personalText = s.text;
+        personalText = personalText.replace(/母|お母さん/g, state.profile.motherName);
+        personalText = personalText.replace(/父|お父さん/g, state.profile.fatherName);
 
-        // 回数達成チェックボックス(丸型)の生成
-        let checksHtml = "";
+        // 回数達成ボタンの出力
+        let circleBtnsHtml = "";
         for (let i = 1; i <= s.count; i++) {
           const isChecked = i <= currentCount;
-          checksHtml += `
-            <button onclick="toggleMrCheck(${s.id}, ${i})" class="w-7 h-7 rounded-full text-[10px] font-bold flex items-center justify-center transition-all ${isChecked ? 'bg-pink-500 text-white' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+          circleBtnsHtml += `
+            <button onclick="toggleScenCount(${s.id}, ${i})" class="w-6 h-6 rounded-full text-[9px] font-black transition-all flex items-center justify-center ${isChecked ? 'bg-rose-500 text-white shadow-xs' : 'bg-slate-100 text-slate-400 border border-slate-200'}" style="font-family: monospace;">
               ${i}
             </button>
           `;
         }
 
         return `
-          <div class="bg-slate-50/70 p-3.5 rounded-xl border border-slate-100 space-y-2.5">
+          <div class="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-200/50 space-y-2 text-xs">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold px-2 py-0.5 bg-slate-200 text-slate-700 rounded-sm">No.${s.id} [${s.age}]</span>
-              <span class="text-xs font-bold ${isScenarioCleared ? 'text-green-600' : 'text-amber-600'}">
-                ${isScenarioCleared ? '✓ 達成' : `実施数: ${currentCount}/${s.count}回`}
+              <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded-sm">No.${s.id} [対象：${s.age}]</span>
+              <span class="text-[10px] font-bold ${isScenCleared ? 'text-green-600' : 'text-slate-400'}">
+                ${isScenCleared ? '✓ 達成' : `必要数: ${currentCount}/${s.count}回`}
               </span>
             </div>
-            <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-medium bg-white p-2.5 rounded-lg border border-slate-100">${text}</p>
-            <div class="flex items-center gap-1.5 justify-end">
-              <span class="text-[10px] font-bold text-slate-400 mr-1">記録:</span>
-              ${checksHtml}
+            <p class="text-slate-700 leading-relaxed bg-white p-2.5 rounded-xl border border-slate-100 whitespace-pre-wrap font-medium">${personalText}</p>
+            <div class="flex items-center justify-end gap-1.5 pt-1">
+              <span class="text-[9px] font-bold text-slate-400 mr-1">実施記録：</span>
+              ${circleBtnsHtml}
             </div>
           </div>
         `;
       }).join('');
 
-      // 全て完了していない場合は次へ進むボタンを無効化
+      // すべて完了（クリア）するまで次に進むを無効化
       document.getElementById('btn-next').disabled = !allCleared;
 
       return `
-        <div class="flex flex-col h-full justify-between">
+        <div class="flex flex-col h-full justify-between min-h-[380px]">
           <div>
-            <div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-3">
-              <h2 class="text-base font-bold text-slate-800">M・R法：${ages[0]}〜編</h2>
-              ${ages.includes("7－9歳") ? `<button onclick="state.currentStep=7;renderStep();" class="text-xs font-bold text-pink-500 bg-pink-50 px-2 py-1 rounded-sm">🧘 音声ガイド</button>` : ''}
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+              <h2 class="text-sm font-bold text-slate-800">M・R法：${targetTags[0]}編</h2>
+              ${targetTags.includes("学童期") || targetTags.includes("思春期・成人期") ? `
+                <button onclick="state.currentStep=7;renderStep();" class="text-[10px] font-bold text-rose-500 bg-rose-50 border border-rose-100 px-2 py-1 rounded-lg">🧘 音声ガイド</button>
+              ` : ''}
             </div>
-            <div class="space-y-3 max-h-[290px] overflow-y-auto pr-1">
-              ${itemsHtml}
+            
+            <div class="space-y-3.5 max-h-[260px] overflow-y-auto pr-1 no-scrollbar">
+              ${listHtml}
             </div>
           </div>
-          ${!allCleared ? `<p class="text-[11px] text-center font-bold text-amber-500 bg-amber-50 rounded-md p-1.5 mt-3">⚠️ すべての実施記録（回数分）をタップするとロックが解除されます</p>` : ''}
+          ${!allCleared ? `
+            <p class="text-[10px] text-center font-bold text-rose-500 bg-rose-50 rounded-xl p-2.5 mt-2">⚠️ 各シナリオの回数をすべて達成すると、ロックが外れます</p>
+          ` : ''}
         </div>
       `;
     }
 
-    // M・R法の回数カウント操作
-    function toggleMrCheck(scenarioId, index) {
-      const current = state.mrProgress[scenarioId] || 0;
-      // タップした番号に応じてカウント数を増減
-      if (current === index) {
-        state.mrProgress[scenarioId] = index - 1;
+    // M・R法回数カウント操作
+    function toggleScenCount(scenId, idx) {
+      const current = state.mrProgress[scenId] || 0;
+      if (current === idx) {
+        state.mrProgress[scenId] = idx - 1;
       } else {
-        state.mrProgress[scenarioId] = index;
+        state.mrProgress[scenId] = idx;
       }
       renderStep();
     }
 
-    // STEP 7: リラクセーション音声ガイドプレイヤーのUI生成
+    // STEP 7: 音声ガイドの描画
     function renderAudioPlayer() {
       const minutes = Math.floor(state.audioTime / 60);
       const seconds = state.audioTime % 60;
-      const displayTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / 01:00`;
+      const progressPercent = (state.audioTime / 60) * 100;
 
-      // 時間経過に応じた字幕ナレーション
-      let caption = "目を閉じて、椅子の背もたれに体を深くあずけましょう...";
-      if (state.audioTime > 10) caption = "鼻からゆっくり吸って、口からふーーっと細く長く吐き出します...";
-      if (state.audioTime > 25) caption = "静かで心地よい、誰もいない穏やかな砂浜や草原を思い浮かべてください...";
-      if (state.audioTime > 45) caption = "全身の力が抜け、心が中性なニュートラル状態へと満たされていきます...";
-      if (state.audioTime >= 60) caption = "素晴らしいリラックス状態です。そのまま次のM・Rシナリオに進みましょう。";
+      // 時間ごとの連動字幕テキスト
+      let subtitles = "目を静かに閉じ、椅子の背もたれに体をゆだねていきましょう。";
+      if (state.audioTime > 10) subtitles = "鼻からゆっくり温かい空気を吸い込み、口からふーーっと細く長く吐き出します...";
+      if (state.audioTime > 25) subtitles = "頭の中で、誰もいない静かな砂浜や青空をイメージしてください。必ず【主観的（自分目線）】な景色にしてくださいね。";
+      if (state.audioTime > 45) subtitles = "雑念が浮かんだら、戦おうとせず、そっと砂浜の景色に意識を戻します...";
+      if (state.audioTime >= 60) subtitles = "素晴らしいリラックス状態です。準備が整いました。次のステップへ進みましょう。";
 
       return `
-        <div class="space-y-6 py-2">
-          <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">リラクセーション音声シミュレーター</h2>
+        <div class="space-y-4">
+          <h2 class="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2 flex items-center gap-1.5">
+            <span>🧘</span> 7. リラクセーション＆中性イメージ
+          </h2>
           
-          <div class="bg-slate-900 text-white rounded-2xl p-5 shadow-inner flex flex-col items-center justify-center space-y-4">
+          <!-- 音声プレイヤー風グラフィック -->
+          <div class="bg-slate-900 rounded-2xl p-5 text-white flex flex-col items-center justify-center space-y-4 shadow-inner">
             
-            <div class="flex items-center justify-center gap-1.5 h-12">
-              ${[1,2,3,4,5].map(() => `
-                <div class="w-1 bg-pink-400 rounded-full h-full wave-bar" style="${state.audioPlaying ? '' : 'animation: none; transform: scaleY(0.2);'}"></div>
+            <!-- 波形アニメーション -->
+            <div class="flex items-center justify-center gap-1 h-10 w-full max-w-[200px]">
+              ${[1,2,3,4,5,6,7].map(() => `
+                <div class="w-1.5 bg-rose-400 rounded-full h-full wave-bar" style="${state.audioPlaying ? '' : 'animation: none; transform: scaleY(0.2);'}"></div>
               `).join('')}
             </div>
 
-            <div class="text-xs font-mono text-slate-400 font-bold">${displayTime}</div>
+            <!-- 時間カウント表示 -->
+            <div class="text-xs font-mono font-bold text-slate-400">
+              ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} / 01:00
+            </div>
 
-            <button onclick="toggleAudio()" class="w-14 h-14 rounded-full bg-pink-500 hover:bg-pink-600 flex items-center justify-center text-white text-lg active:scale-95 transition shadow-md shadow-pink-900/30">
-              ${state.audioPlaying ? '⏸' : '▶'}
+            <!-- 擬似再生バー -->
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-rose-400 h-full transition-all duration-300" style="width: ${progressPercent}%;"></div>
+            </div>
+
+            <!-- 再生制御 -->
+            <button onclick="controlAudio()" class="w-12 h-14 rounded-full bg-rose-500 hover:bg-rose-600 active:scale-95 transition flex items-center justify-center shadow-lg shadow-rose-500/20 text-sm font-black">
+              ${state.audioPlaying ? '一時停止' : '再生'}
             </button>
           </div>
 
-          <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 text-center">
-            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">LIVE 字幕ガイド</span>
-            <p class="text-xs text-slate-700 font-medium leading-relaxed">${caption}</p>
+          <!-- 字幕エリア -->
+          <div class="p-3.5 bg-slate-50 border border-slate-200/50 rounded-2xl text-center min-h-[64px] flex items-center justify-center">
+            <p class="text-[11px] text-slate-700 leading-relaxed font-semibold">${subtitles}</p>
           </div>
         </div>
       `;
     }
 
-    // 音声再生・一時停止の擬似制御
-    function toggleAudio() {
+    // 音声擬似再生処理
+    function controlAudio() {
       if (state.audioPlaying) {
         clearInterval(state.audioInterval);
         state.audioPlaying = false;
@@ -584,6 +875,7 @@
           if (state.audioTime >= 60) {
             clearInterval(state.audioInterval);
             state.audioPlaying = false;
+            showModal("練習完了", "素晴らしいリラクセーション体験でした。雑念をコントロールし、自分目線のイメージを意識できましたか？問題なければ『次に進む』をタップしてください。");
           }
           renderStep();
         }, 1000);
@@ -591,31 +883,54 @@
       renderStep();
     }
 
-    // 画面下部ナビゲーション：進む
+    // カスタムモーダルの制御
+    function showModal(title, msg) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-message').innerText = msg;
+      document.getElementById('custom-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('custom-modal').classList.add('hidden');
+    }
+
+    // ナビゲーション：次へ
     function nextStep() {
+      if (state.currentStep === 1) {
+        // Step 1での簡単な未入力バリデーション（優しいポップアップ）
+        if (!state.profile.name || !state.profile.age) {
+          showModal("プロフィール設定", "お名前とご年齢を簡単に入力していただくと、よりあなたに合った伴走アドバイスができますよ。🌸");
+          return;
+        }
+      }
+
       if (state.currentStep < 11) {
         state.currentStep++;
         renderStep();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        // 修了画面でボタンを押したら最初に戻る
+        // 最初に戻ってリセット
         state.currentStep = 1;
         state.currentQuestionIndex = 0;
         state.answers = {};
-        mrScenarios.forEach(s => state.mrProgress[s.id] = 0);
+        state.attentionShiftChecked = [false, false, false, false];
+        mrScenarios.forEach(scen => state.mrProgress[scen.id] = 0);
         renderStep();
       }
     }
 
-    // 画面下部ナビゲーション：戻る
+    // ナビゲーション：戻る
     function prevStep() {
       if (state.currentStep > 1) {
         state.currentStep--;
+        // 悪循環カードインデックスの調整
+        if (state.currentStep === 2) {
+          state.currentQuestionIndex = 0; // 最初から再チェック
+        }
         renderStep();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
   </script>
-
 </body>
 </html>
