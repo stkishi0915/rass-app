@@ -84,39 +84,19 @@
     }
   }
 
-  // Difyのチャットウィンドウが画面に生成されるのを監視して中身をスキャンする仕組み
-  const observer = new MutationObserver((mutations) => {
-    // 画面内にDifyのチャットウィンドウ（iframe）があるか探す
-    const iframe = document.getElementById('dify-chatbot-bubble-window');
-    if (iframe) {
-      // 安全にiframe内のテキストを定期的にチェックする
-      setInterval(() => {
-        try {
-          // iframe内のドキュメントオブジェクトを取得
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-          const bodyText = iframeDoc.body.innerText;
-
-          // 画面全体の文字からステージタグを判別（一番新しいタグを優先）
-          if (bodyText.includes('STAGE:4') || bodyText.includes('[STAGE:4]')) {
-            updateStageDisplay(4);
-          } else if (bodyText.includes('STAGE:3') || bodyText.includes('[STAGE:3]')) {
-            updateStageDisplay(3);
-          } else if (bodyText.includes('STAGE:2') || bodyText.includes('[STAGE:2]')) {
-            updateStageDisplay(2);
-          } else if (bodyText.includes('STAGE:1') || bodyText.includes('[STAGE:1]')) {
-            updateStageDisplay(1);
-          }
-        } catch (e) {
-          // クロスドメイン制限でエラーが出る場合は何もしない（同ドメイン運用のための保険）
-        }
-      }, 1000); // 1秒ごとにチャット内の文字をチェック
-      
-      observer.disconnect(); // iframeが見つかったら監視を終了
-    }
+  // URLの末尾（#stage2 など）が切り替わった瞬間に画面を更新する安全な仕組み（クロスドメイン対策）
+  window.addEventListener('hashchange', function() {
+    const hash = window.location.hash;
+    if (hash.includes('stage1')) updateStageDisplay(1);
+    if (hash.includes('stage2')) updateStageDisplay(2);
+    if (hash.includes('stage3')) updateStageDisplay(3);
+    if (hash.includes('stage4')) updateStageDisplay(4);
   });
 
-  // 画面全体のドキュメント監視を開始
-  observer.observe(document.body, { childList: true, subtree: true });
+  // ページ読み込み時の初期チェック
+  window.addEventListener('DOMContentLoaded', function() {
+    window.location.hash = 'stage1'; // 最初はステージ1に初期化
+  });
 </script>
 
 <style>
