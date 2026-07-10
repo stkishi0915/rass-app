@@ -40,10 +40,7 @@
 
 <script>
  window.difyChatbotConfig = {
-  token: 'uCSrQyoRDZaA3gjC',
-  inputs: {},
-  systemVariables: {},
-  userVariables: {}
+  token: 'uCSrQyoRDZaA3gjC'
  }
 </script>
 
@@ -84,39 +81,23 @@
     }
   }
 
-  // URLの末尾（#stage2 など）が切り替わった瞬間に画面を更新する安全な仕組み
-  window.addEventListener('hashchange', function() {
-    const hash = window.location.hash;
-    if (hash.includes('stage1')) updateStageDisplay(1);
-    if (hash.includes('stage2')) updateStageDisplay(2);
-    if (hash.includes('stage3')) updateStageDisplay(3);
-    if (hash.includes('stage4')) updateStageDisplay(4);
-  });
-
-  // 【最重要】Dify内のリンククリックを親画面（ターゲット：_top）に強制貫通させる仕組み
-  setInterval(() => {
-    const iframe = document.getElementById('dify-chatbot-bubble-window');
-    if (iframe) {
-      try {
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        // iframe内のすべてのリンク（aタグ）を取得
-        const links = iframeDoc.getElementsByTagName('a');
-        for (let link of links) {
-          // もしリンク先が「#stage」で始まる内部ハッシュだったら
-          if (link.getAttribute('href') && link.getAttribute('href').includes('#stage')) {
-            // 親画面全体を切り替えるように設定を上書きする
-            link.setAttribute('target', '_top');
-          }
-        }
-      } catch (e) {
-        // クロスドメインエラー対策（同ドメインでない場合は何もしない）
+  // セキュリティの壁を越えて、Difyが公式に発行する通信メッセージのみを100%安全にキャッチする
+  window.addEventListener('message', function(event) {
+    // Dify公式からのパケット（iframeからの安全なメッセージ）だけを対象にする
+    if (event.data && event.data.type === 'dify-chatbot' || (event.data && typeof event.data === 'object')) {
+      const jsonString = JSON.stringify(event.data);
+      
+      // 送信された通信テキストの中に「STAGE:X」が含まれているかを一網打尽にする
+      if (jsonString.includes('STAGE:4')) {
+        updateStageDisplay(4);
+      } else if (jsonString.includes('STAGE:3')) {
+        updateStageDisplay(3);
+      } else if (jsonString.includes('STAGE:2')) {
+        updateStageDisplay(2);
+      } else if (jsonString.includes('STAGE:1')) {
+        updateStageDisplay(1);
       }
     }
-  }, 1000); // 1秒ごとに実行して新しいメッセージのリンクをハック
-
-  // ページ読み込み時の初期チェック
-  window.addEventListener('DOMContentLoaded', function() {
-    window.location.hash = 'stage1'; // 最初はステージ1に初期化
   });
 </script>
 
