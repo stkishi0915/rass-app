@@ -9,8 +9,8 @@
         h1 { color: #1C64F2; border-bottom: 2px solid #1C64F2; padding-bottom: 10px; }
         .status-box { background-color: #EBF5FF; border-left: 4px solid #1C64F2; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
         .step-list { padding-left: 20px; }
-        .step-list li { margin-bottom: 10px; color: #666; }
-        .step-list .active { color: #1C64F2; font-weight: bold; }
+        .step-list li { margin-bottom: 10px; color: #666; transition: all 0.3s ease; }
+        .step-list .active { color: #1C64F2; font-weight: bold; font-size: 1.05em; }
     </style>
 </head>
 <body>
@@ -19,22 +19,22 @@
     <h1>RASS 吃音セルフケア・オンライン臨床</h1>
     
     <div class="status-box">
-        <strong>現在のステージ:</strong> ステップ1（初期問診・発話評価）<br>
-        <p>画面右下のチャットボットから、言語聴覚士AIによる問診を始めてください。</p>
+        <strong>現在のステージ:</strong> <span id="current-stage">ステップ1（初期問診・発話評価）</span><br>
+        <p id="stage-description">画面右下のチャットボットから、言語聴覚士AIによる問診を始めてください。</p>
     </div>
 
     <h3>臨床プロトコル（手順）</h3>
-    <ol class="step-list">
-        <li class="active">言語聴覚士AIによる初期問診・主訴の聴取</li>
-        <li>悪循環チェックシートによる評価と解説</li>
-        <li>吃音教育と訓練への同意</li>
-        <li>注意シフト法・認知行動療法の実践</li>
-        <li>定期フィードバック（1ヶ月ごと）</li>
-        <li>年表方式メンタルリハーサル法の解説</li>
-        <li>リラクセーションと中性イメージの体験</li>
-        <li>自宅練習（リラクセーション）</li>
-        <li>メンタルリハーサル法の開始・対立内容の配布（幼少期〜）</li>
-        <li>定期面談と対立内容の更新（1週間単位）</li>
+    <ol class="step-list" id="protocol-steps">
+        <li class="active" id="step-1">言語聴覚士AIによる初期問診・主訴の聴取</li>
+        <li id="step-2">悪循環チェックシートによる評価と解説</li>
+        <li id="step-3">吃音教育と訓練への同意</li>
+        <li id="step-4">注意シフト法・認知行動療法の実践</li>
+        <li id="step-5">定期フィードバック（1ヶ月ごと）</li>
+        <li id="step-6">年表方式メンタルリハーサル法の解説</li>
+        <li id="step-7">リラクセーションと中性イメージの体験</li>
+        <li id="step-8">自宅練習（リラクセーション）</li>
+        <li id="step-9">メンタルリハーサル法の開始・対立内容の配布（幼少期〜）</li>
+        <li id="step-10">定期面談と対立内容の更新（1週間単位）</li>
     </ol>
 </div>
 
@@ -43,38 +43,72 @@
   token: 'uCSrQyoRDZaA3gjC',
   inputs: {},
   systemVariables: {},
-  userVariables: {},
+  userVariables: {}
  }
 </script>
+
 <script
  src="https://udify.app/embed.min.js"
  id="uCSrQyoRDZaA3gjC"
  defer>
 </script>
+
 <script>
- window.difyChatbotConfig = {
-  token: 'uCSrQyoRDZaA3gjC',
-  inputs: {
-    // You can define the inputs from the Start node here
-    // key is the variable name
-    // e.g.
-    // name: "NAME"
-  },
-  systemVariables: {
-    // user_id: 'YOU CAN DEFINE USER ID HERE',
-    // conversation_id: 'YOU CAN DEFINE CONVERSATION ID HERE, IT MUST BE A VALID UUID',
-  },
-  userVariables: {
-    // avatar_url: 'YOU CAN DEFINE USER AVATAR URL HERE',
-    // name: 'YOU CAN DEFINE USER NAME HERE',
-  },
- }
+  // 画面のテキストとリストのハイライトを更新する関数
+  function updateStageDisplay(stageNum) {
+    const stageTitle = document.getElementById('current-stage');
+    const stageDesc = document.getElementById('stage-description');
+    
+    if (!stageTitle || !stageDesc) return;
+
+    // 1. 上部のステータスボックスの文字を変更
+    if (stageNum === 1) {
+      stageTitle.innerText = "ステップ1（初期問診・発話評価）";
+      stageDesc.innerText = "画面右下のチャットボットから、言語聴覚士AIによる問診を始めてください。";
+    } else if (stageNum === 2) {
+      stageTitle.innerText = "ステップ2（悪循環の評価と解説）";
+      stageDesc.innerText = "AIがあなたの「注目・工夫・回避」から、吃音の悪循環を一緒に紐解いています。";
+    } else if (stageNum === 3) {
+      stageTitle.innerText = "ステップ3（仕組みの解説・同意）";
+      stageDesc.innerText = "悪循環の仕組み（自動性の阻害）を理解し、これからのアプローチを確認しています。";
+    } else if (stageNum === 4) {
+      stageTitle.innerText = "ステップ4（次の一歩の提案・実践）";
+      stageDesc.innerText = "「注意の外的シフト」など、工夫を手放すための具体的なセルフケアを提案中です。";
+    }
+
+    // 2. リストの「active（青文字・太字）」の位置を動的に変更
+    for (let i = 1; i <= 10; i++) {
+      const stepLi = document.getElementById('step-' + i);
+      if (stepLi) {
+        if (i === stageNum) {
+          stepLi.className = 'active';
+        } else {
+          stepLi.className = '';
+        }
+      }
+    }
+  }
+
+  // チャットウィンドウ（iframe）からの通信メッセージを監視する仕組み
+  window.addEventListener('message', function(event) {
+    // Difyからのメッセージデータが含まれているかチェック
+    if (event.data && typeof event.data === 'object') {
+      // Difyのチャット履歴や新規発言に含まれるテキストをスキャン
+      const dataStr = JSON.stringify(event.data);
+      
+      if (dataStr.includes('[STAGE:1]')) {
+        updateStageDisplay(1);
+      } else if (dataStr.includes('[STAGE:2]')) {
+        updateStageDisplay(2);
+      } else if (dataStr.includes('[STAGE:3]')) {
+        updateStageDisplay(3);
+      } else if (dataStr.includes('[STAGE:4]')) {
+        updateStageDisplay(4);
+      }
+    }
+  });
 </script>
-<script
- src="https://udify.app/embed.min.js"
- id="uCSrQyoRDZaA3gjC"
- defer>
-</script>
+
 <style>
   #dify-chatbot-bubble-button {
     background-color: #1C64F2 !important;
