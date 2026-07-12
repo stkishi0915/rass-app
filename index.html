@@ -2,113 +2,153 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>RASS吃音セルフケアアプリ</title>
+    <title>RASS吃音セルフケア・オンライン臨床アプリ</title>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f5f7fa; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #1C64F2; border-bottom: 2px solid #1C64F2; padding-bottom: 10px; }
-        .status-box { background-color: #EBF5FF; border-left: 4px solid #1C64F2; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
-        .step-list { padding-left: 20px; }
-        .step-list li { margin-bottom: 10px; color: #666; transition: all 0.3s ease; }
-        .step-list .active { color: #1C64F2; font-weight: bold; font-size: 1.05em; }
+        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f5f7fa; color: #333; display: flex; justify-content: center; }
+        .wrapper { display: flex; max-width: 1200px; width: 100%; gap: 20px; }
+        .main-panel { flex: 1; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #1C64F2; border-bottom: 2px solid #1C64F2; padding-bottom: 10px; margin-top: 0; font-size: 1.6em; }
+        .select-box { margin-bottom: 20px; background: #EBF5FF; padding: 15px; border-radius: 6px; }
+        select { padding: 8px; font-size: 1em; border-radius: 4px; border: 1px solid #1C64F2; width: 100%; max-width: 300px; }
+        .section-title { font-weight: bold; color: #1C64F2; margin-top: 15px; margin-bottom: 5px; border-left: 4px solid #1C64F2; padding-left: 8px; }
+        .content-card { background: #fafafa; border: 1px solid #e5e7eb; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        .checksheet { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #fffcf0; border: 1px solid #fef08a; padding: 15px; border-radius: 6px; }
+        .checksheet label { display: flex; flex-direction: column; font-size: 0.9em; }
+        .checksheet input { padding: 4px; margin-top: 4px; }
+        .btn { background: #1C64F2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn:hover { background: #1a56db; }
+        .result-text { margin-top: 10px; font-weight: bold; color: #059669; }
+        ul, ol { padding-left: 20px; margin: 5px 0; }
+        li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>RASS 吃音セルフケア・オンライン臨床</h1>
-    
-    <div class="status-box">
-        <strong>現在のステージ:</strong> <span id="current-stage">ステップ1（初期問診・発話評価）</span><br>
-        <p id="stage-description">画面右下のチャットボットから、言語聴覚士AIによる問診を始めてください。</p>
-    </div>
+<div class="wrapper">
+    <div class="main-panel">
+        <h1>RASS 吃音セルフケア・オンライン臨床</h1>
+        
+        <div class="select-box">
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">現在の面談回数を選択してください：</label>
+            <select id="session-select" onchange="changeSession()">
+                <option value="1">第1回面談（初期問診・合意形成）</option>
+                <option value="2">第2回面談（悪循環の評定・注意シフト指導）</option>
+                <option value="3">第3回面談（メンタルリハーサル法解説）</option>
+                <option value="4">第4回面談（メンタルリハーサル開始・課題No.1-4）</option>
+                <option value="9">第9回面談（中間評価・内的から外的への注意シフト）</option>
+                <option value="14">第14回面談（10代の買い物・バイト・電話場面）</option>
+            </select>
+        </div>
 
-    <h3>臨床プロトコル（手順）</h3>
-    <ol class="step-list" id="protocol-steps">
-        <li class="active" id="step-1">言語聴覚士AIによる初期問診・主訴の聴取</li>
-        <li id="step-2">悪循環チェックシートによる評価と解説</li>
-        <li id="step-3">吃音教育と訓練への同意</li>
-        <li id="step-4">注意シフト法・認知行動療法の実践</li>
-        <li id="step-5">定期フィードバック（1ヶ月ごと）</li>
-        <li id="step-6">年表方式メンタルリハーサル法の解説</li>
-        <li id="step-7">リラクセーションと中性イメージの体験</li>
-        <li id="step-8">自宅練習（リラクセーション）</li>
-        <li id="step-9">メンタルリハーサル法の開始・対立内容の配布（幼少期〜）</li>
-        <li id="step-10">定期面談と対立内容の更新（1週間単位）</li>
-    </ol>
+        <div class="section-title">本日の臨床プロトコル</div>
+        <div class="content-card" id="protocol-box">
+            </div>
+
+        <div class="section-title">配布された宿題・対立内容</div>
+        <div class="content-card" id="homework-box" style="background: #f0fdf4; border-color: #bbf7d0;">
+            </div>
+
+        <div class="section-title">悪循環チェックシート（毎回の評価・比較用）</div>
+        <div class="checksheet">
+            <label>1. 注目（発話や体の状態への意識）
+                <input type="number" id="score-attention" min="0" max="100" value="50" placeholder="%">
+            </label>
+            <label>2. 工夫（なんとか出そうとする人為的コントロール）
+                <input type="number" id="score-effort" min="0" max="100" value="60" placeholder="%">
+            </label>
+            <label>3. 回避（言葉の言い換えや場面の逃避）
+                <input type="number" id="score-avoid" min="0" max="100" value="40" placeholder="%">
+            </label>
+            <label>
+                <span style="visibility: hidden;">計算ボタン</span>
+                <button class="btn" onclick="calculateScore()">スコアを計算・記録</button>
+            </label>
+        </div>
+        <div class="result-text" id="score-result"></div>
+    </div>
 </div>
 
 <script>
- window.difyChatbotConfig = {
-  token: 'uCSrQyoRDZaA3gjC'
- }
+ window.difyChatbotConfig = { token: 'uCSrQyoRDZaA3gjC' }
 </script>
-
-<script
- src="https://udify.app/embed.min.js"
- id="uCSrQyoRDZaA3gjC"
- defer>
-</script>
+<script src="https://udify.app/embed.min.js" id="uCSrQyoRDZaA3gjC" defer></script>
 
 <script>
-  // 画面のテキストとリストのハイライトを更新する関数
-  function updateStageDisplay(stageNum) {
-    const stageTitle = document.getElementById('current-stage');
-    const stageDesc = document.getElementById('stage-description');
-    
-    if (!stageTitle || !stageDesc) return;
+    // 面談データの定義（添付ドキュメントの内容を可能な範囲で再現）
+    const sessions = {
+        1: {
+            protocol: "<strong>【概要】</strong> 基本的情報の収集、吃音評価（UTBASE-6-J等）、ガイダンス、訓練方針の説明と合意形成を行います。<br><br><strong>【手順】</strong><ol><li>年齢・主訴・苦手な場面（電話など）の聴取</li><li>重症度プロフィールや自己評定表のスコア付け</li><li>吃音ガイダンスの実施</li><li>RASSの実施への合意形成</li></ol>",
+            homework: "<strong>【今週の取り組み】</strong><br>チャットボットと言語聴覚士AIに現在の困りごと（主訴）を詳しく話し、これからのリハビリの目標を共有しましょう。"
+        },
+        2: {
+            protocol: "<strong>【概要】</strong> 吃音進展段階の評価を行い、悪化要因の増加防止のために「振り返りに対する注意シフト」を指導します。<br><br><strong>【手順】</strong><ol><li>進展段階の表の提示と現在地の評定</li><li>悪循環チェックシートを用いた、否定的価値観・行動・負の情動の解説</li><li>嫌な考えを即座に外的情報へ転換する『注意シフト』の指導（毎日継続）</li></ol>",
+            homework: "<strong>【今週の取り組み】</strong><br>嫌な考えが頭に浮かんだら、すぐに目の前の客観的な景色やモノをよく観察する「注意シフト」を毎日実践してください（即効性がなくてもだいたいで継続）。"
+        },
+        3: {
+            protocol: "<strong>【概要】</strong> 注意シフトの実施状況を確認。流暢性要因増加のためメンタルリハーサル法を解説し、リラクセーションと中性イメージ想起を体験します。<br><br><strong>【手順】</strong><ol><li>注意シフトの実施具合の聴取</li><li>下の計算機で悪循環チェックシートをつけ、前回と比較</li><li>メンタルリハーサル法の手順解説とリラクセーションの体験</li></ol>",
+            homework: "<strong>【今週の取り組み】</strong><br>毎日リラクセーションと中性イメージの想起を練習してください。（対立内容はまだ行いません）"
+        },
+        4: {
+            protocol: "<strong>【概要】</strong> メンタルリハーサルの練習具合を確認。幼少期の親への甘えの場面を導入し、メンタルリハーサルを開始します。<br><br><strong>【手順】</strong><ol><li>振り返り・予期不安への注意シフト指導</li><li>メンタルリハーサル時、声を出そうとしたりセリフを意識することは一切禁止。主観的イメージの移動に集中する。</li></ol>",
+            homework: "<strong>【配布された対立内容】</strong><br>・<strong>No.1〜4：幼少期の親への甘えの場面</strong><br>⇒ これらを1週間ごとにメンタルリハーサルで実施してください。"
+        },
+        9: {
+            protocol: "<strong>【概要】</strong> 中間評価を行います。また、どもった瞬間に自身への内的注意を外的注意へシフトさせる指導を開始します。<br><br><strong>【手順】</strong><ol><li>最近の吃音の調子の聴取、各種質問紙による中間スコア評価</li><li>どもった瞬間に、メンタルリハーサルで行っている『雑念コントロール』をしながら話す感覚を現実場面でもイメージする指導</li></ol>",
+            homework: "<strong>【配布された対立内容】</strong><br>・<strong>No.37〜44：小学校低学年の授業場面</strong><br>⇒ 現実の発話場面でも、どもった瞬間に内的注意から外的へシフトする意識を持ち始めましょう。"
+        },
+        14: {
+            protocol: "<strong>【概要】</strong> 前回の対立内容の確認を行い、10代の頃の買い物やバイト、電話の苦手場面を導入します。<br><br><strong>【手順】</strong><ol><li>最近の吃音の調子聴取、悪循環チェックシートの比較</li><li>振り返り・予期不安・どもった瞬間の注意シフト継続指導</li><li>10代の頃の苦手場面（買い物、バイト、電話）の対立内容作成</li></ol>",
+            homework: "<strong>【配布された対立内容】</strong><br>・<strong>No.77〜84：10代の頃の買い物・バイト・電話の場面</strong><br>⇒ 雑念のコントロールができなかった内容があれば、対象者を入れ替えるなどして修正・実施します。"
+        }
+    };
 
-    if (stageNum === 1) {
-      stageTitle.innerText = "ステップ1（初期問診・発話評価）";
-      stageDesc.innerText = "画面右下のチャットボットから、言語聴覚士AIによる問診を始めてください。";
-    } else if (stageNum === 2) {
-      stageTitle.innerText = "ステップ2（悪循環の評価と解説）";
-      stageDesc.innerText = "AIがあなたの「注目・工夫・回避」から、吃音の悪循環を一緒に紐解いています。";
-    } else if (stageNum === 3) {
-      stageTitle.innerText = "ステップ3（仕組みの解説・同意）";
-      stageDesc.innerText = "悪循環の仕組み（自動性の阻害）を理解し、これからのアプローチを確認しています。";
-    } else if (stageNum === 4) {
-      stageTitle.innerText = "ステップ4（次の一歩の提案・実践）";
-      stageDesc.innerText = "「注意の外的シフト」など、工夫を手放すための具体的なセルフケアを提案中です。";
+    let previousTotal = null;
+
+    // 面談切り替え関数
+    function changeSession() {
+        const select = document.getElementById('session-select');
+        const sessionData = sessions[select.value];
+        
+        if (sessionData) {
+            document.getElementById('protocol-box').innerHTML = sessionData.protocol;
+            document.getElementById('homework-box').innerHTML = sessionData.homework;
+        }
     }
 
-    // リストの「active」の位置を変更
-    for (let i = 1; i <= 10; i++) {
-      const stepLi = document.getElementById('step-' + i);
-      if (stepLi) {
-        stepLi.className = (i === stageNum) ? 'active' : '';
-      }
-    }
-  }
+    // 簡易スコア計算・比較ロジック
+    function calculateScore() {
+        const att = parseInt(document.getElementById('score-attention').value) || 0;
+        const eff = parseInt(document.getElementById('score-effort').value) || 0;
+        const avo = parseInt(document.getElementById('score-avoid').value) || 0;
+        const total = att + eff + avo;
 
-  // セキュリティの壁を越えて、Difyが公式に発行する通信メッセージのみを100%安全にキャッチする
-  window.addEventListener('message', function(event) {
-    // Dify公式からのパケット（iframeからの安全なメッセージ）だけを対象にする
-    if (event.data && event.data.type === 'dify-chatbot' || (event.data && typeof event.data === 'object')) {
-      const jsonString = JSON.stringify(event.data);
-      
-      // 送信された通信テキストの中に「STAGE:X」が含まれているかを一網打尽にする
-      if (jsonString.includes('STAGE:4')) {
-        updateStageDisplay(4);
-      } else if (jsonString.includes('STAGE:3')) {
-        updateStageDisplay(3);
-      } else if (jsonString.includes('STAGE:2')) {
-        updateStageDisplay(2);
-      } else if (jsonString.includes('STAGE:1')) {
-        updateStageDisplay(1);
-      }
+        let resultStr = `今回の悪循環トータルスコア: ${total}% `;
+        if (previousTotal !== null) {
+            const diff = total - previousTotal;
+            if (diff < 0) {
+                resultStr += `（前回比: ${diff}%。数値が減少しており、改善方向に向かっています！）`;
+            } else if (diff > 0) {
+                resultStr += `（前回比: +${diff}%。悪化要因が増えている可能性があるため、注意シフトを意識しましょう）`;
+            } else {
+                resultStr += `（前回と同じスコアです。維持できています）`;
+            }
+        } else {
+            resultStr += `（初回記録されました。次回のスコアと比較されます）`;
+        }
+        
+        previousTotal = total;
+        document.getElementById('score-result').innerHTML = resultStr;
     }
-  });
+
+    // 初期化表示
+    window.addEventListener('DOMContentLoaded', () => {
+        changeSession();
+    });
 </script>
 
 <style>
-  #dify-chatbot-bubble-button {
-    background-color: #1C64F2 !important;
-  }
-  #dify-chatbot-bubble-window {
-    width: 24rem !important;
-    height: 40rem !important;
-  }
+  #dify-chatbot-bubble-button { background-color: #1C64F2 !important; }
+  #dify-chatbot-bubble-window { width: 24rem !important; height: 40rem !important; }
 </style>
 </body>
 </html>
