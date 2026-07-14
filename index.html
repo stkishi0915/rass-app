@@ -2,82 +2,209 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RASS吃音セルフケア・オンライン臨床アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background-color: #f5f7fa; color: #333; display: flex; justify-content: center; }
-        .wrapper { display: flex; max-width: 1200px; width: 100%; gap: 20px; }
-        .main-panel { flex: 1; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #1C64F2; border-bottom: 2px solid #1C64F2; padding-bottom: 10px; margin-top: 0; font-size: 1.6em; }
-        .select-box { margin-bottom: 20px; background: #EBF5FF; padding: 15px; border-radius: 6px; }
-        select { padding: 8px; font-size: 1em; border-radius: 4px; border: 1px solid #1C64F2; width: 100%; max-width: 500px; }
-        .section-title { font-weight: bold; color: #1C64F2; margin-top: 15px; margin-bottom: 5px; border-left: 4px solid #1C64F2; padding-left: 8px; }
-        .content-card { background: #fafafa; border: 1px solid #e5e7eb; padding: 15px; border-radius: 6px; margin-bottom: 15px; }
+        /* 修正点1: スマホでのフォントサイズ基本設定と全体レイアウト */
+        body { 
+            font-family: 'Noto Sans JP', sans-serif; 
+            margin: 0; 
+            padding: 10px; 
+            background-color: #f5f7fa; 
+            color: #333; 
+            display: flex; 
+            justify-content: center; 
+            font-size: 16px; /* スマホで見やすい文字サイズに引き上げ */
+            line-height: 1.6;
+        }
+        .wrapper { display: flex; max-width: 1200px; width: 100%; gap: 20px; flex-direction: column; }
+        .main-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
         
+        h1 { 
+            color: #1C64F2; 
+            border-bottom: 3px solid #1C64F2; 
+            padding-bottom: 12px; 
+            margin-top: 0; 
+            font-size: 1.5rem; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 修正点3: 面談回数選択欄をユーザー目線のステップUIへ変更 */
+        .select-box { 
+            margin-bottom: 25px; 
+            background: #EBF5FF; 
+            padding: 20px; 
+            border-radius: 10px; 
+            border: 1px solid #BFDBFE;
+        }
+        .step-indicator {
+            font-size: 0.9rem;
+            color: #1E40AF;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        select { 
+            padding: 12px; 
+            font-size: 1rem; 
+            border-radius: 6px; 
+            border: 2px solid #1C64F2; 
+            width: 100%; 
+            background-color: white;
+            font-weight: 500;
+        }
+
+        /* 修正点2: 全体的に見やすくするためのカード・手順のデザイン化 */
+        .section-title { 
+            font-weight: bold; 
+            color: #1C64F2; 
+            margin-top: 25px; 
+            margin-bottom: 12px; 
+            border-left: 5px solid #1C64F2; 
+            padding-left: 10px; 
+            font-size: 1.2rem;
+        }
+        .content-card { 
+            background: #ffffff; 
+            border: 1px solid #e5e7eb; 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        
+        /* 修正点6: 次の行動の強調表示（パルスアニメーション付きの目立つボックス） */
+        .cta-action-box {
+            background: #FF823A;
+            color: white;
+            padding: 18px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 15px 0;
+            border-left: 6px solid #D94E00;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { transform: scale(1); box-shadow: 0 4px 6px rgba(255,130,58,0.4); }
+            50% { transform: scale(1.01); box-shadow: 0 6px 12px rgba(255,130,58,0.6); }
+            100% { transform: scale(1); box-shadow: 0 4px 6px rgba(255,130,58,0.4); }
+        }
+
+        /* 修正点2: イラスト・ビジュアルプレースホルダーの導入 */
+        .visual-banner {
+            width: 100%;
+            height: auto;
+            min-height: 120px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+            border: 1px solid #BFDBFE;
+        }
+        .visual-banner i { font-size: 3rem; color: #1C64F2; margin-right: 15px; }
+        .visual-banner-text { font-size: 0.95rem; color: #1E40AF; font-weight: 500; }
+
         /* スライドビューア */
-        .slide-container { background: #1e293b; color: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.6); }
-        .slide-title { font-weight: bold; color: #38bdf8; font-size: 1.25em; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
-        .slide-content { min-height: 280px; font-size: 1em; padding: 5px; white-space: pre-wrap; line-height: 1.6; }
+        .slide-container { background: #1e293b; color: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); }
+        .slide-title { font-weight: bold; color: #38bdf8; font-size: 1.15rem; margin-bottom: 15px; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        .slide-content { min-height: 250px; font-size: 0.95rem; padding: 5px; white-space: pre-wrap; line-height: 1.7; }
         .slide-nav { margin-top: 15px; display: flex; justify-content: center; gap: 15px; align-items: center; border-top: 1px solid #334155; padding-top: 15px; }
-        .slide-btn { background: #334155; color: #f8fafc; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9em; font-weight: bold; }
+        .slide-btn { background: #334155; color: #f8fafc; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: bold; transition: background 0.2s; }
         .slide-btn:hover { background: #475569; }
         .slide-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid #334155; }
 
-        /* 本格悪循環チェックシート（全カテゴリー網羅） */
-        .checksheet-box { background: #fffcf0; border: 1px solid #fef08a; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .category-title { font-weight: bold; color: #9a3412; border-bottom: 2px solid #fed7aa; padding-bottom: 4px; margin-top: 15px; margin-bottom: 10px; font-size: 1.05em; }
+        /* 悪循環チェックシート */
+        .checksheet-box { background: #fffcf0; border: 1px solid #fef08a; padding: 15px; border-radius: 10px; margin-bottom: 20px; }
+        .category-title { font-weight: bold; color: #9a3412; border-bottom: 2px solid #fed7aa; padding-bottom: 6px; margin-top: 20px; margin-bottom: 12px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
         .check-group { margin-bottom: 15px; border-bottom: 1px dashed #fef08a; padding-bottom: 12px; }
         .check-group:last-child { border-bottom: none; }
-        .check-title { font-weight: bold; color: #b45309; margin-bottom: 4px; font-size: 0.95em; }
-        .check-desc { font-size: 0.85em; color: #6b7280; margin-bottom: 8px; line-height: 1.4; }
+        .check-title { font-weight: bold; color: #b45309; margin-bottom: 6px; font-size: 0.95rem; }
+        .check-desc { font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; line-height: 1.5; }
         .range-container { display: flex; align-items: center; gap: 15px; }
-        .range-container input[type="range"] { flex: 1; accent-color: #d97706; }
-        .range-val { font-weight: bold; color: #b45309; width: 50px; text-align: right; font-family: monospace; font-size: 1.1em; }
+        .range-container input[type="range"] { flex: 1; accent-color: #d97706; height: 8px; cursor: pointer; }
+        .range-val { font-weight: bold; color: #b45309; width: 55px; text-align: right; font-family: monospace; font-size: 1.1rem; }
 
-        .btn { background: #1C64F2; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; width: 100%; font-size: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        /* ボタン・レポート */
+        .btn { background: #1C64F2; color: white; border: none; padding: 14px 28px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 100%; font-size: 1.05rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: background 0.2s; }
         .btn:hover { background: #1a56db; }
-        
-        /* 悪循環動的解説レポート */
-        .result-box { margin-top: 20px; padding: 20px; background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 8px; display: none; }
-        .result-title { font-weight: bold; color: #166534; margin-bottom: 12px; font-size: 1.2em; border-bottom: 2px solid #bbf7d0; padding-bottom: 6px; }
-        .analysis-section { margin-bottom: 15px; background: white; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .analysis-subtitle { font-weight: bold; color: #1e293b; margin-bottom: 6px; font-size: 0.95em; display: flex; justify-content: space-between; }
-        .analysis-text { font-size: 0.9em; color: #475569; line-height: 1.6; }
+        .result-box { margin-top: 20px; padding: 20px; background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 10px; display: none; }
+        .result-title { font-weight: bold; color: #166534; margin-bottom: 12px; font-size: 1.2rem; border-bottom: 2px solid #bbf7d0; padding-bottom: 6px; }
+        .analysis-section { margin-bottom: 15px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; }
+        .analysis-subtitle { font-weight: bold; color: #1e293b; margin-bottom: 8px; font-size: 1rem; display: flex; justify-content: space-between; }
+        .analysis-text { font-size: 0.9rem; color: #475569; line-height: 1.6; }
 
         /* 自分を罰する計算機 */
-        .punish-calc { background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 6px; margin-top: 15px; }
-        .punish-calc input { padding: 4px; width: 80px; margin: 0 5px; border-radius: 4px; border: 1px solid #93c5fd; text-align: center; }
+        .punish-calc { background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .punish-calc input { padding: 6px; width: 90px; margin: 5px; border-radius: 6px; border: 1px solid #93c5fd; text-align: center; font-size: 1rem; }
 
-        ul, ol { padding-left: 20px; margin: 5px 0; }
-        li { margin-bottom: 6px; line-height: 1.4; }
+        /* 修正点7: 第15回 AI自作教育パネル用UI */
+        .creator-box { background: #FDF2F8; border: 1px solid #FBCFE8; padding: 20px; border-radius: 10px; margin-top: 15px; }
+        .creator-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #F472B6; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
+
+        ul, ol { padding-left: 22px; margin: 8px 0; }
+        li { margin-bottom: 8px; line-height: 1.6; }
+
+        /* 修正点1: チャットボット表示アイコンおよびウィンドウの拡大対応 */
+        #dify-chatbot-bubble-button {
+            width: 75px !important;
+            height: 75px !important;
+            bottom: 25px !important;
+            right: 25px !important;
+        }
+        #dify-chatbot-bubble-window {
+            width: 420px !important;
+            height: 650px !important;
+            max-width: 90vw !important;
+        }
+
+        /* 修正点1: タブレット・PC環境（横幅600px以上）での2カラム調整 */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .wrapper { flex-direction: row; }
+            .main-panel { flex: 1; padding: 30px; }
+        }
     </style>
 </head>
 <body>
-
 <div class="wrapper">
     <div class="main-panel">
-        <h1>RASS 吃音セルフケア・オンライン臨床</h1>
+        <h1><i class="fa-solid fa-brain-circuit"></i> RASS 吃音セルフケア・オンライン臨床</h1>
         
         <div class="select-box">
-            <label style="font-weight: bold; display: block; margin-bottom: 8px;">あなたの現在の面談回数を選択してください：</label>
+            <div class="step-indicator"><i class="fa-solid fa-map-location-dot"></i> あなたの現在の進行ステップ：</div>
             <select id="session-select" onchange="changeSession()">
-                <option value="1">第1回面談（あなたの吃音の状態評価 ＆ 正しい知識を知るガイダンス）</option>
-                <option value="2">第2回面談（悪循環チェック ＆ 嫌な考えを手放す注意シフト指導）</option>
-                <option value="3">第3回面談（注意シフトの確認 ＆ メンタルリハーサル法の体験）</option>
-                <option value="4">第4回面談（M・R法開始：No.1〜4 幼少期の親への甘えの場面）</option>
-                <option value="5">第5回面談（M・R法継続：No.5〜12 幼少期の自宅内での会話場面）</option>
-                <option value="6">第6回面談（M・R法継続：No.13〜20 幼少期の躾の場面）</option>
-                <option value="7">第7回面談（M・R法継続：No.21〜28 幼少期の自宅外の会話場面）</option>
-                <option value="8">第8回面談（M・R法継続：No.29〜36 小小学校低学年の場面）</option>
-                <option value="9">第9回面談（中間スコア評価 ＆ どもった瞬間の注意シフト開始）</option>
-                <option value="10">第10回面談（M・R法継続：No.45〜52 小学校高学年の場面）</option>
-                <option value="11">第11回面談（M・R法継続：No.53〜60 小6〜中1にかけての場面）</option>
-                <option value="12">第12回面談（M・R法継続：No.61〜68 中学生の頃の苦手場面）</option>
-                <option value="13">第13回面談（M・R法継続：No.69〜76 高校生の頃の苦手場面）</option>
-                <option value="14">第14回面談（M・R法継続：No.77〜84 10代の買い物・バイト・電話場面）</option>
+                <option value="1">ステップ 1：吃音の状態評価 ＆ 正しい知識を知るガイダンス</option>
+                <option value="2">ステップ 2：悪循環セルフチェック ＆ 外部への注意シフト指導</option>
+                <option value="3">ステップ 3：注意シフト確認 ＆ 【リラクセーションの練習】体験</option>
+                <option value="4">ステップ 4：M・R法実戦：No.1〜4 幼少期の親への甘えの場面</option>
+                <option value="5">ステップ 5：M・R法実戦：No.5〜12 幼少期の自宅内での会話場面</option>
+                <option value="6">ステップ 6：M・R法実戦：No.13〜20 幼少期の躾の場面</option>
+                <option value="7">ステップ 7：M・R法実戦：No.21〜28 幼少期の自宅外の会話場面</option>
+                <option value="8">ステップ 8：M・R法実戦：No.29〜36 小学校低学年の場面</option>
+                <option value="9">ステップ 9：中間スコア評価 ＆ どもった瞬間の注意シフト開始</option>
+                <option value="10">ステップ 10：M・R法実戦：No.45〜52 小学校高学年の場面</option>
+                <option value="11">ステップ 11：M・R法実戦：No.53〜60 小6〜中1にかけての場面</option>
+                <option value="12">ステップ 12：M・R法実戦：No.61〜68 中学生の頃の苦手場面</option>
+                <option value="13">ステップ 13：M・R法実戦：No.69〜76 高校生の頃の苦手場面</option>
+                <option value="14">ステップ 14：M・R法実戦：No.77〜84 10代の買い物・バイト・電話場面</option>
+                <option value="15">ステップ 15：自作教育：対立内容を自作してセルフリハビリを行う</option>
             </select>
         </div>
 
-        <div class="section-title">今日の進め方（手順）</div>
+        <div class="section-title">本日行うリハビリ手順</div>
         <div class="content-card" id="protocol-box"></div>
 
         <div id="slide-viewer-container">
@@ -87,20 +214,36 @@
                 <div class="slide-content" id="slide-text">スライド内容</div>
                 <div class="slide-nav">
                     <button class="slide-btn" id="prev-btn" onclick="prevSlide()">◀ 前のページ</button>
-                    <span id="slide-page" style="font-size: 0.9em; color: #94a3b8; font-family: monospace;">1 / 10</span>
+                    <span id="slide-page" style="font-size: 0.9rem; color: #94a3b8; font-family: monospace;">1 / 10</span>
                     <button class="slide-btn" id="next-btn" onclick="nextSlide()">次のページ ▶</button>
                 </div>
             </div>
         </div>
 
+        <div id="scenario-creator-container" style="display: none;">
+            <div class="section-title">🤖 AI対立内容セルフ作成アシスタント</div>
+            <div class="creator-box">
+                <p style="font-size: 0.9rem; margin-top:0; color:#9D174D; font-weight:bold;">ユーザーが「場面の種類」と「対象年齢」を指定するだけで、AIが適切な対立内容を作成します。</p>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">① 作成したい場面の種類（例：大学でのゼミ発表、会社の電話対応など）</label>
+                    <input type="text" id="ai-scene-type" class="creator-input" placeholder="例：アルバイトでの接客・レジ対応">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: bold; font-size: 0.9rem;">② 対象年齢（高校卒業後の年齢から、徐々に現在の年齢へ引き上げていきます）</label>
+                    <input type="number" id="ai-scene-age" class="creator-input" value="19" min="18">
+                </div>
+                <button class="btn" style="background: #DB2777;" onclick="requestAIScenario()">この指定で対立内容の作成をAIに依頼する</button>
+            </div>
+        </div>
+
         <div id="checksheet-container">
             <div class="section-title">悪循環セルフチェックシート</div>
-            <p style="font-size: 0.85em; color: #4b5563; margin-top: 0; line-height: 1.4;">
+            <p style="font-size: 0.85rem; color: #4b5563; margin-top: 0; line-height: 1.5;">
                 日常の発話場面を振り返り、現在のあなたが感じるそれぞれの度合いを <b>0%（全く該当しない）〜 100%（常に・完全に該当する）</b> の間で設定してください。ここに挙げられるすべての項目が、あなたの願い（吃音を治したい）とは逆に、吃音を悪化させてしまう要因としてカウントされます。
             </p>
             
             <div class="checksheet-box">
-                <div class="category-title">Ⅰ．価値観・考え（吃音への否定的価値観と認知の歪み）</div>
+                <div class="category-title"><i class="fa-solid fa-scale-unbalanced"></i> Ⅰ．価値観・考え（吃音への否定的価値観と認知の歪み）</div>
                 <div class="check-group">
                     <div class="check-title">1) 他者の考えに対する自分の推測 ＆ 自分に対する考え</div>
                     <div class="check-desc">自分がどもった際、周囲の人が「笑う」「変に思う」「劣っていると見なす」に違いないと思い込んだり（他者の推測）、吃音＝恥ずべきこと、変なことと自分自身を罰している度合い。</div>
@@ -118,7 +261,7 @@
                     </div>
                 </div>
 
-                <div class="category-title">Ⅱ．感情・情動（ネガティブな反応性と反芻の度合い）</div>
+                <div class="category-title"><i class="fa-solid fa-heart-crack"></i> Ⅱ．感情・情動（ネガティブな反応性と反芻の度合い）</div>
                 <div class="check-group">
                     <div class="check-title">1) 情動反応 ＆ 失敗体験の反芻（振り返り）</div>
                     <div class="check-desc">どもった後の後悔、恥ずかしさ、悲しみと、話す前の全般的な「恐怖・予期不安」の強さ。また、失敗体験が頭から離れずに1日に何度も思い返して落ち込んでいる時間の長さ。</div>
@@ -128,7 +271,7 @@
                     </div>
                 </div>
 
-                <div class="category-title">Ⅲ．行動１（語音・発話等への過剰な注目や工夫・二次的症状）</div>
+                <div class="category-title"><i class="fa-solid fa-eye"></i> Ⅲ．行動１（語音・発話等への過剰な注目や工夫・二次的症状）</div>
                 <div class="check-group">
                     <div class="check-title">1) 注目・監視 ＆ 発話の目的化</div>
                     <div class="check-desc">話す前や最中に特定の音や口の動き、身体の緊張に過剰に意識を向けたり、本来は無意識の自動プロセスである「話す」行為そのものを上手く話そうと力ずくでコントロールしようとする度合い。</div>
@@ -139,7 +282,7 @@
                 </div>
                 <div class="check-group">
                     <div class="check-title">2) 工夫（助走・延期）</div>
-                    <div class="check-desc">咳払い、「えーと」等の言葉を挟む、体を動かす（助走）。詰まりそうな時に少し間を置く、後回しにする、考えているフリをしてやり過ごす（延期）などを意図的に行う度合い。</div>
+                    <div class="check-desc">咳払い、「えーっと」等の言葉を挟む、体を動かす（助走）。詰まりそうな時に少し間を置く、後回しにする、考えているフリをしてやり過ごす（延期）などを意図的に行う度合い。</div>
                     <div class="range-container">
                         <input type="range" id="range-effort" min="0" max="100" value="50" oninput="syncVal('effort')">
                         <span class="range-val" id="val-effort">50%</span>
@@ -154,7 +297,7 @@
                     </div>
                 </div>
 
-                <div class="category-title">Ⅳ．相手の理解 ＆ Ⅴ．行動２（コミュニケーション負担と認知の偏り）</div>
+                <div class="category-title"><i class="fa-solid fa-triangle-exclamation"></i> Ⅳ．相手の理解 ＆ Ⅴ．行動２（コミュニケーション負担と認知の偏り）</div>
                 <div class="check-group">
                     <div class="check-title">1) 認知的負担 ＆ 全般的なネガティブ注意</div>
                     <div class="check-desc">どう話すかに脳の資源を使い果たして相手の話を聞き漏らしたり文を必死に記憶しようとする負担度（Ⅳ）と、日常のあらゆる物事の悪い側面ばかりに自動的に注意が向く思考の癖（Ⅴ）の度合い。</div>
@@ -196,24 +339,23 @@
  window.difyChatbotConfig = { token: 'uCSrQyoRDZaA3gjC' }
 </script>
 <script src="https://udify.app/embed.min.js" id="uCSrQyoRDZaA3gjC" defer></script>
-
 <script>
-    // 原文データ（資料①および③）から最適化した全10ページのスライドデータ
     const slides = [
         { title: "P1. 吃音の基礎知識（有病率と原因）", text: "● 成人の場合、吃音の有病率は人口の約1%と言われています。つまり100人に1人くらいは吃音の方がおられる計算になり、意外に多い規模です。\n● 男女比で見ると、成人の場合は9対1の割合で明確に男性に多いとされています。\n● 最も重要な点として、吃音の『根本的な原因』は現代医学では不明です。したがって手術やお薬で完全に治す「根治療法」は現在存在しません。\n● 現在は、何らかの【遺伝的な要因（7割）】に、【環境的な要因（3割）】が絡み合って発症するのではないかと考えられています。\n● 根治療法がないため、病院で行われているものも含めすべて「対症療法」です。「何を以って良くなったとするか」は臨床家によって解釈が異なります。ネットの情報や言語聴覚士によって言うことが違う現状があるのは、この解釈の違いが理由です。医学的に分かっていることと分かっていないことを分けて考える必要があります。" },
-        { title: "P2. 吃音の症状（中核症状）", text: "吃音の症状は、大きく分けると本人の意思とは関係なく現れる『中核症状』と、どもることを恐れて自分の意思で行う『二次的症状』の2つがあります。\n\n【① 中核症状（吃音そのもの）】\n1. 繰り返し（連発）：音や語の最初をコントロールできずに繰り返す症状（例：「み、み、みかん」）。\n2. 引き伸ばし（伸発）：音を引き延ばす症状（例：「みーーかん」）。この2つは子どもの吃音で多く見られます。\n3. ブロック（難発・阻止）：言葉を出そうとすると、喉に急に鍵がかかったように声が出なくなる症状（例：「……っみかん」）。俗に「言葉が詰まる」と表現され、本人にとって一番つらくしんどい喋り方になります。\n\n※喋ろうとするときに不随意に体が動いてしまう「随伴症状」が伴う場合もあります。" },
+        { title: "P2. 吃音の症状（中核症状）", text: "吃音の症状は、大きく分けると本人の意思とは関係なく現れる『中核症状』と、どもることを恐れて自分の意思で行う『二次的症状』の2つがあります。\n\n【① 中核症状（吃音そのもの）】\n1. 繰り返し（連発）：音や語の最初をコントロールできずに繰り返す症状（例：「み、み、みかん」）。\n2. 引き伸ばし（伸発）：音を引き延ばす症状（例：「みーーかん」）。この2つは子どもの吃音で多く見られます。\n3. ブロック（難発・阻止）：言葉を出しようとすると、喉に急に鍵がかかったように声が出なくなる症状（例：「……っみかん」）。俗に「言葉が詰まる」と表現され、本人にとって一番つらくしんどい喋り方になります。\n\n※喋ろうとするときに不随意に体が動いてしまう「随伴症状」が伴う場合もあります。" },
         { title: "P3. 吃音の症状（二次的症状：工夫・回避）", text: "中核症状との大きな違いは、「どもることを恐れて、自分の意思で行う行動」である点です。これらはすべてまとめて『工夫（話すときのテクニックや意図的な操作）』と呼ばれます。\n\n● 解除反応：ブロックが出たときに、そこから脱出するために力を入れながら無理やり乗り切ろうとしたり、少し力を抜きながら息を吐く操作。\n● 助走（挿入）：言葉の前に「あの」「えーっと」など別の言葉を挟んで勢いをつける。\n● 延期：言えると思えるまで話すタイミングを先延ばしにする、考えているフリをする。\n● 回避：工夫の中で最も重たい症状。話さないことでその場をやり過ごす行動。\n・発話回避：本当は答えが分かっているのに「分からない」フリをする。\n・場面回避（引きこもり）：人と会う機会や話す機会そのものを遠ざける。\n\n※医学的には、この「工夫」や「回避」といった二次的症状もすべて吃音の症状に含みます。" },
-        { title: "P4. 吃音の進展段階（重症度の捉え方）", text: "吃音の重症度に関係するものとして「進展段階」という考え方があり、大きく4つの段階に分けられます。\n\n● 第1層：繰り返しと引き伸ばしだけが出る状態。どもる波が激しく、喋っている本人には特にしんどさや自覚がない状態。\n● 第2層：ブロック（言葉の詰まり）が追加され本人に自覚が出ます。周りの大人が良かれと思って「ゆっくり話してごらん」とアドバイスしたり、本人がテクニックを誤って学習し始めるのもこの時期です。「どもることは良くないことだ」と強く意識し始めます。\n● 第3層：ブロックを抑えるためのテクニック、つまり『工夫』を使い出す段階です。テクニック自体が実は症状（二次的症状）に移行しています。話すたびに「どもるか・否か」を常に意識し続けねばならず、一生懸命努力するため負担感が激増し、ここで初めて『苦悩』が生まれます。\n● 第4層：工夫でもコントロールできないため、喋るのを避ける『回避』が主症状になります。楽などもり方は消え去り、重たいブロックに変化し、嫌でさらに回避するという悪循環に入ります（一番重たい状態）。\n\n★最も重要な事実は、「言葉が詰まること（中核症状）よりも、工夫や回避（二次的症状）を行うことの方が、吃音の症状としては重い」ということです。そしてこの段階は変動します。" },
-        { title: "P5. なぜ吃音は変動するのか（悪化・改善要因）", text: "頭の中にひとつのビーカーがあり、その中に水が入っているとイメージしてください。この水の量が多ければ多いほど、吃音の症状が悪化し、進展段階が重い方へ進んでいくと考えます。\n\n● ビーカーに水を注ぐ要因（悪化要因）\n否定的な感情、嫌な感情に浸り続けてしまうこと（情動の反芻）、吃音への強い注目、話すテクニック（工夫）の使用、話すことの回避。これらはすべて、ビーカーにどんどん水を注ぎ足して吃音を悪化させます。\n\n● ビーカーから水を出す要因（改善要因）\n『自然で無意識な発話』の経験、そして成功体験に基づく自信です。\n\n実は、健康な人と第3層・第4層で悩んでいる吃音の人とでは、話すときの脳の活動プロセスが明確に違うことが科学的（PET画像検査など）に分かっています。" },
-        { title: "P6. 脳の発話プロセスと直接法の限界", text: "● 無意識な発話（一般的なプロセス）\n「言いたいこと」が思い浮かぶと言葉の組み立てや運動指令はすべて脳が自動的（無意識下）に行い、結果として勝手に「声が出る」。意識するのは「言いたい内容」と「出た声」だけです。\n\n● 吃音独特の発話プロセス\n「言いたいこと」が思い浮かんだ瞬間にまず「予期不安」が生まれ、普通の人が無意識に行っている脳の自動プロセスを、すべて「意識下でコントロールしよう」とします。非常に複雑で負担の多い喋り方になっています。\nただし、吃音のある人も普通の人と同じように「無意識な話し方」をやっている瞬間もあることが分かっています。\n\n● 直接法（話す練習を行うアプローチ）の限界\nゆっくり話す練習などは効果が分かりやすい「即効性」がありますが、成人吃音者の場合、声をコントロールしようとすること自体が【工夫】や【注目・監視】をさらに強化してしまう矛盾をはらむため、実際の生活場面では効果が長続きしにくい特徴があります。" },
+        { title: "P4. 吃音の進展段階（重症度の捉え方）", text: "吃音の重症度に関係するものとして「進展段階」という考え方があり、大きく4つの段階に分けられます。\n\n● 第1層：繰り返しと引き伸ばしだけが出る状態。どもる波が激しく、喋っている本人には特にしんどさや自覚がない状態。\n● 第2層：ブロック（言葉の詰まり）が追加され本人に自覚が出ます。周りの大人が良かれと思って「ゆっくり話してごらん」とアドバイスしたり、本人がテクニックを誤って学習し始めるのもこの時期です。「どもることは良くないことだ」と強く意識し始めます。\n● 第3層：ブロックを抑えるためのテクニック、つまり『工夫』を使い出す段階です。テクニック自体が実は症状（二次的症状）に移行しています。話すたびに「どもるか・否か」を常に意識し続けねばならず、一生懸命努力するため負担感が激増し、ここで初めて『苦悩』が生まれます。\n● 第4層：工夫でもコントロールできないため、喋るのを避ける『回避』が主症状になります。楽などもり方は消え去り、重たいブロックに変化し、嫌でさらに回避するという悪循環に入ります（一番重たい状態）。\n\n★最も重要な事事実、「言葉が詰まること（中核症状）よりも、工夫や回避（二次的症状）を行うことの方が, 吃音の症状としては重い」ということです。そしてこの段階は変動します。" },
+        { title: "P5. なぜ吃音は変動するのか（悪化・改善要因）", text: "頭の中にひとつのビーカーがあり、その中に水が入っているとイメージしてください。この水の量が多ければ多いほど、吃音の症状悪化し、進展段階が重い方へ進んでいくと考えます。\n\n● ビーカーに水を注ぐ要因（悪化要因）\n否定的な感情、嫌な感情に浸り続けてしまうこと（情動の反芻）、吃音への強い注目、話すテクニック（工夫）の使用、話すことの回避。これらはすべて、ビーカーにどんどん水を注ぎ足して吃音を悪化させます。\n\n● ビーカーから水を出す要因（改善要因）\n『自然で無意識な発話』の経験、そして成功体験に基づく自信です。\n\n実は、健康な人と第3層・第4層で悩んでいる吃音の人とでは、話すときの脳の活動プロセスが明確に違うことが科学的（PET画像検査など）に分かっています。" },
+        { title: "P6. 脳の発話プロセスと直接法の限界", text: "● 無意識な発話（一般的なプロセス）\n「言いたいこと」が思い浮かぶと言葉の組み立てや運動指令はすべて脳が自動的（無意識下）に行い、結果として勝手に「声が出る」。意識するのは「言いたい内容」と「出た声」だけです。\n\n● 吃音独特の発話プロセス\n「言いたいこと」が思い浮かんだ瞬間にまず「予期不安」が生まれ、普通の人が無意識に行っている脳の自動プロセスを、すべて「意識下でコントロールしよう」とします。非常に複雑で負担の多い喋り方になっています。\nただし、吃音のある人も普通の人と同じように「無意識な話し方」をやっている瞬間もあることが分かっています。\n\n● 直接法（話す練習を行うアプローチ）の限界\nゆっくり話す練習などは効果が分かりやすい「即効性」がありますが、成人吃音者の場合、声をコントロールしようこと自体が【工夫】や【注目・監視】をさらに強化してしまう矛盾をはらむため、実際の生活場面では効果が長続きしにくい特徴があります。" },
         { title: "P7. RASSアプローチの核心：なぜ「間接法」なのか？", text: "● 間接法（話す練習をしないアプローチ）\n声を出すスピーチ練習などは行いません。直接法が「吃音の症状をコントロールすること」を目的とするのに対し、間接法は「普通の人と同じ自然で無意識な話し方に脳を戻すこと」を目的とします。いろいろ意識してしまっている状態を、すべて無意識の状態にリセットしていくアプローチです。\n\n● 自然で無意識な発話への遡及的アプローチ「RASS（ラス）」\n区分としては「間接法」に属し、すべての訓練を頭の中（イメージ）で行います。あなたが子供の頃、吃音を意識していなかった時期は、何も考えずに言葉が出ていたはずです。RASSの目的は、大人になってから脳にこびりついた「注目」「工夫」「回避」という悪化要因を剥ぎ取り、進展段階を逆方向に遡る（遡及する）ことで、脳を本来のクリーンな状態へ戻すことにあります。\n\nビーカーのイラストで言うと、日中の行動（注意シフト）で「水が入ってくるのを止め」、夜間のイメージ（メンタルリハーサル法）で「中の水を外へどんどん汲み出していく」、この両方を同時に行うことで初めて効果を発揮します。" },
         { title: "P8. 年表方式メンタルリハーサル法（M・R法）の仕組み", text: "● メンタルリハーサル法の具体的な進め方\n頭の中で自分が話す場面を思い浮かべ、声を出さずに発話を行う方法です。「吃音の話し方は、声に出す前にすでに頭の中で完成している」という脳の仕組みに基づいているため、頭の中のイメージだけで脳の発話訓練が成立します。\n\n● 専門家が設計する「対立内容」\nただし、普通の話し方をイメージする必要があります。電話が苦手な人に「頭の中で何も考えずに普通に喋ってください」とだけ言っても、過去の強い苦手意識から絶対に吃音を意識してしまい、むしろ吃音を悪化させる「悪化訓練」になってしまいます。そのため、自然で無意識な発話が確実に成立するよう、中身（対立内容）を言語聴覚士が設計します。\n\n● 年表を遡る手順\nいきなり現在の苦手な場面（ラスボス）に挑むのではなく、吃音の意識がまだ薄かった「幼少期の話す場面」からスタートします。そこから年表を追うように、徐々に現在の年齢へと近づけていき、イメージの中で流暢性の成功体験の場数を踏んでいきます。" },
-        { title: "P9. 効果の現れ方と注意点（改善率について）", text: "● 開発者の研究データ（最も重い第4層の吃音の方々の3年後の経過）\n・全体の1/3の人：「正常域」に到達（完全に治った状態）。\n・全体の1/3の人：「第1層」または「第2層」に到達（症状は少し出るが、本人としては全く困らなくなった状態）。\n・残りの1/3の人：残念ながら「第3層」の状態にとどまる。\n確実に全員が100%良くなる方法というわけではありませんが、約7割（70%）の改善率が見込めるとされています。\n\n⚠️ 重要な注意点\nこの方法は症状をその場で抑え込むテクニックではないため、即効性は一切ありません。毎日コツコツと繰り返し、数ヶ月、半年、1年と長い日数をかけて取り組む中で、あるとき振り返ってみて「そういえば最近、どもることを気にしていないな」と気づくような、非常に地味な現れ方をします。取り組む際は腰を据えて、まずは3年くらいのスパンを見ておいていただくようお願いしています。早い人で数か月で進展段階第2層に到達する方もおられます。効果は後からついてくるものなので、まずは習慣化して継続してみてください。" },
+        { title: "P9. 効果ের現れ方と注意点（改善率について）", text: "● 開発者の研究データ（最も重い第4層の吃音の方々の3年後の経過）\n・全体の1/3の人：「正常域」に到達（完全に治った状態）。\n・全体の1/3の人：「第1層」または「第2層」に到達（症状は少し出るが、本人としては全く困らなくなった状態）。\n・残りの1/3の人：残念ながら「第3層」の状態にとどまる。\n確実に全員が100%良くなる方法というわけではありませんが、約7割（70%）の改善率が見込めるとされています。\n\n⚠️ 重要な注意点\nこの方法は症状をその場で抑え込むテクニックではないため、即効性は一切ありません。毎日コツコツと繰り返し、数ヶ月、半年、1年と長い日数をかけて取り組む中で、あるとき振り返ってみて「そういえば最近、どもることを気にしていないな」と気づくような、非常に地味な現れ方をします。取り組む際は腰を据えて、まずは3年くらいのスパンを見ておいていただくようお願いしています。早い人で数か月で進展段階第2層に到達する方もおられます。効果は後からついてくるものなので、まずは習慣化して継続してみてください。" },
         { title: "P10. 医学的な「治る・改善する」の定義と合意", text: "● RASSにおける「改善」の定義\n私たちは「無理にコントロールしてどもらずに話すこと」をゴールとはしません。最終目標は、あなたの頭の中から吃音への『恐怖心』『予期不安』『振り返り』が完全に消え去り、チェックシートの数値がすべて【0%】になり、結果として【吃音のことを一切意識せずに、自然に無意識に言葉が出ている状態】になることです。\n\n言葉がどれだけ詰まるかという「頻度」よりも、出ている症状の「質（工夫や苦悩がないか）」が変化することを重視するのが、現代の医学的な考え方です。\n正常域に達した段階では、自分が吃音者であるという意識も無くなります（吃音者意識からの脱却）。\n\nこの理論とこれからの進め方に納得し、RASSによるセルフケアを開始することに同意いただける場合は、右側の言語聴覚士AIにその旨を伝えて、あなたの最初の主訴（困りごと）をお話しください。ここからあなたと一緒にリハビリを進めていきましょう！" }
     ];
 
     let currentSlideIndex = 0;
     function updateSlideDisplay() {
+        if (currentSlideIndex >= slides.length) currentSlideIndex = slides.length - 1;
         const slide = slides[currentSlideIndex];
         document.getElementById('slide-title').innerText = slide.title;
         document.getElementById('slide-text').innerText = slide.text;
@@ -229,97 +371,199 @@
         document.getElementById(`val-${id}`).innerText = `${val}%`;
     }
 
-    // 全14回の厳密なユーザー目線プロトコル・マトリクス
-    const sessions = {
-        1: {
-            title: "第1回面談（あなたの吃音の状態評価 ＆ 正しい知識を知るガイダンス）",
-            protocol: "<strong>【手順】</strong><ol><li>AIから挨拶と最初の質問が始まります。ご年齢や仕事、普段特に困っている苦手な場面（電話や挨拶など）をお答えください。</li><li>AIがあなたの回答と資料をベースに、現在の吃音の『進展段階（現在地）』を特定・判定します。</li><li>左側の全10ページの臨床ガイダンス資料を1ページずつめくって読み進めてください。AIがその内容と連動しながら、吃音の医学的背景や悪化要因の正体を能動的に詳しく解説します。</li><li>RASSのコンセプト（声を出す練習を一切行わない間接法）に納得でき、同意される場合は、その旨をチャットでAIに伝えて次のステップへ進んでください。</li></ol>",
-            homework: "左側のスライド資料（P1〜P10）を読み込み、これから行う「間接法」のコンセプトを確認してください。納得でき、同意される場合は面談を次に進めていきましょう。"
-        },
-        2: {
-            title: "第2回面談（悪循環チェック ＆ 嫌な考えを手放す注意シフト指導）",
-            protocol: "<strong>【手順】</strong><ol><li>AIから語りかけが自動で始まります。指示に従って下の『悪循環セルフチェックシート』を動かしてください。</li><li>スライダー（0〜100%）を設定し、一番下の『悪循環を分析して、RASSの臨床解説を生成する』ボタンを押してください。</li><li>出力されたレポートをじっくり読み、自分が良かれと思って行っていた「工夫」や「回避」がどのように吃音を悪化させているか（逆行行動の正体）、なぜ「考えないようにする」のではなく「注意を外部へ切り替える」必要があるのかを資料（悪循環の表）をもとに深く学びましょう。</li><li>レポートの結果スコアをAIに伝え、日常生活での具体的な注意シフト（振り返り・予期不安の遮断）の始め方を教わりましょう。</li></ol>",
-            homework: "日常で吃音を悔やむ「振り返り」や「予期不安」の雑念が頭をよぎった瞬間（0.5秒以内）、すぐに目の前の景色やモノを観察する「注意シフト」を毎日実践してください。嫌な考えが浮かぶ時間をトータルで減らすことが目標です。"
-        },
-        3: {
-            title: "第3回面談（注意シフトの確認 ＆ メンタルリハーサル法の体験）",
-            protocol: "<strong>【手順】</strong><ol><li>AIから進捗確認の語りかけが自動で始まります。</li><li>まずは下の『悪循環セルフチェックシート』をすべて入力し、分析ボタンを押して今日のレポートを出力してください。前回のスコア（分析レポート上部に表示されます）と比較して、数値が減少しているか、あるいは維持できているかを確認し、その結果をAIにチャットで報告してください。</li><li>1週間実践した『注意シフト』の感覚をAIと共有し、アドバイスをもらいます。</li><li>夜間に行う核心的イメージリハビリ<b>「メンタルリハーサル法（M・R法）」の体験セッション</b>の手続きと注意点を、左側のスライド資料（P11に出現します）の書面解説で詳しく読み込み、頭の中で実際にイメージを動かす練習を体験してください。</li></ol>",
-            homework: "日中の注意シフトによる雑念コントロールを維持しつつ、夜寝る前にベッドの中でM・R法の体験（声出し・セリフ意識は完全禁止、主観的な景色を映像として動かすこと）を毎晩スタートさせてください。"
-        }
-    };
-
     function changeSession() {
         const select = document.getElementById('session-select');
         const sVal = select.value;
         
-        let sessionData = sessions[sVal];
-        
-        // 第4回〜14回のデフォルトプロトコルを動的に生成（厳密な共通仕様）
-        if (!sessionData) {
-            let homeworkText = "";
-            if (sVal == "4") homeworkText = "<strong>【今週の取り組み（対立内容No.1〜4）】</strong><br>・No.1〜4：幼少期の親への甘えの場面<br>⇒ AIから提示されたこれらの場面を、1週間ごとに1つずつ毎晩リハーサルしてください。";
-            else if (sVal == "5") homeworkText = "<strong>【今週の取り組み（対立内容No.5〜12）】</strong><br>・No.5〜12：幼少期の自宅内でのコミュニケーション場面<br>⇒ 1日2つのペースでメンタルリハーサルを継続してください。";
-            else if (sVal == "6") homeworkText = "<strong>【今週の取り組み（対立内容No.13〜20）】</strong><br>・No.13〜20：幼少期の躾（しつけ）の場面<br>⇒ 雑念をコントロールしながらイメージ練習を続けてください。";
-            else if (sVal == "7") homeworkText = "<strong>【今週の取り組み（対立内容No.21〜28）】</strong><br>・No.21〜28：幼少期の自宅外でのコミュニケーション場面<br>⇒ 毎日コツコツとリハーサルを行い、脳に流暢性要因を蓄積させましょう。";
-            else if (sVal == "8") homeworkText = "<strong>【今週の取り組み（対立内容No.29〜36）】</strong><br>・No.29〜36：小学校低学年の場面<br>⇒ 当時の記憶を思い浮かべながら、声出しやセリフ意識を排除したリハーサルを続けます。";
-            else if (sVal == "9") homeworkText = "<strong>【今週の取り組み（対立内容No.37〜44）】</strong><br>・No.37〜44：小学校低学年の授業場面<br>⇒ 宿題のM・R法を続けつつ、日常生活でどもってしまった瞬間にも、意識を外側へサッと切り替える注意シフトを意識し始めましょう。";
-            else if (sVal == "10") homeworkText = "<strong>【今週の取り組み（対立内容No.45〜52）】</strong><br>・No.45〜52：小学校高学年の場面<br>⇒ 雑念のコントロールに集中し、主観的イメージの移動を毎日練習してください。";
-            else if (sVal == "11") homeworkText = "<strong>【今週の取り組み（対立内容No.53〜60）】</strong><br>・No.53〜60：小学6年生から中学1年生にかけての場面<br>⇒ 環境が変わる時期の場面ですが、イメージの中の景色をしっかり動かしていきましょう。";
-            else if (sVal == "12") homeworkText = "<strong>【今週の取り組み（対立内容No.61〜68）】</strong><br>・No.61〜68：中学生の頃の苦手意識のあった場面<br>⇒ 嫌な記憶が雑念として浮かびやすい場面ですが、その雑念をそっと受け流すコントロールを意識しましょう。";
-            else if (sVal == "13") homeworkText = "<strong>【今週の取り組み（対立内容No.69〜76）】</strong><br>・No.69〜76：高校生の頃の苦手意識のあった場面<br>⇒ 毎日のルーティンとしてリハーサルを継続し、脳の流暢性要因をさらに高めましょう。";
-            else if (sVal == "14") homeworkText = "<strong>【今週の取り組み（対立内容No.77〜84）】</strong><br>・No.77〜84：10代の頃の買い物・バイト・電話の場面<br>⇒ これらが最後の課題パッケージです。もし雑念コントロールが難しい内容があれば、対象者を入れ替えるなど工夫して最後まで実践しましょう！";
-
-            sessionData = {
-                title: `第${sVal}回面談`,
-                protocol: `<strong>【手順】</strong><ol><li>AIから進捗確認の語りかけが自動で始まります。</li><li>まずは下の『悪循環セルフチェックシート』をすべて入力し、一番下の分析ボタンを押してレポートを出力してください。前回のレポート上のトータルスコアと比較して、悪化要因（注目・工夫・回避）の数値がどのように変動しているかを確認し、その結果をAIにチャットで報告してください。</li><li>日常生活における「注意シフト」（予期不安やどもった瞬間など）の実践具合をAIに報告し、フィードバックを受けます。</li><li>前回のM・R課題で実施が難しかった（雑念が消えなかった）ものがないか確認します。あればAIに伝えて実施年齢や登場人物の修正を依頼し、問題なければ今回の対象番号のイメージ練習について解説を受けます。</li><li><b>【あなたの次の行動】</b> チャットボットのAIに対して「本日の面談回数（第${sVal}回）」を告げ、今週取り組むべき『対立内容（課題シナリオ）』の具体的な中身を作成・提示するように依頼してください。</li></ol>`,
-                homework: homeworkText
-            };
-        }
-        
-        document.getElementById('protocol-box').innerHTML = sessionData.protocol;
-        document.getElementById('homework-box').innerHTML = sessionData.homework;
-
+        const protocolBox = document.getElementById('protocol-box');
+        const homeworkBox = document.getElementById('homework-box');
         const slideViewer = document.getElementById('slide-viewer-container');
         const checksheetContainer = document.getElementById('checksheet-container');
         const slideSectionTitle = document.getElementById('slide-section-title');
+        const scenarioCreator = document.getElementById('scenario-creator-container');
         
-        // スライド配列の一時的な拡張（第3回以降でP11解説を動的追加するため）
-        if (slides.length > 10) slides.pop();
+        // 動的な追加スライドのリセット
+        while(slides.length > 10) { slides.pop(); }
+        scenarioCreator.style.display = "none";
+
+        // 修正点6: 次の行動ボックスを各回ごとに超強調してHTML内に動的生成
+        let ctaText = "";
 
         if (sVal === "1") {
+            ctaText = "チャットボットを開いて、AIにあなたの「ご年齢・お仕事・一番苦労している苦手な場面」をチャットで送信してください。";
+            protocolBox.innerHTML = `
+                <div class="visual-banner"><i class="fa-solid fa-comments"></i><div class="visual-banner-text">まずはAIによる丁寧なヒアリングと現状評価からリハビリを始めます。</div></div>
+                <strong>【手順】</strong>
+                <ol>
+                    <li>AIから挨拶と最初の質問が始まります。ご年齢や仕事、普段特に困っている苦手な場面（電話や挨拶など）をお答えください。</li>
+                    <li>AIがあなたの回答と資料をベースに、現在の吃音の『進展段階（現在地）』を特定・判定します。</li>
+                    <li>左側の全10ページの臨床ガイダンス資料を1ページずつめくって読み進めてください。AIがその内容と連動しながら詳しく解説します。</li>
+                </ol>
+                <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = "左側のスライド資料（P1〜P10）を読み込み、これから行う「間接法」のコンセプトを確認してください。納得でき、同意される場合はステップを次に進めていきましょう。";
+            
             slideViewer.style.display = "block";
             checksheetContainer.style.display = "none";
             slideSectionTitle.innerText = "臨床ガイダンス・評価資料";
             currentSlideIndex = 0;
             updateSlideDisplay();
-        } else {
+
+        } else if (sVal === "2") {
+            ctaText = "下の『悪循環セルフチェックシート』のスライダーを設定し、分析レポートボタンを押したあと、その結果スコアをAIに送信してください。";
+            protocolBox.innerHTML = `
+                <div class="visual-banner"><i class="fa-solid fa-chart-pie"></i><div class="visual-banner-text">無意識の自動プロセスである「話す行為」を力ずくで操作しようとする悪循環を可視化します。</div></div>
+                <strong>【手順】</strong>
+                <ol>
+                    <li>指示に従って下の『悪循環セルフチェックシート』を動かしてください。</li>
+                    <li>スライダー（0〜100%）を設定し、一番下の『悪循環を分析して、RASSの臨床解説を生成する』ボタンを押してください。</li>
+                    <li>出力されたレポートを読み、自分が良かれと思って行っていた「工夫」や「回避」がどのように吃音を悪化させているか（逆行行動の正体）を学びましょう。</li>
+                </ol>
+                <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = "日常で吃音を悔やむ「振り返り」や「予期不安」の雑念が頭をよぎった瞬間（0.5秒以内）、すぐに目の前の景色やモノを観察する「注意シフト」を毎日実践してください。嫌な考えが浮かぶ時間をトータルで減らすことが目標です。";
+            
+            slideViewer.style.display = "block";
+            checksheetContainer.style.display = "block";
+            slideSectionTitle.innerText = "臨床参考資料 ＆ 訓練マニュアル";
+            currentSlideIndex = 4;
+            updateSlideDisplay();
+
+        } else if (sVal === "3") {
+            /* 修正点4: 第3回のリラクセーション練習・中性イメージ想起の手続きを厳密に反映 */
+            ctaText = "AIに「注意シフトの1週間の感想」と「ベッドでのリラクセーション体験の準備ができた旨」をチャットで伝えてください。";
+            protocolBox.innerHTML = `
+                <div class="visual-banner"><i class="fa-solid fa-bed"></i><div class="visual-banner-text">添付資料の内容を完全反映した【リラクセーションの練習】を行います。</div></div>
+                <strong>【実施手順】</strong>
+                <ol>
+                    <li><b>① 布団に入って目を閉じて寝る準備をする</b></li>
+                    <li><b>② 身体の力を抜いていく（リラクセーション）約１分</b></li>
+                    <li><b>③ 中性イメージの想起（海 ➤ 山 ➤ 温泉）各２０秒ずつイメージを移動させる</b></li>
+                    <li><b>④ 对立内容（※ステップ3のリラクセーション練習では省略します）</b></li>
+                    <li><b>⑤ そのまま心地よく寝落ちする</b></li>
+                </ol>
+                <p style="font-size:0.9rem; color:#b45309; font-weight:bold; margin-left:10px;">
+                    ⚠️ 注意点：<br>
+                    ① 雑念のコントロール（目的の考え以外の考えに注意が向いたら、目的の考えに切り替える）<br>
+                    ② 主観的イメージ（頭の中で思い浮かべる景色は、フカンではなく、必ず自分目線の景色にする）
+                </p>
+                <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = "<b>【今週の取り組み：メンタルリハーサル】</b><br>上記のステップ3リラクセーション手順を、<b>一日1回、夜寝る前にベッドの中で行います。週5日できればOKです。</b>声を出すこと、セリフを考えることは完全厳禁です。";
+            
             slideViewer.style.display = "block";
             checksheetContainer.style.display = "block";
             slideSectionTitle.innerText = "臨床参考資料 ＆ 訓練マニュアル";
             
-            if (sVal === "3" || parseInt(sVal) >= 3) {
-                // 第3回以降はスライドP11として「M・R法の手続きと注意点」を常時表示・見返せるように追加
-                slides.push({
-                    title: "P11. メンタルリハーサル法（M・R法）の手続きと注意点",
-                    text: "【M・R法の具体的な手続き】\n1. 布団に入るなど、リラックスした状態で目を閉じます。\n2. まず心身の緊張をほぐす「リラクセーション」を行い、心が落ち着く海や空などの「中性イメージ」を1分ほど思い浮かべます。\n3. その後、言語聴覚士AIから配布された「対立内容（課題シナリオ）」の場面を頭の中に導入します。\n\n⚠️ 【絶対厳守の注意点】\n① 実際に声を出そうとしたり、喉や口の筋肉を動かそうとしては絶対になりません。\n② 「自分が何を喋るか（セリフ）」に意識を向けることは完全禁止です。\n③ 主観的な視点（自分の目から見えている景色）で、目の前の登場人物の顔や周囲の部屋の様子、モノの色彩を【映像として動かし続けること（視点移動）】だけに脳のメモリを100%集中させてください。吃音独特の発話回路を起動させず、脳に健常な自然発話を再学習させます。"
-                });
-                currentSlideIndex = 10; // M・R法マニュアルを初期表示
-            } else {
-                currentSlideIndex = 4; // 第2回は悪循環の仕組みスライドを初期表示
-            }
+            slides.push({
+                title: "P11. メンタルリハーサル法（M・R法）の基本と注意点",
+                text: "【M・R法（ステップ3）の絶対厳守ルール】\n① 実際に声を出そうとしたり、喉や口の筋肉を動かしようとしては絶対になりません。\n② 「自分が何を喋るか（セリフ）」に意識を向けることは完全禁止です。\n③ 主観的な視点（自分の目から見えている景色）で、目の前の景色や登場人物、モノの色彩を【映像として動かし続けること（視点移動）】だけに脳のメモリを100%集中させてください。脳に健常な自然発話を再学習させます。"
+            });
+            currentSlideIndex = 10;
+            updateSlideDisplay();
+
+        } else if (sVal === "4") {
+            /* 修正点5: 第4回のメンタルリハーサル法実施方法を厳密に反映 */
+            ctaText = "AIに「ステップ4（No.1〜4の対立内容パッケージ）」の具体的なシナリオの中身を出力するように依頼してください。";
+            protocolBox.innerHTML = `
+                <div class="visual-banner"><i class="fa-solid fa-child"></i><div class="visual-banner-text">添付資料の内容に準拠し、幼少期の親への甘えの場面から本格的なM・R法を開始します。</div></div>
+                <strong>【実施手順】</strong>
+                <ol>
+                    <li><b>① 布団に入して目を閉じて寝る準備をする</b></li>
+                    <li><b>② 身体の力を抜いていく（リラクセーション）約１分</b></li>
+                    <li><b>③ 中性イメージの想起（海 or 山 or 温泉 から1つ選択）約２０秒</b></li>
+                    <li><b>④ AIから配布された対立内容（No.1〜4のいずれか1つ）を思い浮かべる</b></li>
+                    <li><b>⑤ そのまま寝落ちする</b></li>
+                </ol>
+                <p style="font-size:0.9rem; color:#b45309; font-weight:bold; margin-left:10px;">
+                    ⚠️ 注意点：<br>
+                    ① 雑念のコントロール（目的の考え以外の考えに注意が向いたら、目的の考えに切り替える）<br>
+                    ② 主観的イメージ（頭の中で思い浮かべる景色は、必ず自分目線）
+                </p>
+                <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = "<b>【今週の取り組み（対立内容No.1〜4）】</b><br>・No.1〜4：幼少期の親への甘えの場面<br>⇒ 対立内容の必要回数は週5回で、メンタルリハーサルは一日1回行います。<b>1つの対立内容は1週間単位で使用し、週5日できればOKです。</b>";
+            
+            slideViewer.style.display = "block";
+            checksheetContainer.style.display = "block";
+            currentSlideIndex = 4;
+            updateSlideDisplay();
+
+        } else if (sVal === "15") {
+            /* 修正点7: 第15回「対立内容の自作教育」とAI連携インターフェースの実装 */
+            scenarioCreator.style.display = "block";
+            ctaText = "下のフォームに「作成したい苦手な場面」と「対象年齢」を入力し、桃色のボタンを押してAIに命令を送信してください。";
+            protocolBox.innerHTML = `
+                <div class="visual-banner" style="background:linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-color:#FBCFE8;"><i class="fa-solid fa-wand-magic-sparkles" style="color:#DB2777;"></i><div class="visual-banner-text" style="color:#9D174D;">これからは対立内容を自作して、自分でメンタルリハーサルを行える教育フェーズへ移行します。</div></div>
+                <strong>【自作する対立内容の必須構成】</strong>
+                <ul>
+                    <li><b>① 場面想起：</b>「〇〇する場面」の具体的なシチュエーション設定</li>
+                    <li><b>② 自然で無意識な行動：</b>「周囲の様子をよく観察しながら、自分のペースで〇〇する」行動指示</li>
+                    <li><b>③ 成功体験：</b>自分の目的が実行できている、相手に受け入れられている、と実感できる景色を思い浮かべる</li>
+                </ul>
+                <p style="font-size:0.9rem; color:#9D174D; font-weight:bold;">
+                    💡 自作訓練の進め方指針：<br>
+                    対立内容の対象年齢は、<b>高校卒業後の場面から徐々に現在の年齢に引き上げていきます。</b>最終的に、現在の自分が苦手な場面や将来不安を感じる場面に対して自作します。各年齢で、自分が苦手だった場面を材料にし、これまで通り「雑念のコントロール」と「主観的イメージ」に注意しながら行います。
+                </p>
+                <div class="cta-action-box" style="background:#DB2777; border-left-color:#9D174D;">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = "<b>【今週からのセルフ取り組み】</b><br>自分で、あるいはAIと一緒に作成したオリジナルの対立内容（1つの内容は1週間単位で使用、週5日、1日1回）を使ってメンタルリハーサルを継続してください。年齢の枠組みを現在の自分自身へと少しずつ引き上げていくことがゴールです。";
+            
+            slideViewer.style.display = "none";
+            checksheetContainer.style.display = "block";
+
+        } else {
+            /* 修正点5: 第5回〜14回（第5回面談以降）の実施手順を厳密に反映 */
+            ctaText = `AIに「現在のステップ（第${sVal}回）」に適合した具体的な対立内容（課題パッケージシナリオ）の提示を求めてください。`;
+            
+            let homeworkText = "";
+            if (sVal == "5") homeworkText = "・No.5〜12：幼少期の自宅内でのコミュニケーション場面";
+            else if (sVal == "6") homeworkText = "・No.13〜20：幼少期の躾（しつけ）の場面";
+            else if (sVal == "7") homeworkText = "・No.21〜28：幼少期の自宅外でのコミュニケーション場面";
+            else if (sVal == "8") homeworkText = "・No.29〜36：小学校低学年の場面";
+            else if (sVal == "9") homeworkText = "・No.37〜44：小学校低学年の授業場面 ＆ どもった瞬間の注意シフトを日常でも意識開始";
+            else if (sVal == "10") homeworkText = "・No.45〜52：小学校高学年の場面";
+            else if (sVal == "11") homeworkText = "・No.53〜60：小6〜中1にかけての場面";
+            else if (sVal == "12") homeworkText = "・No.61〜68：中学生の頃の苦手意識のあった場面";
+            else if (sVal == "13") homeworkText = "・No.69〜76：高校生の頃の苦手意識のあった場面";
+            else if (sVal == "14") homeworkText = "・No.77〜84：10代の頃の買い物・バイト・電話の場面";
+
+            protocolBox.innerHTML = `
+                <div class="visual-banner"><i class="fa-solid fa-forward-step"></i><div class="visual-banner-text">第5回以降の手順：中性イメージを省略し、2つの対立内容を同時に想起する脳内回路を訓練します。</div></div>
+                <strong>【実施手順】</strong>
+                <ol>
+                    <li><b>① 布団に入って目を閉じて寝る準備をする</b></li>
+                    <li><b>② 身体の力を抜いていく（リラクセーション）約１分</b></li>
+                    <li><b>③ 対立内容一つ目を想起する 約２０秒</b></li>
+                    <li><b>④ 对立内容二つ目を想起する 約２０秒</b></li>
+                    <li><b>⑤ そのまま寝落ちする</b></li>
+                </ol>
+                <p style="font-size:0.9rem; color:#b45309; font-weight:bold; margin-left:10px;">
+                    ⚠️ 注意点：<br>
+                    ① 雑念のコントロール（目的の考え以外の考えに注意が向いたら、目的の考えに切り替える）<br>
+                    ② 主観的イメージ（頭の中で思い浮かべる景色は、必ず自分目線）
+                </p>
+                <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
+            `;
+            homeworkBox.innerHTML = `<b>【今週の取り組み（ステップ ${sVal}）】</b><br>${homeworkText}<br>⇒ 対立内容の必要回数は週5回で、メンタルリハーサルは一日1回行います。<b>1つの対立内容は1週間単位で使用し、週5日できればOKです。</b>`;
+            
+            slideViewer.style.display = "block";
+            checksheetContainer.style.display = "block";
+            currentSlideIndex = 4;
             updateSlideDisplay();
         }
-        document.getElementById('result-area').style.display = "none";
 
-        // Difyへの自動リードポスト（Iframeへのイベント送信）
+        // Difyボットへメッセージをポスト（iframeメッセージ経由）
         setTimeout(() => {
             const difyIframe = document.querySelector('iframe[src*="udify.app"]');
             if (difyIframe && difyIframe.contentWindow) {
                 let msg = "";
                 if (sVal === "1") {
-                    msg = "こんにちは！第1回面談を開始します。私の年齢や仕事、苦手な場面についてヒアリングを行い、進展段階の特定と吃音ガイダンスの能動的なリードをお願いします。";
+                    msg = "こんにちは！リハビリの「ステップ1」を開始します。私の進展段階の特定とガイダンスのリードをお願いします。";
+                } else if (sVal === "15") {
+                    msg = "こんにちは！「ステップ15」に進みました。対立内容の自作教育フェーズに入ります。私が場面や年齢を投げるので、①場面想起、②自然で無意識な行動、③成功体験の3部構成で対立内容を適切に作成できるAIアシスタントを起動してください。";
                 } else {
-                    msg = `こんにちは！第${sVal}回面談をスタートします。本日の手順に従い、私への挨拶と、左側の悪循環セルフチェックシートの入力を促す自発的なリードを始めてください。`;
+                    msg = `こんにちは！リハビリの「ステップ${sVal}」を開始します。進捗チェックと、新しい課題（対立内容）の手順に沿った対話リードをお願いします。`;
                 }
                 difyIframe.contentWindow.postMessage(JSON.stringify({
                     type: 'dify-chat-send',
@@ -329,9 +573,31 @@
         }, 1200);
     }
 
+    // 修正点7: ユーザーが入力した条件を元にAIへ適切なプロンプトを構築して自動送信する関数
+    function requestAIScenario() {
+        const sceneType = document.getElementById('ai-scene-type').value.trim();
+        const sceneAge = document.getElementById('ai-scene-age').value.trim();
+        if (!sceneType) {
+            alert("場面の種類（例：電話、接客など）を入力してください。");
+            return;
+        }
+        
+        const promptMessage = `【対立内容の自動作成依頼】\n対象年齢は「${sceneAge}歳」、場面の種類は「${sceneType}」です。\n以下の厳格な自作構成ルールをすべて反映させて、私がメンタルリハーサルでそのまま使用できるシナリオを1つ作成してください。\n\n【構成構成】\n① 場面想起（「○○する場面」をイメージできる情景）\n② 自然で無意識な行動（「周囲の様子をよく観察しながら、自分のペースで○○する」という、話す努力ではなく外部へ注意を向ける行動指示）\n③ 成功体験（自分の目的が実行できている、相手に受け入れられている、と実感できる景色を思い浮かべる記述）\n\n注意点として、雑念のコントロールと主観적イメージ（自分目線）で行いやすい内容にしてください。`;
+        
+        const difyIframe = document.querySelector('iframe[src*="udify.app"]');
+        if (difyIframe && difyIframe.contentWindow) {
+            difyIframe.contentWindow.postMessage(JSON.stringify({
+                type: 'dify-chat-send',
+                message: promptMessage
+            }), '*');
+            alert("右下のチャットAIに自作対立内容の構成命令を送信しました！チャットウィンドウの回答をご確認ください。");
+        } else {
+            alert("チャットボットがまだ読み込まれていないか、通信できません。右下のアイコンが表示されているか確認してください。");
+        }
+    }
+
     let previousTotal = null;
 
-    // 臨床資料・悪循環チェックシートカテゴリー解説に則った高度診断エンジン
     function generateClinicalReport() {
         const valScore = parseInt(document.getElementById('range-value').value) || 0;
         const cogScore = parseInt(document.getElementById('range-cognition').value) || 0;
@@ -342,7 +608,6 @@
         const burScore = parseInt(document.getElementById('range-burden').value) || 0;
         
         const total = Math.round((valScore + cogScore + emoScore + attScore + effScore + avoScore + burScore) / 7);
-        
         document.getElementById('rep-total').innerText = `${total}%`;
         
         let totalDesc = "";
@@ -357,48 +622,36 @@
             totalDesc = "<b>【軽度・改善傾向（第2層〜正常域レベル）】</b> 悪循環の負荷は低く抑えられています。発話努力を取り除き、吃音のことを考えもしないで生活できる状態へ向けて、注意シフトを継続しましょう。";
         }
 
-        // 個別下位因子の分析と解説の生成
         const maxScore = Math.max(valScore, cogScore, emoScore, attScore, effScore, avoScore, burScore);
-        
         mechanismDesc = "現在のあなたのチェックシートから、吃音を悪化させている顕著な要因を分析しました：<br><br>";
         
         if (maxScore === valScore || maxScore === cogScore) {
-            mechanismDesc += `<b>【カテゴリーⅠ. 価値観・考え の歪み】</b><br>
-            資料にある通り、吃音を悪とする「吃音への否定的価値観」が強まっています。他人が心のなかで変に思っているに違いないと思い込んだり（マインドリーディング）、自分自身を「駄目な人間だ」と罰して自己肯定感を低下させています。話すテクニック（工夫）を駆使することは、本音では『スラスラ話したい』と思っていても、行動としては『どもってはいけない』という前提を毎日強化することになり、あなたの願いと完全に逆行して健常者の状態からどんどん離れていく原因になっています。`;
+            mechanismDesc += `<b>【カテゴリーⅠ. 価値観・考え の歪み】</b><br>吃音を悪とする「吃音への否定的価値観」が強まっています。自分自身を「駄目な人間だ」と罰して自己肯定感を低下させています。話すテクニック（工夫）を駆使することは、本音では『スラスラ話したい』と思っていても、行動としては『どもってはいけない』という前提を毎日強化することになり、あなたの願いと完全に逆行して健常者の状態からどんどん離れていく原因になります。`;
         } else if (maxScore === emoScore) {
-            mechanismDesc += `<b>【カテゴリーⅡ. 感情・情動 の反芻】</b><br>
-            どもってしまった後の後悔、恥ずかしさ、悲しみといった負の感情や、全般的な予期不安に頭が支配されています。失敗体験を1日に何度も思い返す『振り返り（反芻）』の時間が長いため、脳内の恐怖の回路が毎日太く更新されてしまっています。感情に囚われる時間を減らさなければ、悪循環から降りることはできません。`;
+            mechanismDesc += `<b>【カテゴリーⅡ. 感情・情動 の反芻】</b><br>どもってしまった後の後悔、恥ずかしさ、悲しみといった負の感情や、全般的な予期不安に頭が支配されています。失敗体験を1日に何度も思い返す『振り返り（反芻）』の時間が長いため、脳内の恐怖の回路が毎日太く更新されてしまっています。`;
         } else if (maxScore === attScore) {
-            mechanismDesc += `<b>【カテゴリーⅢ-1. 注目・監視 による自動性阻害】</b><br>
-            話す前や最中に、特定の言葉の音や口・舌の動き、喉の緊張に過剰に意識（内的注意）を向けて見張ってしまっています。本来は脳が自動的に行うはずの「話す」プロセスを意識下で人為的にコントロールしようと目的化するため、脳の運動指令にバグが生じ、結果としてブロック（難発）を引き起こしています。`;
+            mechanismDesc += `<b>【カテゴリーⅢ-1. 注目・監視 による自動性阻害】</b><br>話す前や最中に、特定の言葉の音や口・舌の動き、喉の緊張に過剰に意識（内的注意）を向けて見張ってしまっています。本来は脳が自動的に行うはずの「話す」プロセスを意識下で人為的にコントロールしようとするため、脳の運動指令にバグが生じ、ブロックを引き起こしています。`;
         } else if (maxScore === effScore || maxScore === avoScore) {
-            mechanismDesc += `<b>【カテゴリーⅢ-2,3. 工夫・回避（二次的症状）による悪化】</b><br>
-            力を入れて乗り切る（解除反応）、言葉の前に別の単語を挟む（助走）、話すタイミングをずらす（延期）、言葉を言い換えるなどの『テクニック』に依存しています。これらは一時的にブロックが出にくくなる『即効性』があるため、のめり込みがちですが、効果は数日から数ヶ月です。慣れると注意が逸れなくなり、またブロックする状態に戻ります。さらに『回避』を行えば行うほど、「自分は言えない」との思いが強烈になる最悪の逆行結果を招きます。`;
+            mechanismDesc += `<b>【カテゴリーⅢ-2,3. 工夫・回避（二次的症状）による悪化】</b><br>力を入れて乗り切る（解除反応）、言葉の前に別の単語を挟む（助走）、言葉を言い換えるなどの『テクニック』に依存しています。これらは一時的にブロックが出にくくなる『即効性』があるため依存しがちですが、これを行うこと自体が脳へ強い条件付けとなり、最悪の逆行結果を招きます。`;
         } else {
-            mechanismDesc += `<b>【カテゴリーⅣ. 相手の理解 ＆ Ⅴ. 行動２ の負担】</b><br>
-            どうコントロールするかに脳の資源を使い果たし、相手の話を聞き漏らしたり文を必死に記憶しようとするコミュニケーション面の過度な認知的負担（Ⅳ）が極めて高くなっています。日常のあらゆる物事に対して無意識にネガティブな側面ばかりに注意が向く思考の癖（Ⅴ）も悪循環を強めています。`;
+            mechanismDesc += `<b>【カテゴリーⅣ. 相手の理解 ＆ Ⅴ. 行動２ の負担】</b><br>どうコントロールするかに脳の資源を使い果たし、相手の話を聞き漏らしたり文を必死に記憶しようとするコミュニケーション面の過度な認知的負担（Ⅳ）が極めて高くなっています。`;
         }
 
-        // 注意シフト法のマインドフルネス・注意シフト手続きに則った正しい解説
-        therapyDesc = `<b>【注意シフト法・セルフケア導入手続き】</b><br>
-        悪循環から脱するために今すぐ徹底すべきなのは、日常の行動における<b>「注意シフト」</b>です。ここで非常に重要な医学的事実として、注意シフトで行うのは、ストレスを感じる状態を<b>「考えないようにする」のではありません。</b>「吃音のことを考えないようにしている」と考えている時点で、すでに吃音のことを考えてしまっているからです。目的は、吃音者意識に浸っている状態から<b>『その状態からいち早く離れる』</b>ことにあります。<br><br>
+        therapyDesc = `<b>【注意シフト法・セルフケア導入手続き】</b><br>悪循環から脱するために今すぐ徹底すべきなのは、日常の行動における<b>「注意シフト」</b>です。注意シフトで行うのは、ストレスを感じる状態を<b>「考えないようにする」のではありません。</b>「吃音のことを考えないようにしている」と考えている時点で、すでに吃音のことを考えてしまっているからです。目的は、吃音者意識に浸っている状態から<b>『その状態からいち早く離れる（別のものに注意を100%向ける）』</b>ことにあります。<br><br>
         <b>【具体的な実践手順】</b><br>
         1. 話す前の予期不安や、話した後の「どもってしまった…うまく話せなかった…」という振り返りの雑念が頭をよぎった瞬間（0.5秒以内）に、その考えを止めようとせず、そのまま放置します。<br>
-        2. すぐに、自分の内側（喉の感覚や不安な気持ち）に向けられていた注意を、<b>【目の前にある客観的な景色、近くにあるモノの具体的な形、看板の文字、周囲の色彩や陰影】へと100%強制的に切り替えて、細かく観察</b>してください。<br>
-        3. 客観的な外的刺激へ注意を向けている間は、嫌な考えから物理的に離れることができます。ストレスが強ければすぐにまた嫌な考えが浮かんできますが、<b>気づいたらすぐにまた注意を外部に向け切り替えます。</b><br><br>
-        これを何度も泥臭く繰り返しているうちに、脳の恐怖の条件付けが解除され、嫌な考えは自然と浮かんでこなくなります。トータルで吃音者意識に浸っている時間を減らし、その時間が少なければ少ないほど、吃音は『自然で無意識な発話（第2層・正常域）』へと良い状態に変えやすくなります。今までの努力の方向性を変え、健常者と同じ発話行動（無意識）を取り戻しましょう。`;
+        2. すぐに、自分の内側（喉の感覚や不安な気持ち）に向けられていた注意を、<b>【目の前にある客観的な景色、近くにあるモノの具体的な形、看板の文字、周囲の色彩や陰影】へと100%強制的に切り替えて、細かく観察</b>してください。<br><br>
+        これを何度も泥臭く繰り返しているうちに、脳の恐怖の条件付けが解除され、吃音は『自然で無意識な発話』へと良い状態に変えやすくなります。`;
 
-        // 自分を罰する計算機の動的埋め込み（解説レポート内）
         therapyDesc += `<div class="punish-calc">
             <b>💡 自分で自分を罰してきた回数を可視化してみましょう</b><br>
-            <span style="font-size:0.85em; color:#475569;">他人から馬鹿にされた回数より、自分で自分を罰した回数の方が圧倒的に多いことに気づくためのワークです。</span><br><br>
+            <span style="font-size:0.85rem; color:#475569;">他人から馬鹿にされた回数より、自分で自分を罰した回数の方が圧倒的に多いことに気づくためのワークです。</span><br><br>
             ① 1日に工夫を使った平均回数: <input type="number" id="calc-eff" value="20" oninput="runPunishCalc()"><br>
             ② 1年に話す日数: <input type="number" id="calc-days" value="300" readonly> 日（固定）<br>
             ③ 吃音を意識し始めてからの年数 (現在の年齢 - 9歳): <input type="number" id="calc-years" value="15" oninput="runPunishCalc()"> 年<br>
             <div style="margin-top:10px; font-weight:bold; color:#1e3a8a;">
-                ➔ あなたが自分で自分を罰してきた推定総回数: <span id="punish-total-val" style="font-size:1.2em; color:#b91c1c;">90,000</span> 回
+                ➔ あなたが自分で自分を罰してきた推定総回数: <span id="punish-total-val" style="font-size:1.2rem; color:#b91c1c;">90,000</span> 回
             </div>
-            <p style="font-size:0.85em; color:#555; margin-top:5px;">他人があなたを責める回数より、この掛け算の数の方が圧倒的に多いはずです。「自分が吃っても他者から罰せられない（カミングアウト等で確認）」ことと、「自分で自身を罰しない（注意シフト）」の両方を進めていきましょう。</p>
         </div>`;
 
         document.getElementById('rep-total-desc').innerHTML = totalDesc;
@@ -406,9 +659,7 @@
         document.getElementById('rep-therapy').innerHTML = therapyDesc;
         document.getElementById('result-area').style.display = "block";
         
-        // 初回の計算実行
         setTimeout(() => { runPunishCalc(); }, 100);
-        
         previousTotal = total;
     }
 
