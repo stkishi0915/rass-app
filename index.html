@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <script>if(prompt("パスワードを入力してください：") !== "rass2026"){ alert("パスワードが違います。"); document.body.innerHTML = "<h1>アクセス権限がありません。</h1>"; window.stop(); }</script>
+    <script>
+  (function(){
+    var pw = "";
+    while (pw !== "rass2026") { // 設定したパスワード
+      pw = prompt("パスワードを入力してください：");
+      if (pw === null) {
+        // キャンセルを押された場合
+        document.write("<h1 style='text-align:center;margin-top:50px;'>アクセス権限がありません。</h1>");
+        window.stop();
+        return;
+      }
+      if (pw !== "rass-monitor2026") {
+        alert("パスワードが違います。");
+      }
+    }
+  })();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RASS吃音セルフケア・オンライン臨床アプリ</title>
