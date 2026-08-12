@@ -4,7 +4,7 @@
     <script>
   (function(){
     var pw = "";
-    while (pw !== "rass2026") { // 設定したパスワード
+    while (pw !== "rass2026") { // 設定した正しいパスワード
       pw = prompt("パスワードを入力してください：");
       if (pw === null) {
         // キャンセルを押された場合
@@ -165,7 +165,6 @@
         .creator-box { background: #FDF2F8; border: 1px solid #FBCFE8; padding: 20px; border-radius: 10px; margin-top: 15px; }
         .creator-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid #F472B6; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
 
-        /* 修正点2: 宿題エリアの視認性強化と不快感を与えない名称への変更 */
         .homework-section-title {
             font-weight: bold; 
             color: #15803d; 
@@ -338,7 +337,7 @@
 
                 <div class="category-title"><i class="fa-solid fa-triangle-exclamation"></i> Ⅳ．相手の理解 ＆ Ⅴ．行動２（コミュニケーション負担と認知の偏り）</div>
                 <div class="check-group">
-                    <div class="check-title">1) 認认知 Burden ＆ 全般的なネガティブ注意</div>
+                    <div class="check-title">1) 認知負担 ＆ 全般的なネガティブ注意</div>
                     <div class="check-desc">どう話すかに脳の資源を使い果たして相手の話を聞き漏らしたりする負担度と、物事の悪い側面ばかりに注意が向く度合い。</div>
                     <div class="range-container">
                         <input type="range" id="range-burden" min="0" max="100" value="50" oninput="syncVal('burden')">
@@ -413,7 +412,7 @@
         document.getElementById(`val-${id}`).innerText = `${val}%`;
     }
 
-// ----------------------------------------------------
+    // ----------------------------------------------------
     // 悪循環スコアの履歴管理・前後比較機能
     // ----------------------------------------------------
     function getSavedScoreHistory() {
@@ -450,9 +449,9 @@
         scenarioCreator.style.display = "none";
 
         let ctaText = "";
-        
+
         if (sVal === "1") {
-            // ステップ1：初回ガイダンス・評価
+            // ステップ1：初回評価
             currentSlides = baseSlides.slice(0, 10);
             ctaText = "以下の文章を右下のチャットボットへ送信してください：<br><br><span style='background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:4px; display:block; font-family:monospace;'>こんにちは！リハビリの「ステップ1」を開始します。私の進展段階の特定とガイダンスのリードをお願いします。私の年齢・仕事・苦手な場面をお話しします。</span>";
             protocolBox.innerHTML = `
@@ -466,15 +465,17 @@
                 <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
             `;
             homeworkBox.innerHTML = "左側のスライド資料（P1〜P10）を読み込み、これから行う「間接法」のコンセプトを確認してください。";
+            
             slideViewer.style.display = "block";
             checksheetContainer.style.display = "none";
             slideSectionTitle.innerText = "臨床ガイダンス・評価資料";
             currentSlideIndex = 0;
             updateSlideDisplay();
+
         } else {
-            // ステップ2〜15：毎回のステップで悪循環セルフチェックを実施
+            // ステップ2〜15：毎ステップで悪循環セルフチェックを実施
             slideViewer.style.display = (sVal === "2" || sVal === "3") ? "block" : "none";
-            checksheetContainer.style.display = "block"; // 全ステップでチェックシートを表示
+            checksheetContainer.style.display = "block"; // 全ステップで表示
 
             if (sVal === "15") {
                 scenarioCreator.style.display = "block";
@@ -492,7 +493,20 @@
                 </ol>
                 <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
             `;
-            homeworkBox.innerHTML = `今週のステップアップ・ワーク（M・R法メンタルリハーサル）を毎晩ベッドの中で継続し、次回セッション時に再度チェックシートで変化を確認しましょう。`;
+
+            if (sVal === "2") {
+                homeworkBox.innerHTML = "日常で吃音を悔やむ「振り返り」や「予期不安」の雑念が頭をよぎった瞬間、すぐに目の前の景色やモノを観察する「注意シフト」を毎日実践してください。";
+            } else if (sVal === "3") {
+                homeworkBox.innerHTML = "一日1回、夜寝る前にベッドの中で【リラクセーション・中性イメージ体験】を行います。声を出すこと、セリフを考えることは厳禁です。";
+            } else {
+                homeworkBox.innerHTML = `ステップ ${sVal} の担当対立内容を用いて、一日1回夜寝る前のメンタルリハーサル法（M・R法）を継続し、次回セッション時に再度チェックシートで変化を確認しましょう。`;
+            }
+
+            if (sVal === "2" || sVal === "3") {
+                slideSectionTitle.innerText = "臨床参考資料 ＆ 訓練マニュアル";
+                currentSlideIndex = (sVal === "2") ? 4 : 10;
+                updateSlideDisplay();
+            }
         }
     }
 
@@ -540,11 +554,21 @@
         `;
 
         const mechanismDesc = `
-            * 価値観・考え: ${valValue}% / 認識: ${valCognition}%
-            * 感情・反芻: ${valEmotion}%
-            * 注目・監視: ${valAttention}%
-            * 工夫（助走・延期）: ${valEffort}% / 回避: ${valAvoid}%
+            * 価値観・考え: ${valValue}% / 認識: ${valCognition}%<br>
+            * 感情・反芻: ${valEmotion}%<br>
+            * 注目・監視: ${valAttention}%<br>
+            * 工夫（助走・延期）: ${valEffort}% / 回避: ${valAvoid}%<br>
             * 認知負担: ${valBurden}%
+            <div class="punish-calc">
+                <span style="font-weight:bold; color:#1e3a8a;">【自分を罰した回数の試算ワーク】</span><br>
+                <span style="font-size:0.85rem; color:#4b5563;">他人から馬鹿にされた回数より、自分で自分を罰した回数の方が圧倒的に多いことに気づくためのワークです。</span><br><br>
+                ① 1日に工夫を使った平均回数: <input type="number" id="calc-eff" value="20" oninput="runPunishCalc()"><br>
+                ② 1年に話す日数: <input type="number" id="calc-days" value="300" readonly> 日（固定）<br>
+                ③ 吃音を意識し始めてからの年数 (現在の年齢 - 9歳): <input type="number" id="calc-years" value="15" oninput="runPunishCalc()"><br>
+                <div style="margin-top:10px; font-weight:bold; color:#1e3a8a;">
+                    ➔ あなたが自分で自分を罰してきた推定総回数: <span id="punish-total-val" style="font-size:1.2rem; color:#b91c1c;">90,000</span> 回
+                </div>
+            </div>
         `;
 
         const therapyDesc = `
@@ -560,25 +584,44 @@
 
         const ctaBox = document.querySelector('.cta-action-box');
         if (ctaBox) {
-            ctaBox.innerHTML = `🔥 【AIへ送信するレポートメッセージ】<br>以下の内容をコピーしてチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px;">${copyMessage}</pre>`;
+            ctaBox.innerHTML = `🔥 【AIへ送信するレポートメッセージ】<br>以下の内容をコピーしてチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${copyMessage}</pre>`;
         }
 
         document.getElementById('result-area').style.display = "block";
+        setTimeout(() => { runPunishCalc(); }, 100);
     }
-
 
     function runPunishCalc() {
         const eff = parseInt(document.getElementById('calc-eff').value) || 0;
         const days = 300;
         const years = parseInt(document.getElementById('calc-years').value) || 0;
-        const totalPunish = eff * days * years;
-        document.getElementById('punish-total-val').innerText = totalPunish.toLocaleString();
+        const total = eff * days * years;
+        const target = document.getElementById('punish-total-val');
+        if (target) {
+            target.innerText = total.toLocaleString();
+        }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    function requestAIScenario() {
+        const scene = document.getElementById('ai-scene-type').value;
+        const age = document.getElementById('ai-scene-age').value;
+        if (!scene) {
+            alert('作成したい場面の種類を入力してください。');
+            return;
+        }
+        alert(`AIへの作成依頼テキストを生成しました。\n右下のチャットボットへ送信してください。`);
+        const msg = `【ステップ15：対立内容自作依頼】\n対象年齢：${age}歳\n希望場面：${scene}\n上記の設定に合わせたRASS対立内容パッケージの作成をお願いします。`;
+        
+        const ctaBox = document.querySelector('.cta-action-box');
+        if (ctaBox) {
+            ctaBox.innerHTML = `🔥 【AIへ送信する自作依頼メッセージ】<br>以下の内容をコピーしてチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${msg}</pre>`;
+        }
+    }
+
+    // 初期起動処理
+    window.onload = function() {
         changeSession();
-    });
+    };
 </script>
 </body>
 </html>
-
