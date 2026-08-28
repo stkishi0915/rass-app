@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <script>
+<script>
   (function(){
-    var pw = "";
-    while (pw !== "rass2026") { // 設定した正しいパスワード
-      pw = prompt("パスワードを入力してください：");
+    var correctPw = "rass2026";
+    while (true) {
+      var pw = prompt("パスワードを入力してください：");
       if (pw === null) {
-        // キャンセルを押された場合
         document.write("<h1 style='text-align:center;margin-top:50px;'>アクセス権限がありません。</h1>");
         window.stop();
-        return;
+        break;
       }
-      if (pw !== "rass-monitor2026") {
-        alert("パスワードが違います。");
+      if (pw === correctPw) {
+        break;
       }
+      alert("パスワードが違います。");
     }
   })();
 </script>
@@ -189,7 +189,6 @@
         ul, ol { padding-left: 22px; margin: 8px 0; }
         li { margin-bottom: 8px; line-height: 1.6; }
 
-        /* スクロール追従設定 */
         #dify-chatbot-bubble-button {
             position: fixed !important;
             bottom: 20px !important;
@@ -261,7 +260,7 @@
         <div id="scenario-creator-container" style="display: none;">
             <div class="section-title">🤖 AI対立内容セルフ作成アシスタント</div>
             <div class="creator-box">
-                <p style="font-size: 0.9rem; margin-top:0; color:#9D174D; font-weight:bold;">場面の種類と対象年齢を指定してボタンを押すと、右下のチャットボットへ自動で作成依頼が送信されます。</p>
+                <p style="font-size: 0.9rem; margin-top:0; color:#9D174D; font-weight:bold;">場面の種類と対象年齢を指定してボタンを押すと、右下のチャットボットへ送信するための依頼テキストが生成されます。</p>
                 <div style="margin-bottom: 10px;">
                     <label style="font-weight: bold; font-size: 0.9rem;">① 作成したい場面の種類（例：大学でのゼミ発表、会社の電話対応など）</label>
                     <input type="text" id="ai-scene-type" class="creator-input" placeholder="例：アルバイトでの接客・レジ対応">
@@ -277,7 +276,7 @@
         <div id="checksheet-container">
             <div class="section-title">悪循環セルフチェックシート</div>
             <p style="font-size: 0.85rem; color: #4b5563; margin-top: 0; line-height: 1.5;">
-                日常の発話場面を振り返り、現在のあなたが感じるそれぞれの度合いを <b>0%（全く該当しない）〜 100%（常に・完全に該当する）</b> の間で設定してください。
+                日常の発話場面を振り返り、現在のあなたが感じるそれぞれの度合いを <b>0%（全く該当しない）〜 100%（常に・完全に該当する）</b> の間で選択してください（10%単位）。
             </p>
             
             <div class="checksheet-box">
@@ -286,7 +285,7 @@
                     <div class="check-title">1) 他者の考えに対する自分の推測 ＆ 自分に対する考え</div>
                     <div class="check-desc">自分がどもった際、周囲の人が「笑う」「変に思う」と思い込んだり、吃音を恥ずべきこととして自分自身を罰している度合い。</div>
                     <div class="range-container">
-                        <input type="range" id="range-value" min="0" max="100" value="50" oninput="syncVal('value')">
+                        <input type="range" id="range-value" min="0" max="100" step="10" value="50" oninput="syncVal('value')">
                         <span class="range-val" id="val-value">50%</span>
                     </div>
                 </div>
@@ -294,7 +293,7 @@
                     <div class="check-title">2) 孤立・発話への強迫観念 ＆ 否定的自己認識</div>
                     <div class="check-desc">吃音を絶対に隠したいという思いや、「話すとは意図的に口をコントロールするものだ」という前提の強さ。</div>
                     <div class="range-container">
-                        <input type="range" id="range-cognition" min="0" max="100" value="50" oninput="syncVal('cognition')">
+                        <input type="range" id="range-cognition" min="0" max="100" step="10" value="50" oninput="syncVal('cognition')">
                         <span class="range-val" id="val-cognition">50%</span>
                     </div>
                 </div>
@@ -304,7 +303,7 @@
                     <div class="check-title">1) 情動反応 ＆ 失敗体験の反芻（振り返り）</div>
                     <div class="check-desc">どもった後の後悔や恥ずかしさと、話す前の予期不安の強さ。失敗体験を頭の中で何度も思い返してしまう度合い。</div>
                     <div class="range-container">
-                        <input type="range" id="range-emotion" min="0" max="100" value="50" oninput="syncVal('emotion')">
+                        <input type="range" id="range-emotion" min="0" max="100" step="10" value="50" oninput="syncVal('emotion')">
                         <span class="range-val" id="val-emotion">50%</span>
                     </div>
                 </div>
@@ -314,7 +313,7 @@
                     <div class="check-title">1) 注目・監視 ＆ 発話の目的化</div>
                     <div class="check-desc">話す前や最中に特定の音や口の動き、身体の緊張に過剰に意識を向け、上手く話そうと力ずくでコントロールしようとする度合い。</div>
                     <div class="range-container">
-                        <input type="range" id="range-attention" min="0" max="100" value="50" oninput="syncVal('attention')">
+                        <input type="range" id="range-attention" min="0" max="100" step="10" value="50" oninput="syncVal('attention')">
                         <span class="range-val" id="val-attention">50%</span>
                     </div>
                 </div>
@@ -322,26 +321,42 @@
                     <div class="check-title">2) 工夫（助走・延期）</div>
                     <div class="check-desc">咳払いや「えーっと」等を挟む（助走）、詰まりそうな時に少し間を置く、考えているフリをしてやり過ごす（延期）度合い。</div>
                     <div class="range-container">
-                        <input type="range" id="range-effort" min="0" max="100" value="50" oninput="syncVal('effort')">
+                        <input type="range" id="range-effort" min="0" max="100" step="10" value="50" oninput="syncVal('effort')">
                         <span class="range-val" id="val-effort">50%</span>
                     </div>
                 </div>
                 <div class="check-group">
-                    <div class="check-title">3) その他の工夫・回避（解除反応・言い換え・発話回避）</div>
-                    <div class="check-desc">詰まった時に力を入れて乗り切る（解除反応）、言いやすい言葉に変える（言い換え）、最終的に言うのを諦める（発話回避）度合い。</div>
+                    <div class="check-title">3) その他の工夫（解除反応・言い換えなど）</div>
+                    <div class="check-desc">詰まった時に力を入れて乗り切る（解除反応）、言いやすい言葉に変える（言い換え）など、その他の意図的な発話操作の頻度。</div>
                     <div class="range-container">
-                        <input type="range" id="range-avoid" min="0" max="100" value="50" oninput="syncVal('avoid')">
+                        <input type="range" id="range-avoid" min="0" max="100" step="10" value="50" oninput="syncVal('avoid')">
                         <span class="range-val" id="val-avoid">50%</span>
+                    </div>
+                </div>
+                <div class="check-group">
+                    <div class="check-title">4) 回避</div>
+                    <div class="check-desc">詰まりそうになると話すことを止める、話す場面を避けるなどの回避の頻度。</div>
+                    <div class="range-container">
+                        <input type="range" id="range-avoid-act" min="0" max="100" step="10" value="50" oninput="syncVal('avoid-act')">
+                        <span class="range-val" id="val-avoid-act">50%</span>
                     </div>
                 </div>
 
                 <div class="category-title"><i class="fa-solid fa-triangle-exclamation"></i> Ⅳ．相手の理解 ＆ Ⅴ．行動２（コミュニケーション負担と認知の偏り）</div>
                 <div class="check-group">
-                    <div class="check-title">1) 認知負担 ＆ 全般的なネガティブ注意</div>
-                    <div class="check-desc">どう話すかに脳の資源を使い果たして相手の話を聞き漏らしたりする負担度と、物事の悪い側面ばかりに注意が向く度合い。</div>
+                    <div class="check-title">1) 話し方に気を使いすぎて、相手の話を聞き漏らしたりする頻度</div>
+                    <div class="check-desc">どう喋るか・上手く話せるかに脳の意識を奪われ、相手のメッセージに集中できないコミュニケーション負担の度合い。</div>
                     <div class="range-container">
-                        <input type="range" id="range-burden" min="0" max="100" value="50" oninput="syncVal('burden')">
-                        <span class="range-val" id="val-burden">50%</span>
+                        <input type="range" id="range-listen-burden" min="0" max="100" step="10" value="50" oninput="syncVal('listen-burden')">
+                        <span class="range-val" id="val-listen-burden">50%</span>
+                    </div>
+                </div>
+                <div class="check-group">
+                    <div class="check-title">2) 物事を悪い面ばかりに注意が向く頻度</div>
+                    <div class="check-desc">会話場面や日常の出来事において、ネガティブな可能性や悪かった点に過剰に注意が向いてしまう認知の偏り。</div>
+                    <div class="range-container">
+                        <input type="range" id="range-neg-bias" min="0" max="100" step="10" value="50" oninput="syncVal('neg-bias')">
+                        <span class="range-val" id="val-neg-bias">50%</span>
                     </div>
                 </div>
 
@@ -387,8 +402,8 @@
         { title: "P6. 脳の発話プロセスと直接法の限界", text: "● 無意識な発話（一般的なプロセス）\n「言いたいこと」が思い浮かぶと言葉の組み立てや運動指令はすべて脳が自動的（無意識下）に行い、結果として勝手に「声が出る」。意識するのは「言いたい内容」と「出た声」だけです。\n\n● 吃音独特の発話プロセス\n「言いたいこと」が思い浮かんだ瞬間にまず「予期不安」が生まれ、普通の人が無意識に行っている脳の自動プロセスを、すべて「意識下でコントロールしよう」とします。非常に複雑で負担の多い喋り方になっています。\nただし、吃音のある人も普通の人と同じように「無意識な話し方」をやっている瞬間もあることが分かっています。\n\n● 直接法（話す練習を行うアプローチ）の限界\nゆっくり話す練習などは効果が分かりやすい「即効性」がありますが、成人吃音者の場合、声をコントロールしようとすること自体が【工夫】や【注目・監視】をさらに強化してしまう矛盾をはらむため、実際の生活場面では効果が長続きしにくい特徴があります。" },
         { title: "P7. RASSアプローチの核心：なぜ「間接法」なのか？", text: "● 間接法（話す練習をしないアプローチ）\n声を出すスピーチ練習などは行いません。直接法が「吃音の症状をコントロールすること」を目的とするのに対し、間接法は「普通の人と同じ自然で無意識な話し方に脳を戻すこと」を目的とします。いろいろ意識してしまっている状態を、すべて無意識の状態にリセットしていくアプローチです。\n\n● 自然で無意識な発話への遡及的アプローチ「RASS（ラス）」\n区分としては「間接法」に属し、すべての訓練を頭の中（イメージ）で行います。あなたが子供の頃、吃音を意識していなかった時期は、何も考えずに言葉が出ていたはずです。RASSの目的は、大人になってから脳にこびりついた「注目」「工夫」「回避」という悪化要因を剥ぎ取り、進展段階を逆方向に遡る（遡及する）ことで、脳を本来のクリーンな状態へ戻すことにあります。\n\nビーカーのイラストで言うと、日中の行動（注意シフト）で「水が入ってくるのを止め」、夜間のイメージ（メンタルリハーサル法）で「中の水を外へどんどん汲み出していく」、この両方を同時に行うことで初めて効果を発揮します。" },
         { title: "P8. 年表方式メンタルリハーサル法（M・R法）の仕組み", text: "● メンタルリハーサル法の具体的な進め方\n頭の中で自分が話す場面を思い浮かべ、声を出さずに発話を行う方法です。「吃音の話し方は、声に出す前にすでに頭の中で完成している」という脳の仕組みに基づいているため、頭の中のイメージだけで脳の発話訓練が成立します。\n\n● 専門家が設計する「対立内容」\nただし、普通の話し方をイメージする必要があります。電話が苦手な人に「頭の中で何も考えずに普通に喋ってください」とだけ言っても、過去の強い苦手意識から絶対に吃音を意識してしまい、むしろ吃音を悪化させる「悪化訓練」になってしまいます。そのため、自然で無意識な発話が確実に成立するよう、中身（対立内容）を言語聴覚士が設計します。\n\n● 年表を遡る手順\nいきなり現在の苦手な場面（ラスボス）に挑むのではなく、吃音の意識がまだ薄かった「幼少期の話す場面」からスタートします。そこから年表を追うように、徐々に現在の年齢へと近づけていき、イメージの中で流暢性の成功体験の場数を踏んでいきます。" },
-        { title: "P9. 効果の現れ方と注意点（改善率について）", text: "● 開発者の研究データ（最も重い第4層の吃音の方々の3年後の経過）\n・全体の1/3の人：「正常域」に到達（完全に治った状態）。\n・全体の1/3の人：「第1層」または「第2層」に到達（症状は少し出るが、本人としては全く困らなくなった状態）。\n・残りの1/3の人：残念ながら「第3層」の状態にとどまる。\n確実に全員が100%良くなる方法というわけではありませんが、約7割（70%）の改善率が見込めるとされています。\n\n⚠️ 重要な注意点\nこの方法は症状をその場で抑え込むテクニックではないため、即効性は一切ありません。毎日コツコツと繰り返し、数ヶ月、半年、1年と長い日数をかけて取り組む中で、あるとき振り返ってみて「そういえば最近、どもることを気にしていないな」と気づくような、非常に地味な現れ方をします。取り組む際は腰を据えて、まずは3年くらいのスパンを見ておいていただくようお願いしています。早い人で数か月で進展段階第2層に到達する方もおられます。効果は後からついてくるものなので、まずは習慣化して継続してみてください。" },
-        { title: "P10. 医学的な「治る・改善する」の定義と合意", text: "● RASSにおける「改善」の定義\n私たちは「無理にコントロールしてどもらずに話すこと」をゴールとはしません。最終目標は、あなたの頭の中から吃音への『恐怖心』『予期不安』『振り返り』が完全に消え去り、チェックシートの数値がすべて【0%】になり、結果として【吃音のことを一切意識せずに、自然に無意識に言葉が出ている状態】になることです。\n\n言葉がどれだけ詰まるかという「頻度」よりも、出ている症状の「質（工夫や苦悩がないか）」が変化することを重視するのが、現代の医学的な考え方です。\n正常域に達した段階では、自分が吃音者であるという意識も無くなります（吃音者意識からの脱却）。\n\nこの理論とこれからの進め方に納得し、RASSによるセルフケアを開始することに同意いただける場合は、右側の言語聴覚士AIにその旨を伝えて、あなたの最初の主訴（困りごと）をお話しください。ここからあなたと一緒にリハビリを進めていきましょう！" },
+        { title: "P9. 効果の現れ方と注意点（改善率について）", text: "● 開発者の研究データ（最も重い第4層の吃音の方々の3年後の経過）\n・全体の1/3の人：「正常域」に到達（完全に治った状態）。\n・全体の1/3の人：「第1層」または「第2層」に到達（症状は少し出るが、本人としては全く困らなくなった状態）。\n・残りの1/3の人：残念ながら「第3層」の状態にとどまる。\n確実に全員が100%良くなる方法というわけではありませんが、約7割（70%）の改善率が見込めるとされています。\n\n⚠️ 重要な注意点\nこの方法は症状をその場で抑え込むテクニックではないため、即効性は一切ありません。毎日コツコツと繰り返し、数ヶ月、半年、1年と長い日数をかけて取り組む中で、あるとき振り返ってみて「そういえば最近、どもることを気にしていないな」と気づくような、非常に地味な現れ方をします。取り組む際は腰を据えて、まずは3年くらいのスパンを見ておいていただくようお願いしています。早い人で数か月で進展段階第2層に到達する方に限られます。効果は後からついてくるものなので、まずは習慣化して継続してみてください。" },
+        { title: "P10. 医学的な「治る・改善する」の定義と合意", text: "● RASSにおける「改善」の定義\n私たちは「無理にコントロールしてどもらずに話すこと」をゴールとはしません。最終目標は、あなたの頭の中から吃音への『恐怖心』『予期不安』『振り返り』が完全に消え去り、チェックシートの数値がすべて【0%】になり、結果として【吃音のことを一切意識せずに、自然に無意識に言葉が出ている状態】になることです。\n\n言葉がどれだけ詰まるかという「頻度」よりも、出ている症状の「質（工夫や苦悩がないか）」が変化することを重視するのが、現代の医学的な考え方です。\n正常域に達した段階では、自分が吃音者であるという意識も無くなります（吃音者意識からの脱却）。\n\nこの理論とこれからの進め方に納得し、RASSによるセルフケアを開始することに同意いただける場合は、右下の言語聴覚士AIにその旨を伝えて、あなたの最初の主訴（困りごと）をお話しください。ここからあなたと一緒にリハビリを進めていきましょう！" },
         { title: "P11. メンタルリハーサル法（M・R法）の基本と注意点", text: "【M・R法の絶対厳守ルール】\n① 声を出すことを意識してはいけません。喉や口の筋肉を動かそうとするのも厳禁です。\n② 「自分が何を喋るか（セリフ）」に意識を向けることは完全禁止です。\n③ 主観的な視点（自分の目から見えている景色）で、目の前の景色や登場人物、モノの色彩を【映像として動かし続けること（視点移動）】だけに脳のメモリを100%集中させてください。脳に健常な自然発話を再学習させます。" }
     ];
 
@@ -412,9 +427,6 @@
         document.getElementById(`val-${id}`).innerText = `${val}%`;
     }
 
-    // ----------------------------------------------------
-    // 悪循環スコアの履歴管理・前後比較機能
-    // ----------------------------------------------------
     function getSavedScoreHistory() {
         const history = localStorage.getItem('rass_score_history');
         return history ? JSON.parse(history) : [];
@@ -432,9 +444,6 @@
         return history;
     }
 
-    // ----------------------------------------------------
-    // セッション（ステップ）切替処理
-    // ----------------------------------------------------
     function changeSession() {
         const select = document.getElementById('session-select');
         const sVal = select.value;
@@ -451,9 +460,8 @@
         let ctaText = "";
 
         if (sVal === "1") {
-            // ステップ1：初回評価
             currentSlides = baseSlides.slice(0, 10);
-            ctaText = "以下の文章を右下のチャットボットへ送信してください：<br><br><span style='background:rgba(255,255,255,0.2); padding:4px 8px; border-radius:4px; display:block; font-family:monospace;'>こんにちは！リハビリの「ステップ1」を開始します。私の進展段階の特定とガイダンスのリードをお願いします。私の年齢・仕事・苦手な場面をお話しします。</span>";
+            ctaText = "以下の文章をコピーして右下のチャットボットへ送信してください：<br><pre style='background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;'>こんにちは！リハビリの「ステップ1」を開始します。私の進展段階の特定とガイダンスのリードをお願いします。私の年齢・仕事・苦手な場面をお話しします。</pre>";
             protocolBox.innerHTML = `
                 <div class="visual-banner"><i class="fa-solid fa-comments"></i><div class="visual-banner-text">まずはAIによる丁寧なヒアリングと現状評価からリハビリを始めます。</div></div>
                 <strong>【手順】</strong>
@@ -473,23 +481,22 @@
             updateSlideDisplay();
 
         } else {
-            // ステップ2〜15：毎ステップで悪循環セルフチェックを実施
             slideViewer.style.display = (sVal === "2" || sVal === "3") ? "block" : "none";
-            checksheetContainer.style.display = "block"; // 全ステップで表示
+            checksheetContainer.style.display = "block";
 
             if (sVal === "15") {
                 scenarioCreator.style.display = "block";
             }
 
-            ctaText = `下の『悪循環セルフチェックシート』を設定して『分析レポートを生成』ボタンを押し、出力された最新スコアと前後比較メッセージをチャットボットへ送信してください。`;
+            ctaText = `下の『悪循環セルフチェックシート』を設定して『分析レポートを生成』ボタンを押し、出力された最新スコアと前後比較メッセージをコピーして右下のチャットボットへ送信してください。`;
             
             protocolBox.innerHTML = `
                 <div class="visual-banner"><i class="fa-solid fa-chart-line"></i><div class="visual-banner-text">【ステップ ${sVal}】悪循環セルフチェックで現在の負荷を計測し、前回からの変化を確認します。</div></div>
                 <strong>【本日のリハビリ手順】</strong>
                 <ol>
-                    <li>下の『悪循環セルフチェックシート』のスライダー（0〜100%）を現在の体感に合わせて調整します。</li>
-                    <li>『悪循環を分析して、RASSの臨床解説を生成する』ボタンを押し、**前後比較レポート**を出力します。</li>
-                    <li>生成された結果をコピーして右下のチャットボットへ送信し、本日のセッション・フィードバックを受けてください。</li>
+                    <li>下の『悪循環セルフチェックシート』のスライダー（10%刻み）を現在の体感に合わせて調整します。</li>
+                    <li>『悪循環を分析して、RASSの臨床解説を生成する』ボタンを押し、前後比較レポートを出力します。</li>
+                    <li>生成されたテキストをコピーして右下のチャットボットへ送信し、本日のセッション・フィードバックを受けてください。</li>
                 </ol>
                 <div class="cta-action-box">🔥 【あなたの次の行動】<br>${ctaText}</div>
             `;
@@ -510,9 +517,6 @@
         }
     }
 
-    // ----------------------------------------------------
-    // 臨床レポート生成 ＆ 前後比較フィードバック
-    // ----------------------------------------------------
     function generateClinicalReport() {
         const valValue = parseInt(document.getElementById('range-value').value) || 0;
         const valCognition = parseInt(document.getElementById('range-cognition').value) || 0;
@@ -520,12 +524,13 @@
         const valAttention = parseInt(document.getElementById('range-attention').value) || 0;
         const valEffort = parseInt(document.getElementById('range-effort').value) || 0;
         const valAvoid = parseInt(document.getElementById('range-avoid').value) || 0;
-        const valBurden = parseInt(document.getElementById('range-burden').value) || 0;
+        const valAvoidAct = parseInt(document.getElementById('range-avoid-act').value) || 0;
+        const valListenBurden = parseInt(document.getElementById('range-listen-burden').value) || 0;
+        const valNegBias = parseInt(document.getElementById('range-neg-bias').value) || 0;
 
-        const total = Math.round((valValue + valCognition + valEmotion + valAttention + valEffort + valAvoid + valBurden) / 7);
+        const total = Math.round((valValue + valCognition + valEmotion + valAttention + valEffort + valAvoid + valAvoidAct + valListenBurden + valNegBias) / 9);
         const stepVal = document.getElementById('session-select').value;
 
-        // 前後比較データの取得
         const history = getSavedScoreHistory();
         let prevScoreText = "今回が初回測定です。";
         let diffText = "";
@@ -543,7 +548,6 @@
             prevScoreText = `前回（ステップ${lastRecord.step}）：${lastRecord.total}% ➔ 今回（ステップ${stepVal}）：${total}% ${diffText}`;
         }
 
-        // 最新スコアを履歴に保存
         saveScoreToHistory(stepVal, total);
 
         document.getElementById('rep-total').innerText = `${total}% ${diffText}`;
@@ -554,11 +558,11 @@
         `;
 
         const mechanismDesc = `
-            * 価値観・考え: ${valValue}% / 認識: ${valCognition}%<br>
-            * 感情・反芻: ${valEmotion}%<br>
-            * 注目・監視: ${valAttention}%<br>
-            * 工夫（助走・延期）: ${valEffort}% / 回避: ${valAvoid}%<br>
-            * 認知負担: ${valBurden}%
+            * Ⅰ-1 他者推測・自己処罰: ${valValue}% / Ⅰ-2 発話強迫・隠蔽: ${valCognition}%<br>
+            * Ⅱ-1 情動反応・反芻: ${valEmotion}%<br>
+            * Ⅲ-1 注目・自己監視: ${valAttention}% / Ⅲ-2 工夫（助走・延期）: ${valEffort}%<br>
+            * Ⅲ-3 その他の工夫（解除・言い換え）: ${valAvoid}% / Ⅲ-4 回避行動: ${valAvoidAct}%<br>
+            * Ⅳ-1 聞き漏らし等負担: ${valListenBurden}% / Ⅴ-1 悪い面への注意偏り: ${valNegBias}%
             <div class="punish-calc">
                 <span style="font-weight:bold; color:#1e3a8a;">【自分を罰した回数の試算ワーク】</span><br>
                 <span style="font-size:0.85rem; color:#4b5563;">他人から馬鹿にされた回数より、自分で自分を罰した回数の方が圧倒的に多いことに気づくためのワークです。</span><br><br>
@@ -579,12 +583,11 @@
         document.getElementById('rep-mechanism').innerHTML = mechanismDesc;
         document.getElementById('rep-therapy').innerHTML = therapyDesc;
 
-        // AI送信用メッセージの作成
-        const copyMessage = `【悪循環セルフチェック報告（ステップ${stepVal}）】\n現在のトータル負荷スコア：${total}%\n前後比較：${prevScoreText}\n\n[詳細項目]\n・否定的価値観・認識：${valValue}%\n・感情の反芻・予期不安：${valEmotion}%\n・注目・自己監視：${valAttention}%\n・人為的工夫：${valEffort}%\n・回避行動：${valAvoid}%\n\n上記のスコア結果を踏まえて、今回のフィードバックとアドバイスをお願いします。`;
+        const copyMessage = `【悪循環セルフチェック報告（ステップ${stepVal}）】\n現在のトータル負荷スコア：${total}%\n前後比較：${prevScoreText}\n\n[詳細項目]\n・否定的価値観・推測：${valValue}%\n・発話強迫・隠蔽：${valCognition}%\n・感情の反芻・予期不安：${valEmotion}%\n・注目・自己監視：${valAttention}%\n・工夫（助走・延期）：${valEffort}%\n・その他の工夫（解除・言い換え）：${valAvoid}%\n・回避行動：${valAvoidAct}%\n・会話の聞き漏らし負担：${valListenBurden}%\n・悪い面への注意の偏り：${valNegBias}%\n\n上記のスコア結果を踏まえて、今回のフィードバックとアドバイスをお願いします。`;
 
         const ctaBox = document.querySelector('.cta-action-box');
         if (ctaBox) {
-            ctaBox.innerHTML = `🔥 【AIへ送信するレポートメッセージ】<br>以下の内容をコピーしてチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${copyMessage}</pre>`;
+            ctaBox.innerHTML = `🔥 【AIへ送信するレポートメッセージ】<br>以下の文面をコピーして、右下のチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${copyMessage}</pre>`;
         }
 
         document.getElementById('result-area').style.display = "block";
@@ -609,16 +612,16 @@
             alert('作成したい場面の種類を入力してください。');
             return;
         }
-        alert(`AIへの作成依頼テキストを生成しました。\n右下のチャットボットへ送信してください。`);
+        
         const msg = `【ステップ15：対立内容自作依頼】\n対象年齢：${age}歳\n希望場面：${scene}\n上記の設定に合わせたRASS対立内容パッケージの作成をお願いします。`;
         
         const ctaBox = document.querySelector('.cta-action-box');
         if (ctaBox) {
-            ctaBox.innerHTML = `🔥 【AIへ送信する自作依頼メッセージ】<br>以下の内容をコピーしてチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${msg}</pre>`;
+            ctaBox.innerHTML = `🔥 【AIへ送信する自作依頼メッセージ】<br>以下のテキストをコピーして、右下のチャットボットへ送信してください：<br><pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${msg}</pre>`;
+            ctaBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
-    // 初期起動処理
     window.onload = function() {
         changeSession();
     };
