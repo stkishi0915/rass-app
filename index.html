@@ -1,583 +1,816 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RASS吃音セルフケア支援</title>
-
-    <meta
-        name="description"
-        content="RASSの考え方を参考に、吃音に関する気づきとセルフケアを対話形式で支援するサービスです。"
-    >
-
-    <meta name="theme-color" content="#1e3a8a">
-
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    >
-
-    <style>
-        :root {
-            --primary: #1e3a8a;
-            --primary-light: #2563eb;
-            --secondary: #0f766e;
-            --bg: #f3f6fb;
-            --card: #ffffff;
-            --text: #1f2937;
-            --muted: #6b7280;
-            --border: #dbe2ea;
-            --danger: #b91c1c;
-            --warning: #92400e;
-            --success: #166534;
-            --shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
-            --radius: 14px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-            font-family:
-                -apple-system,
-                BlinkMacSystemFont,
-                "Noto Sans JP",
-                "Yu Gothic",
-                "Hiragino Kaku Gothic ProN",
-                Meiryo,
-                sans-serif;
-            color: var(--text);
-            background: var(--bg);
-            line-height: 1.75;
-        }
-
-        button,
-        input,
-        select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
-        }
-
-        .container {
-            width: min(1180px, calc(100% - 32px));
-            margin: 0 auto;
-        }
-
-        header {
-            background: linear-gradient(
-                135deg,
-                #1e3a8a,
-                #2563eb
-            );
-            color: white;
-            padding: 28px 0;
-            box-shadow: var(--shadow);
-        }
-
-        .header-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .brand h1 {
-            margin: 0;
-            font-size: 1.45rem;
-        }
-
-        .brand p {
-            margin: 4px 0 0;
-            opacity: 0.9;
-            font-size: 0.9rem;
-        }
-
-        .status-badge {
-            padding: 7px 12px;
-            border: 1px solid rgba(255,255,255,.35);
-            border-radius: 999px;
-            font-size: .8rem;
-            white-space: nowrap;
-        }
-
-        main {
-            padding: 28px 0 80px;
-        }
-
-        .notice {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            border-radius: var(--radius);
-            padding: 18px;
-            margin-bottom: 22px;
-        }
-
-        .notice strong {
-            color: var(--warning);
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 22px;
-            align-items: start;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 22px;
-            margin-bottom: 22px;
-        }
-
-        .card h2 {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.15rem;
-        }
-
-        .card h3 {
-            color: var(--primary);
-            margin-top: 0;
-        }
-
-        .session-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .session-row label {
-            font-weight: 700;
-        }
-
-        select {
-            border: 1px solid var(--border);
-            border-radius: 9px;
-            padding: 10px 12px;
-            background: white;
-            min-width: 220px;
-        }
-
-        .visual-banner {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            background: #eff6ff;
-            border-left: 5px solid var(--primary-light);
-            padding: 14px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-        }
-
-        .visual-banner i {
-            color: var(--primary-light);
-            margin-top: 5px;
-        }
-
-        ol {
-            padding-left: 24px;
-        }
-
-        .cta-action-box {
-            margin-top: 18px;
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .copy-area {
-            width: 100%;
-            min-height: 160px;
-            resize: vertical;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 12px;
-            background: #f8fafc;
-            color: var(--text);
-        }
-
-        .copy-button {
-            margin-top: 10px;
-            border: 0;
-            border-radius: 8px;
-            padding: 10px 16px;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-        }
-
-        .copy-button:hover {
-            background: #172554;
-        }
-
-        .slide-viewer {
-            position: relative;
-        }
-
-        .slide {
-            background: linear-gradient(
-                145deg,
-                #ffffff,
-                #f8fafc
-            );
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            min-height: 360px;
-        }
-
-        .slide h3 {
-            margin-top: 0;
-            font-size: 1.15rem;
-        }
-
-        .slide-text {
-            white-space: pre-line;
-        }
-
-        .slide-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .nav-button {
-            border: 1px solid var(--border);
-            background: white;
-            border-radius: 8px;
-            padding: 9px 16px;
-        }
-
-        .nav-button:disabled {
-            opacity: .4;
-            cursor: not-allowed;
-        }
-
-        .page-number {
-            color: var(--muted);
-            font-size: .9rem;
-        }
-
-        .check-item {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .check-item:last-child {
-            border-bottom: 0;
-        }
-
-        .check-title {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .range-value {
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            accent-color: var(--primary);
-        }
-
-        .range-labels {
-            display: flex;
-            justify-content: space-between;
-            color: var(--muted);
-            font-size: .75rem;
-        }
-
-        .primary-button {
-            width: 100%;
-            border: 0;
-            border-radius: 10px;
-            padding: 13px 18px;
-            background: var(--primary);
-            color: white;
-            font-weight: 700;
-            margin-top: 18px;
-        }
-
-        .primary-button:hover {
-            background: #172554;
-        }
-
-        .result {
-            display: none;
-        }
-
-        .score-box {
-            text-align: center;
-            padding: 24px;
-            border-radius: 12px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            margin-bottom: 18px;
-        }
-
-        .score-number {
-            font-size: 2.4rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-
-        .result-section {
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .result-section:last-child {
-            border-bottom: 0;
-        }
-
-        .punish-calc {
-            margin-top: 20px;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .punish-calc input {
-            width: 90px;
-            padding: 7px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-        }
-
-        .scenario-form {
-            display: grid;
-            gap: 12px;
-        }
-
-        .scenario-form label {
-            font-weight: 700;
-        }
-
-        .scenario-form input {
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        footer {
-            padding: 30px 0;
-            background: #111827;
-            color: #d1d5db;
-            font-size: .8rem;
-        }
-
-        footer p {
-            margin: 5px 0;
-        }
-
-        .small {
-            font-size: .82rem;
-            color: var(--muted);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        @media (max-width: 850px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-
-            .header-inner {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .slide {
-                min-height: auto;
-            }
-        }
-    </style>
-
-    <!--
-        Dify Chatbot
-        ---------------------------------------------
-        実際の公開用トークンをここに設定してください。
-
-        注意：
-        ブラウザに埋め込むトークンは利用者側から確認可能です。
-        高いセキュリティが必要なAPIキーや秘密鍵は絶対にここへ置かないでください。
-    -->
-
-    <script>
-        window.difyChatbotConfig = {
-            token: 'YOUR_DIFY_PUBLIC_TOKEN'
-        };
-    </script>
-
-    <script
-        src="https://udify.app/embed.min.js"
-        id="YOUR_DIFY_PUBLIC_TOKEN"
-        defer>
-    </script>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta name="description"
+      content="RASS吃音セルフケア支援">
+
+<title>RASS吃音セルフケア支援</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+:root {
+    --primary: #1e3a8a;
+    --primary-light: #3b82f6;
+    --primary-soft: #eff6ff;
+    --accent: #0f766e;
+    --danger: #b91c1c;
+    --warning: #92400e;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #d1d5db;
+    --background: #f3f6fa;
+    --card: #ffffff;
+    --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    --radius: 14px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Noto Sans JP",
+        "Yu Gothic",
+        "Hiragino Kaku Gothic ProN",
+        Meiryo,
+        sans-serif;
+    line-height: 1.75;
+}
+
+button,
+select,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+/* =========================
+   Header
+========================= */
+
+.site-header {
+    background: linear-gradient(135deg, #172554, #1e3a8a);
+    color: white;
+    padding: 22px 20px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.15);
+}
+
+.header-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.brand-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.brand-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.82;
+}
+
+/* =========================
+   Layout
+========================= */
+
+.container {
+    width: min(1180px, calc(100% - 28px));
+    margin: 24px auto 100px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid rgba(209, 213, 219, 0.8);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.card-title {
+    margin: 0 0 14px;
+    color: var(--primary);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.card-title i {
+    font-size: 0.95em;
+}
+
+.section-label {
+    display: inline-block;
+    font-size: 0.78rem;
+    color: var(--primary);
+    background: var(--primary-soft);
+    border-radius: 999px;
+    padding: 4px 10px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+/* =========================
+   Safety
+========================= */
+
+.safety-notice {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #78350f;
+    font-size: 0.88rem;
+}
+
+.safety-notice strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.disclaimer {
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 18px;
+    padding-top: 14px;
+}
+
+/* =========================
+   Session selector
+========================= */
+
+.session-control {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.session-control label {
+    font-weight: 700;
+}
+
+.session-select {
+    min-width: 230px;
+    padding: 11px 14px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+}
+
+/* =========================
+   Protocol
+========================= */
+
+.visual-banner {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--primary-soft);
+    border-left: 4px solid var(--primary-light);
+    border-radius: 10px;
+    padding: 13px 14px;
+    margin-bottom: 15px;
+}
+
+.visual-banner i {
+    color: var(--primary);
+    margin-top: 5px;
+}
+
+.visual-banner-text {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.protocol-list {
+    padding-left: 1.5rem;
+}
+
+.cta-action-box {
+    margin-top: 18px;
+    background: #f8fafc;
+    border: 1px dashed #94a3b8;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.cta-action-box pre {
+    margin-bottom: 0;
+    overflow-x: auto;
+}
+
+/* =========================
+   Slide viewer
+========================= */
+
+.slide-viewer {
+    background: #0f172a;
+    border-radius: 14px;
+    padding: 20px;
+    color: white;
+}
+
+.slide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.slide-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.slide-page {
+    font-size: 0.82rem;
+    opacity: 0.75;
+    white-space: nowrap;
+}
+
+.slide-text {
+    min-height: 380px;
+    white-space: pre-wrap;
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 0.93rem;
+}
+
+.slide-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+}
+
+.slide-btn {
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    padding: 9px 16px;
+    border-radius: 8px;
+}
+
+.slide-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.15);
+}
+
+/* =========================
+   Checksheet
+========================= */
+
+.checksheet-item {
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.checksheet-item:last-child {
+    border-bottom: none;
+}
+
+.checksheet-label {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.range-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 58px;
+    gap: 12px;
+    align-items: center;
+}
+
+.range-value {
+    text-align: right;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+.checksheet-scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--muted);
+}
+
+.primary-button {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary);
+    color: white;
+    padding: 13px 18px;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.primary-button:hover:not(:disabled) {
+    background: #172554;
+    transform: translateY(-1px);
+}
+
+/* =========================
+   Result
+========================= */
+
+.result-card {
+    border: 2px solid #bfdbfe;
+    background: #f8fbff;
+}
+
+.score-display {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.score-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.score-caption {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.report-block {
+    margin-bottom: 18px;
+}
+
+.report-block h4 {
+    color: var(--primary);
+    margin-bottom: 7px;
+}
+
+.punish-calc {
+    margin-top: 16px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border: 1px solid #dbeafe;
+}
+
+.punish-calc input[type="number"] {
+    width: 90px;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 0 4px;
+}
+
+.copy-button {
+    margin-top: 12px;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: white;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.copy-button:hover {
+    background: var(--primary-soft);
+}
+
+/* =========================
+   Scenario creator
+========================= */
+
+.scenario-form {
+    display: grid;
+    gap: 13px;
+}
+
+.form-group {
+    display: grid;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 700;
+}
+
+.form-control {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* =========================
+   Chatbot status
+========================= */
+
+.chatbot-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+}
+
+.status-dot.ready {
+    background: #16a34a;
+}
+
+/* =========================
+   History
+========================= */
+
+.history-table-wrapper {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.history-table th,
+.history-table td {
+    padding: 9px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.history-table th {
+    background: #f8fafc;
+}
+
+.history-empty {
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.site-footer {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 14px 40px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 850px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        width: min(100% - 18px, 1180px);
+        margin-top: 14px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+    .slide-text {
+        min-height: 300px;
+    }
+
+    .session-select {
+        width: 100%;
+    }
+
+    .session-control {
+        display: block;
+    }
+}
+
+/* =========================
+   Reduced motion
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        transition: none !important;
+    }
+}
+</style>
+
+<!--
+=========================================================
+DIFY CHATBOT
+=========================================================
+※ 本番環境ではトークンをHTMLに直接置かない方式を推奨。
+=========================================================
+-->
+
+<script>
+window.difyChatbotConfig = {
+    token: 'uCSrQyoRDZaA3gjC'
+};
+</script>
+
+<script
+    src="https://udify.app/embed.min.js"
+    id="uCSrQyoRDZaA3gjC"
+    defer>
+</script>
+
 </head>
 
 <body>
 
-<header>
-    <div class="container header-inner">
+<header class="site-header">
+    <div class="header-inner">
         <div class="brand">
-            <h1>RASS吃音セルフケア支援</h1>
-            <p>対話とセルフチェックによる継続的なセルフケア支援</p>
-        </div>
-
-        <div class="status-badge">
-            AIセルフケア支援ツール
+            <div class="brand-icon">
+                <i class="fa-solid fa-comments"></i>
+            </div>
+            <div>
+                <div class="brand-title">
+                    RASS吃音セルフケア支援
+                </div>
+                <div class="brand-subtitle">
+                    対話型セルフケア・サポート
+                </div>
+            </div>
         </div>
     </div>
 </header>
 
-<main>
-    <div class="container">
 
-        <section class="notice">
-            <strong>
-                <i class="fa-solid fa-circle-info"></i>
-                ご利用前に
-            </strong>
+<main class="container">
 
-            <p>
-                このサービスは、吃音に関するセルフケアを対話形式で支援するためのツールです。
-                医師・言語聴覚士等による診断、治療、緊急時の医療対応を代替するものではありません。
-            </p>
+    <!-- =========================
+         Safety notice
+    ========================== -->
 
-            <p>
-                AIによる評価はセルフチェックを整理するための参考情報であり、
-                医学的な診断や確定的な重症度判定ではありません。
-            </p>
-        </section>
+    <section class="safety-notice">
+        <strong>
+            <i class="fa-solid fa-circle-info"></i>
+            ご利用前にご確認ください
+        </strong>
 
-        <div class="layout">
+        本サービスは、RASSの考え方に基づくセルフケアを
+        対話形式で支援するためのAIツールです。
+        実在する言語聴覚士による診察・診断・治療・緊急対応を
+        代替するものではありません。
 
-            <!-- =========================
-                 LEFT
-            ========================== -->
-            <div>
-
-                <section class="card">
-                    <h2>
-                        <i class="fa-solid fa-list-check"></i>
-                        セッション選択
-                    </h2>
-
-                    <div class="session-row">
-                        <label for="session-select">
-                            現在のステップ
-                        </label>
-
-                        <select
-                            id="session-select"
-                            onchange="changeSession()">
-
-                            <option value="1">
-                                ステップ1：場面の特定・初期評価
-                            </option>
-
-                            <option value="2">
-                                ステップ2：悪循環の特定
-                            </option>
-
-                            <option value="3">
-                                ステップ3：仕組みの理解
-                            </option>
-
-                            <option value="4">
-                                ステップ4：注意シフト
-                            </option>
-
-                            <option value="5">ステップ5</option>
-                            <option value="6">ステップ6</option>
-                            <option value="7">ステップ7</option>
-                            <option value="8">ステップ8</option>
-                            <option value="9">ステップ9</option>
-                            <option value="10">ステップ10</option>
-                            <option value="11">ステップ11</option>
-                            <option value="12">ステップ12</option>
-                            <option value="13">ステップ13</option>
-                            <option value="14">ステップ14</option>
-
-                            <option value="15">
-                                ステップ15：対立内容の自作教育フェーズ
-                            </option>
-                        </select>
-                    </div>
-                </section>
+        強い心理的苦痛、生活上の重大な支障、自傷・希死念慮、
+        またはその他の緊急性がある場合は、本サービスだけに頼らず、
+        医療機関・言語聴覚士・地域の相談窓口等へご相談ください。
+    </section>
 
 
-                <!-- =========================
-                     PROTOCOL
-                ========================== -->
+    <div class="grid">
 
-                <section class="card">
+        <!-- ==================================================
+             LEFT
+        =================================================== -->
 
-                    <h2>
-                        <i class="fa-solid fa-route"></i>
-                        本日の進め方
-                    </h2>
+        <div>
 
-                    <div id="protocol-box"></div>
+            <!-- Session selector -->
 
-                </section>
+            <section class="card">
+
+                <div class="section-label">
+                    セルフケア・セッション
+                </div>
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-list-check"></i>
+                    現在のステップ
+                </h2>
+
+                <div class="session-control">
+
+                    <label for="session-select">
+                        ステップ
+                    </label>
+
+                    <select
+                        id="session-select"
+                        class="session-select"
+                        onchange="changeSession()">
+
+                        <option value="1">
+                            Step 1　場面の特定・初期評価
+                        </option>
+
+                        <option value="2">
+                            Step 2　悪循環の特定
+                        </option>
+
+                        <option value="3">
+                            Step 3　仕組みの理解
+                        </option>
+
+                        <option value="4">
+                            Step 4　注意シフト
+                        </option>
+
+                        <option value="5">
+                            Step 5　セルフケア
+                        </option>
+
+                        <option value="6">
+                            Step 6
+                        </option>
+
+                        <option value="7">
+                            Step 7
+                        </option>
+
+                        <option value="8">
+                            Step 8
+                        </option>
+
+                        <option value="9">
+                            Step 9
+                        </option>
+
+                        <option value="10">
+                            Step 10
+                        </option>
+
+                        <option value="11">
+                            Step 11
+                        </option>
+
+                        <option value="12">
+                            Step 12
+                        </option>
+
+                        <option value="13">
+                            Step 13
+                        </option>
+
+                        <option value="14">
+                            Step 14
+                        </option>
+
+                        <option value="15">
+                            Step 15　対立内容の自作教育フェーズ
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </section>
 
 
-                <!-- =========================
-                     SLIDES
-                ========================== -->
+            <!-- Protocol -->
 
-                <section
-                    id="slide-viewer-container"
-                    class="card slide-viewer">
+            <section class="card">
 
-                    <h2 id="slide-section-title">
-                        臨床ガイダンス・参考資料
-                    </h2>
+                <h2 class="card-title">
+                    <i class="fa-solid fa-route"></i>
+                    本日の進め方
+                </h2>
 
-                    <div class="slide">
+                <div id="protocol-box"></div>
 
-                        <h3 id="slide-title"></h3>
+                <div class="disclaimer">
+                    AIからの案内と本ページの資料は、セルフケアを
+                    進めるための参考情報です。
+                    症状や状態を医学的に診断するものではありません。
+                </div>
+
+            </section>
+
+
+            <!-- Slides -->
+
+            <section
+                id="slide-viewer-container"
+                class="card"
+                style="display:none;">
+
+                <h2
+                    id="slide-section-title"
+                    class="card-title">
+
+                    <i class="fa-solid fa-book-open"></i>
+                    臨床参考資料
+                </h2>
+
+                <div class="slide-viewer">
+
+                    <div class="slide-header">
 
                         <div
-                            id="slide-text"
-                            class="slide-text">
+                            id="slide-title"
+                            class="slide-title">
                         </div>
 
+                        <div
+                            id="slide-page"
+                            class="slide-page">
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="slide-text"
+                        class="slide-text">
                     </div>
 
                     <div class="slide-controls">
 
                         <button
                             id="prev-btn"
-                            class="nav-button"
+                            class="slide-btn"
                             type="button"
                             onclick="prevSlide()">
 
@@ -586,14 +819,9 @@
 
                         </button>
 
-                        <span
-                            id="slide-page"
-                            class="page-number">
-                        </span>
-
                         <button
                             id="next-btn"
-                            class="nav-button"
+                            class="slide-btn"
                             type="button"
                             onclick="nextSlide()">
 
@@ -604,162 +832,2170 @@
 
                     </div>
 
-                </section>
+                </div>
+
+            </section>
 
 
-                <!-- =========================
-                     CHECK SHEET
-                ========================== -->
+            <!-- Checksheet -->
 
-                <section
-                    id="checksheet-container"
-                    class="card">
+            <section
+                id="checksheet-container"
+                class="card"
+                style="display:none;">
 
-                    <h2>
-                        <i class="fa-solid fa-chart-line"></i>
-                        悪循環セルフチェック
-                    </h2>
+                <h2 class="card-title">
+                    <i class="fa-solid fa-chart-line"></i>
+                    悪循環セルフチェックシート
+                </h2>
 
-                    <p class="small">
-                        0〜100%の範囲で、現在の体感に近い位置へ調整してください。
-                        数値は診断値ではなく、ご自身の状態を振り返るための指標です。
-                    </p>
-
-                    <div id="checksheet-list">
-
-                        <div class="check-item">
-
-                            <div class="check-title">
-                                <span>
-                                    Ⅰ-1 他者推測・否定的価値観
-                                </span>
-
-                                <span
-                                    id="val-value"
-                                    class="range-value">
-                                    0%
-                                </span>
-                            </div>
-
-                            <input
-                                id="range-value"
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="10"
-                                value="0"
-                                oninput="syncVal('value')">
-
-                            <div class="range-labels">
-                                <span>ほぼない</span>
-                                <span>非常に強い</span>
-                            </div>
-
-                        </div>
+                <p>
+                    現在の体感に近い数値を10％刻みで設定してください。
+                    数値そのものを「良い・悪い」と評価する必要はありません。
+                </p>
 
 
-                        <div class="check-item">
+                <div class="checksheet-item">
 
-                            <div class="check-title">
-                                <span>
-                                    Ⅰ-2 発話強迫・隠蔽
-                                </span>
+                    <div class="checksheet-label">
+                        Ⅰ-1　他者推測・自己処罰
+                    </div>
 
-                                <span
-                                    id="val-cognition"
-                                    class="range-value">
-                                    0%
-                                </span>
-                            </div>
+                    <div class="range-row">
 
-                            <input
-                                id="range-cognition"
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="10"
-                                value="0"
-                                oninput="syncVal('cognition')">
+                        <input
+                            id="range-value"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('value')">
 
-                            <div class="range-labels">
-                                <span>ほぼない</span>
-                                <span>非常に強い</span>
-                            </div>
+                        <span
+                            id="val-value"
+                            class="range-value">
+                            0%
+                        </span>
 
-                        </div>
+                    </div>
 
+                    <div class="checksheet-scale">
+                        <span>0%</span>
+                        <span>100%</span>
+                    </div>
 
-                        <div class="check-item">
-
-                            <div class="check-title">
-                                <span>
-                                    Ⅱ-1 情動反応・反芻
-                                </span>
-
-                                <span
-                                    id="val-emotion"
-                                    class="range-value">
-                                    0%
-                                </span>
-                            </div>
-
-                            <input
-                                id="range-emotion"
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="10"
-                                value="0"
-                                oninput="syncVal('emotion')">
-
-                            <div class="range-labels">
-                                <span>ほぼない</span>
-                                <span>非常に強い</span>
-                            </div>
-
-                        </div>
+                </div>
 
 
-                        <div class="check-item">
+                <div class="checksheet-item">
 
-                            <div class="check-title">
-                                <span>
-                                    Ⅲ-1 注目・自己監視
-                                </span>
+                    <div class="checksheet-label">
+                        Ⅰ-2　発話強迫・隠蔽
+                    </div>
 
-                                <span
-                                    id="val-attention"
-                                    class="range-value">
-                                    0%
-                                </span>
-                            </div>
+                    <div class="range-row">
 
-                            <input
-                                id="range-attention"
-                                type="range"
-                                min="0"
-                                max="100"
-                                step="10"
-                                value="0"
-                                oninput="syncVal('attention')">
+                        <input
+                            id="range-cognition"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('cognition')">
 
-                            <div class="range-labels">
-                                <span>ほぼない</span>
-                                <span>非常に強い</span>
-                            </div>
+                        <span
+                            id="val-cognition"
+                            class="range-value">
+                            0%
+                        </span>
 
-                        </div>
+                    </div>
+
+                </div>
 
 
-                        <div class="check-item">
+                <div class="checksheet-item">
 
-                            <div class="check-title">
-                                <span>
-                                    Ⅲ-2 工夫（助走・延期）
-                                </span>
+                    <div class="checksheet-label">
+                        Ⅱ-1　情動反応・反芻
+                    </div>
 
-                                <span
-                                    id="val-effort"
-                                    class="range-value">
-                                    0%
- 
+                    <div class="range-row">
+
+                        <input
+                            id="range-emotion"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('emotion')">
+
+                        <span
+                            id="val-emotion"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅲ-1　注目・自己監視
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-attention"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('attention')">
+
+                        <span
+                            id="val-attention"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅲ-2　工夫（助走・延期）
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-effort"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('effort')">
+
+                        <span
+                            id="val-effort"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅲ-3　その他の工夫（解除・言い換え）
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-avoid"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('avoid')">
+
+                        <span
+                            id="val-avoid"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅲ-4　回避行動
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-avoid-act"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('avoid-act')">
+
+                        <span
+                            id="val-avoid-act"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅳ-1　聞き漏らし等負担
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-listen-burden"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('listen-burden')">
+
+                        <span
+                            id="val-listen-burden"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="checksheet-item">
+
+                    <div class="checksheet-label">
+                        Ⅴ-1　悪い面への注意偏り
+                    </div>
+
+                    <div class="range-row">
+
+                        <input
+                            id="range-neg-bias"
+                            type="range"
+                            min="0"
+                            max="100"
+                            step="10"
+                            value="0"
+                            oninput="syncVal('neg-bias')">
+
+                        <span
+                            id="val-neg-bias"
+                            class="range-value">
+                            0%
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="primary-button"
+                    onclick="generateClinicalReport()">
+
+                    <i class="fa-solid fa-file-medical"></i>
+                    悪循環を分析してレポートを生成する
+
+                </button>
+
+            </section>
+
+
+            <!-- Result -->
+
+            <section
+                id="result-area"
+                class="card result-card"
+                style="display:none;">
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-chart-simple"></i>
+                    今回のセルフチェック結果
+                </h2>
+
+                <div class="score-display">
+
+                    <div class="score-caption">
+                        悪循環セルフチェック・トータル負荷
+                    </div>
+
+                    <div
+                        id="rep-total"
+                        class="score-number">
+                        0%
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="rep-total-desc"
+                    class="report-block">
+                </div>
+
+                <div
+                    id="rep-mechanism"
+                    class="report-block">
+                </div>
+
+                <div
+                    id="rep-therapy"
+                    class="report-block">
+                </div>
+
+                <button
+                    id="copy-report-button"
+                    type="button"
+                    class="copy-button"
+                    onclick="copyLatestReport()">
+
+                    <i class="fa-regular fa-copy"></i>
+                    AI送信用レポートをコピー
+
+                </button>
+
+            </section>
+
+
+            <!-- History -->
+
+            <section class="card">
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    セルフチェック履歴
+                </h2>
+
+                <div id="history-container"></div>
+
+            </section>
+
+
+            <!-- Scenario creator -->
+
+            <section
+                id="scenario-creator-container"
+                class="card"
+                style="display:none;">
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    対立内容の自作教育フェーズ
+                </h2>
+
+                <p>
+                    現在の年齢や実際の生活場面を入力し、
+                    AIに対立内容の作成を依頼するためのメッセージを生成します。
+                </p>
+
+                <div class="scenario-form">
+
+                    <div class="form-group">
+
+                        <label for="ai-scene-age">
+                            対象年齢
+                        </label>
+
+                        <input
+                            id="ai-scene-age"
+                            class="form-control"
+                            type="number"
+                            min="1"
+                            max="120"
+                            placeholder="例：35">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="ai-scene-type">
+                            希望する場面
+                        </label>
+
+                        <textarea
+                            id="ai-scene-type"
+                            class="form-control"
+                            maxlength="500"
+                            placeholder="例：職場で同僚に仕事の相談をする場面">
+                        </textarea>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        onclick="requestAIScenario()">
+
+                        <i class="fa-solid fa-paper-plane"></i>
+                        AIへの依頼文を作成する
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- ==================================================
+             RIGHT
+        =================================================== -->
+
+        <div>
+
+            <section class="card">
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-robot"></i>
+                    AIセルフケア支援
+                </h2>
+
+                <p>
+                    右下に表示されるAIチャットボットから、
+                    現在のステップに応じた案内を受けてください。
+                </p>
+
+                <div class="chatbot-status">
+
+                    <span
+                        id="chatbot-status-dot"
+                        class="status-dot">
+                    </span>
+
+                    <span id="chatbot-status-text">
+                        AIチャットボットを読み込んでいます
+                    </span>
+
+                </div>
+
+                <div class="disclaimer">
+                    AIの回答はセルフケア支援を目的としたものであり、
+                    医学的診断・治療計画・緊急時の判断を行うものではありません。
+                </div>
+
+            </section>
+
+
+            <section class="card">
+
+                <h2 class="card-title">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    安全にご利用いただくために
+                </h2>
+
+                <p>
+                    本サービスでは、吃音についての体験や困りごとを
+                    AIとの対話を通じて整理していきます。
+                </p>
+
+                <p>
+                    過去の体験を思い出すことによって強い苦痛や動揺が
+                    生じた場合は、無理に話を続けないでください。
+                </p>
+
+                <p>
+                    強い苦痛がある場合や緊急性がある場合には、
+                    医療機関、言語聴覚士、地域の相談窓口、
+                    信頼できる人などへの相談を検討してください。
+                </p>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <p>
+        RASS吃音セルフケア支援
+    </p>
+
+    <p>
+        本サービスはセルフケア支援を目的としたAIツールです。
+        実在する医療専門職による診察・診断・治療を提供するものではありません。
+    </p>
+
+</footer>
+
+
+<script>
+/* =========================================================
+   RASS Application v2.0
+   =========================================================
+
+   設計方針
+
+   1. HTMLは「現在のステップ」を管理する。
+   2. Difyは対話と臨床フローを管理する。
+   3. HTMLはステップ1～3で先回りして
+      対立内容やM・R法を自動実行しない。
+   4. ユーザー入力をinnerHTMLへ直接挿入しない。
+   5. localStorage破損時もアプリを停止させない。
+========================================================= */
+
+
+/* =========================================================
+   Slide data
+========================================================= */
+
+const baseSlides = [
+
+    {
+        title: "P1. 吃音の基礎知識（有病率と原因）",
+        text:
+`● 成人の場合、吃音の有病率は人口の約1%と言われています。
+
+● 男女比などの疫学的情報には研究による差があります。
+
+● 吃音の原因については、遺伝的要因、神経生理学的要因、発達・環境要因など、複数の要因が関与すると考えられています。
+
+● 吃音は単一の原因によって説明できるものではありません。
+
+※本資料の医学的説明は一般的な参考情報です。`
+    },
+
+    {
+        title: "P2. 吃音の症状（中核症状）",
+        text:
+`吃音の症状には、発話そのものに現れる中核症状があります。
+
+1. 繰り返し（連発）
+音や語の一部を繰り返す状態。
+
+2. 引き伸ばし（伸発）
+音を引き延ばす状態。
+
+3. ブロック（難発・阻止）
+発話しようとしても、一時的に声が出にくくなる状態。
+
+また、発話に伴って身体的な反応が現れる場合もあります。
+
+症状の現れ方には個人差があります。`
+    },
+
+    {
+        title: "P3. 吃音の症状（二次的反応・回避）",
+        text:
+`吃音を経験する中で、発話への不安や予測、回避などが生じることがあります。
+
+例えば、
+
+● 発話するタイミングを遅らせる
+● 特定の言葉を避ける
+● 話す場面そのものを避ける
+● 発話をコントロールしようとする
+
+などがあります。
+
+これらが本人の生活や心理的負担にどのように関係しているかを整理することが重要です。`
+    },
+
+    {
+        title: "P4. 吃音と生活への影響",
+        text:
+`吃音の重さは、単純に「どのくらいどもるか」だけでは捉えられません。
+
+発話への不安、
+発話を避ける行動、
+社会参加への制限、
+本人が感じる苦痛など、
+複数の側面から考える必要があります。
+
+同じような発話症状でも、本人が感じる困難さには大きな個人差があります。`
+    },
+
+    {
+        title: "P5. 吃音の変動について",
+        text:
+`吃音の状態は一定ではなく、場面、相手、心理的状態、環境などによって変化することがあります。
+
+「今日は話しやすかった」
+「今日はかなり話しにくかった」
+
+という変化があっても、それだけでセルフケアが失敗したとは判断できません。
+
+日々の変動を記録しながら、長期的な傾向を見ることが重要です。`
+    },
+
+    {
+        title: "P6. 発話への注意と自己監視",
+        text:
+`発話するときに、
+
+「次の言葉は出るだろうか」
+「詰まるかもしれない」
+
+など、発話そのものを強く監視する状態が生じることがあります。
+
+本サービスでは、このような「発話への注意」が日常生活でどのように現れているかを整理します。`
+    },
+
+    {
+        title: "P7. 注意シフトという考え方",
+        text:
+`RASSセルフケアでは、発話そのものを過剰に監視するのではなく、必要に応じて周囲の環境へ注意を向ける「注意シフト」という考え方を扱います。
+
+例えば、
+
+● 周囲の景色
+● 物の形
+● 色
+● 相手の表情
+
+など、外部の情報を観察する方法です。
+
+実際の取り組みは現在のステップに従って進めます。`
+    },
+
+    {
+        title: "P8. メンタルリハーサル法について",
+        text:
+`メンタルリハーサル法では、実際に声を出すのではなく、頭の中で場面をイメージする方法を扱います。
+
+ただし、本サービスではステップを飛ばして訓練を開始することはしません。
+
+現在のステップに応じたAIの案内に従ってください。`
+    },
+
+    {
+        title: "P9. 長期的な変化について",
+        text:
+`セルフケアの変化は、その日の発話状態だけで判断するものではありません。
+
+一定期間の記録、
+日常生活での困難さ、
+回避や自己監視の変化などを
+総合的に振り返ります。
+
+短期間の数値変化だけで「治った」「悪化した」と断定しないことが重要です。`
+    },
+
+    {
+        title: "P10. セルフケアにおける目標",
+        text:
+`本サービスでは、単純に「どもらないこと」だけを唯一の目標とはしません。
+
+吃音への過度な注目、
+発話への恐怖、
+回避、
+生活上の制限などがどのように変化しているかを確認します。
+
+本人にとっての生活上の変化を重視します。`
+    },
+
+    {
+        title: "P11. M・R法の基本的注意",
+        text:
+`メンタルリハーサル法を行う場合は、現在のステップに応じたAIの案内を確認してください。
+
+本サービスでは、声を出す訓練と頭の中で行うイメージ訓練を区別します。
+
+ステップ1～3では、対立内容の作成やメンタルリハーサルの実施指示は行いません。`
+    }
+
+];
+
+
+/* =========================================================
+   State
+========================================================= */
+
+let currentSlides = [...baseSlides];
+let currentSlideIndex = 0;
+
+let latestReportMessage = "";
+
+const STORAGE_KEY = "rass_score_history_v2";
+
+
+/* =========================================================
+   Utility
+========================================================= */
+
+function safeParseJSON(value, fallback) {
+
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        return fallback;
+    }
+}
+
+
+function getSavedScoreHistory() {
+
+    try {
+
+        const raw = localStorage.getItem(STORAGE_KEY);
+
+        if (!raw) {
+            return [];
+        }
+
+        const parsed = safeParseJSON(raw, []);
+
+        if (!Array.isArray(parsed)) {
+            return [];
+        }
+
+        return parsed.filter(record =>
+            record &&
+            typeof record === "object" &&
+            typeof record.total === "number"
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Score history could not be loaded.",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+function saveScoreToHistory(stepVal, scoreTotal) {
+
+    const history = getSavedScoreHistory();
+
+    const record = {
+        step: String(stepVal),
+        total: Number(scoreTotal),
+        date: new Date().toISOString()
+    };
+
+    history.push(record);
+
+    /*
+     * 履歴が無制限に増え続けないよう、
+     * 最新100件まで保持。
+     */
+    const trimmed = history.slice(-100);
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(trimmed)
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "Score history could not be saved.",
+            error
+        );
+    }
+
+    return trimmed;
+}
+
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function formatDate(isoString) {
+
+    const date = new Date(isoString);
+
+    if (Number.isNaN(date.getTime())) {
+        return "-";
+    }
+
+    return date.toLocaleDateString(
+        "ja-JP",
+        {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    );
+}
+
+
+/* =========================================================
+   Slides
+========================================================= */
+
+function updateSlideDisplay() {
+
+    const titleEl =
+        document.getElementById("slide-title");
+
+    const textEl =
+        document.getElementById("slide-text");
+
+    const pageEl =
+        document.getElementById("slide-page");
+
+    const prevBtn =
+        document.getElementById("prev-btn");
+
+    const nextBtn =
+        document.getElementById("next-btn");
+
+
+    if (!titleEl ||
+        !textEl ||
+        !pageEl ||
+        !prevBtn ||
+        !nextBtn) {
+
+        return;
+    }
+
+
+    if (!currentSlides.length) {
+
+        titleEl.innerText = "";
+        textEl.innerText = "";
+        pageEl.innerText = "0 / 0";
+
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+
+        return;
+    }
+
+
+    if (currentSlideIndex < 0) {
+        currentSlideIndex = 0;
+    }
+
+    if (currentSlideIndex >= currentSlides.length) {
+        currentSlideIndex = currentSlides.length - 1;
+    }
+
+
+    const slide =
+        currentSlides[currentSlideIndex];
+
+
+    titleEl.innerText =
+        slide.title;
+
+    textEl.innerText =
+        slide.text;
+
+    pageEl.innerText =
+        `${currentSlideIndex + 1} / ${currentSlides.length}`;
+
+
+    prevBtn.disabled =
+        currentSlideIndex === 0;
+
+    nextBtn.disabled =
+        currentSlideIndex ===
+        currentSlides.length - 1;
+}
+
+
+function nextSlide() {
+
+    if (
+        currentSlideIndex <
+        currentSlides.length - 1
+    ) {
+
+        currentSlideIndex++;
+
+        updateSlideDisplay();
+    }
+}
+
+
+function prevSlide() {
+
+    if (currentSlideIndex > 0) {
+
+        currentSlideIndex--;
+
+        updateSlideDisplay();
+    }
+}
+
+
+/* =========================================================
+   Slider
+========================================================= */
+
+function syncVal(id) {
+
+    const input =
+        document.getElementById(`range-${id}`);
+
+    const output =
+        document.getElementById(`val-${id}`);
+
+
+    if (!input || !output) {
+        return;
+    }
+
+
+    const value =
+        Number(input.value) || 0;
+
+    output.innerText =
+        `${value}%`;
+}
+
+
+/* =========================================================
+   Session handling
+========================================================= */
+
+function changeSession() {
+
+    const select =
+        document.getElementById("session-select");
+
+    if (!select) {
+        return;
+    }
+
+
+    const sVal =
+        String(select.value);
+
+
+    const protocolBox =
+        document.getElementById("protocol-box");
+
+    const homeworkBox =
+        document.getElementById("homework-box");
+
+    const slideViewer =
+        document.getElementById(
+            "slide-viewer-container"
+        );
+
+    const checksheetContainer =
+        document.getElementById(
+            "checksheet-container"
+        );
+
+    const slideSectionTitle =
+        document.getElementById(
+            "slide-section-title"
+        );
+
+    const scenarioCreator =
+        document.getElementById(
+            "scenario-creator-container"
+        );
+
+
+    if (!protocolBox ||
+        !slideViewer ||
+        !checksheetContainer ||
+        !slideSectionTitle ||
+        !scenarioCreator) {
+
+        return;
+    }
+
+
+    currentSlides =
+        [...baseSlides];
+
+    currentSlideIndex = 0;
+
+
+    slideViewer.style.display =
+        "none";
+
+    checksheetContainer.style.display =
+        "none";
+
+    scenarioCreator.style.display =
+        "none";
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Step 1～3:
+     * 対立内容やM・R法をHTML側から先回りして
+     * 指示しない。
+     */
+
+
+    if (sVal === "1") {
+
+        protocolBox.innerHTML = `
+            <div class="visual-banner">
+                <i class="fa-solid fa-comments"></i>
+                <div class="visual-banner-text">
+                    まずはAIとの対話によって、
+                    現在困っている場面と状態を整理します。
+                </div>
+            </div>
+
+            <strong>【ステップ1】</strong>
+
+            <ol class="protocol-list">
+                <li>
+                    右下のAIチャットボットを開いてください。
+                </li>
+
+                <li>
+                    AIの質問に沿って、
+                    年齢・仕事または所属・現在特に困っている発話場面をお伝えください。
+                </li>
+
+                <li>
+                    AIとの対話を通じて、
+                    現在の状態を整理してください。
+                </li>
+            </ol>
+
+            <div class="cta-action-box">
+                AIチャットボットとのヒアリングを開始してください。
+            </div>
+        `;
+
+
+        slideViewer.style.display =
+            "block";
+
+        slideSectionTitle.innerText =
+            "臨床参考資料";
+
+        updateSlideDisplay();
+
+        return;
+    }
+
+
+    if (sVal === "2") {
+
+        protocolBox.innerHTML = `
+            <div class="visual-banner">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <div class="visual-banner-text">
+                    発話場面で生じている
+                    「注目・工夫・回避」の悪循環を整理します。
+                </div>
+            </div>
+
+            <strong>【ステップ2】</strong>
+
+            <ol class="protocol-list">
+                <li>
+                    AIからの質問に1つずつ回答してください。
+                </li>
+
+                <li>
+                    現在の場面で起きていることを整理します。
+                </li>
+
+                <li>
+                    このステップでは、
+                    対立内容の作成やメンタルリハーサルは行いません。
+                </li>
+            </ol>
+
+            <div class="cta-action-box">
+                AIチャットボットの質問に沿って進めてください。
+            </div>
+        `;
+
+
+        slideViewer.style.display =
+            "block";
+
+        slideSectionTitle.innerText =
+            "臨床参考資料";
+
+        currentSlideIndex = 5;
+
+        updateSlideDisplay();
+
+        return;
+    }
+
+
+    if (sVal === "3") {
+
+        protocolBox.innerHTML = `
+            <div class="visual-banner">
+                <i class="fa-solid fa-brain"></i>
+                <div class="visual-banner-text">
+                    発話への注意と人為的コントロールが
+                    悪循環にどのように関係するかを整理します。
+                </div>
+            </div>
+
+            <strong>【ステップ3】</strong>
+
+            <ol class="protocol-list">
+                <li>
+                    AIからの解説を確認してください。
+                </li>
+
+                <li>
+                    ご自身の体験と照らし合わせて、
+                    感想や気づきを伝えてください。
+                </li>
+
+                <li>
+                    このステップでは、
+                    対立内容の作成やメンタルリハーサルの実施指示は行いません。
+                </li>
+            </ol>
+
+            <div class="cta-action-box">
+                AIとの対話を通じて、
+                現在の仕組みへの理解を深めてください。
+            </div>
+        `;
+
+
+        slideViewer.style.display =
+            "block";
+
+        slideSectionTitle.innerText =
+            "臨床参考資料";
+
+        currentSlideIndex = 6;
+
+        updateSlideDisplay();
+
+        return;
+    }
+
+
+    /*
+     * Step 4～14
+     */
+
+    checksheetContainer.style.display =
+        "block";
+
+    slideViewer.style.display =
+        "block";
+
+    slideSectionTitle.innerText =
+        "臨床参考資料 ＆ セルフケア";
+
+    protocolBox.innerHTML = `
+        <div class="visual-banner">
+            <i class="fa-solid fa-chart-line"></i>
+            <div class="visual-banner-text">
+                ステップ ${escapeHTML(sVal)} のセルフケアに取り組みます。
+            </div>
+        </div>
+
+        <strong>【本日の進め方】</strong>
+
+        <ol class="protocol-list">
+            <li>
+                現在の体感をセルフチェックシートに入力してください。
+            </li>
+
+            <li>
+                「レポートを生成する」を押してください。
+            </li>
+
+            <li>
+                生成されたレポートをAIチャットボットへ送信してください。
+            </li>
+        </ol>
+
+        <div class="cta-action-box">
+            現在のステップに応じたAIの案内を優先してください。
+        </div>
+    `;
+
+
+    if (sVal === "4") {
+
+        currentSlideIndex = 6;
+
+    } else if (sVal === "5") {
+
+        currentSlideIndex = 7;
+
+    } else {
+
+        currentSlideIndex =
+            Math.min(
+                7,
+                currentSlides.length - 1
+            );
+    }
+
+
+    updateSlideDisplay();
+
+
+    if (sVal === "15") {
+
+        /*
+         * Step 15:
+         * 対立内容の自作教育フェーズ
+         */
+
+        checksheetContainer.style.display =
+            "none";
+
+        slideViewer.style.display =
+            "block";
+
+        scenarioCreator.style.display =
+            "block";
+
+        slideSectionTitle.innerText =
+            "対立内容の自作教育フェーズ";
+
+        currentSlideIndex =
+            Math.min(
+                7,
+                currentSlides.length - 1
+            );
+
+        updateSlideDisplay();
+    }
+}
+
+
+/* =========================================================
+   Clinical report
+========================================================= */
+
+function getRangeValue(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+        return 0;
+    }
+
+    const value =
+        Number.parseInt(
+            element.value,
+            10
+        );
+
+    if (!Number.isFinite(value)) {
+        return 0;
+    }
+
+    return Math.min(
+        100,
+        Math.max(0, value)
+    );
+}
+
+
+function generateClinicalReport() {
+
+    const values = {
+
+        value:
+            getRangeValue("range-value"),
+
+        cognition:
+            getRangeValue("range-cognition"),
+
+        emotion:
+            getRangeValue("range-emotion"),
+
+        attention:
+            getRangeValue("range-attention"),
+
+        effort:
+            getRangeValue("range-effort"),
+
+        avoid:
+            getRangeValue("range-avoid"),
+
+        avoidAct:
+            getRangeValue("range-avoid-act"),
+
+        listenBurden:
+            getRangeValue(
+                "range-listen-burden"
+            ),
+
+        negBias:
+            getRangeValue(
+                "range-neg-bias"
+            )
+    };
+
+
+    const valueArray =
+        Object.values(values);
+
+
+    const total =
+        Math.round(
+            valueArray.reduce(
+                (sum, value) =>
+                    sum + value,
+                0
+            ) / valueArray.length
+        );
+
+
+    const stepVal =
+        document.getElementById(
+            "session-select"
+        ).value;
+
+
+    const history =
+        getSavedScoreHistory();
+
+
+    let prevScoreText =
+        "今回が初回測定です。";
+
+    let diffText =
+        "";
+
+
+    if (history.length > 0) {
+
+        const lastRecord =
+            history[history.length - 1];
+
+        const diff =
+            total -
+            Number(lastRecord.total);
+
+
+        if (diff < 0) {
+
+            diffText =
+                `（前回比：▼${Math.abs(diff)}%）`;
+
+        } else if (diff > 0) {
+
+            diffText =
+                `（前回比：▲${diff}%）`;
+
+        } else {
+
+            diffText =
+                "（前回比：変化なし）";
+        }
+
+
+        prevScoreText =
+            `前回（ステップ${escapeHTML(lastRecord.step)}）：${lastRecord.total}% → 今回（ステップ${escapeHTML(stepVal)}）：${total}% ${diffText}`;
+    }
+
+
+    saveScoreToHistory(
+        stepVal,
+        total
+    );
+
+
+    const reportTotal =
+        document.getElementById(
+            "rep-total"
+        );
+
+
+    if (reportTotal) {
+
+        reportTotal.innerText =
+            `${total}%`;
+    }
+
+
+    const totalDesc =
+        `
+        <div>
+            <strong>【スコア推移・前後比較】</strong><br>
+            ${escapeHTML(prevScoreText)}
+        </div>
+
+        <p>
+            今回の悪循環セルフチェック・
+            トータル負荷は
+            <strong>${total}%</strong>
+            です。
+        </p>
+
+        <p>
+            この数値だけで吃音の重症度や
+            医学的な改善・悪化を確定することはできません。
+            前回との変化を記録し、
+            日常生活での体験と合わせて振り返ってください。
+        </p>
+        `;
+
+
+    const mechanismDesc =
+        `
+        <h4>【各項目】</h4>
+
+        <ul>
+            <li>Ⅰ-1 他者推測・自己処罰：${values.value}%</li>
+            <li>Ⅰ-2 発話強迫・隠蔽：${values.cognition}%</li>
+            <li>Ⅱ-1 情動反応・反芻：${values.emotion}%</li>
+            <li>Ⅲ-1 注目・自己監視：${values.attention}%</li>
+            <li>Ⅲ-2 工夫（助走・延期）：${values.effort}%</li>
+            <li>Ⅲ-3 その他の工夫：${values.avoid}%</li>
+            <li>Ⅲ-4 回避行動：${values.avoidAct}%</li>
+            <li>Ⅳ-1 聞き漏らし等負担：${values.listenBurden}%</li>
+            <li>Ⅴ-1 悪い面への注意偏り：${values.negBias}%</li>
+        </ul>
+
+        <div class="punish-calc">
+
+            <strong>
+                【自分を罰した回数の試算ワーク】
+            </strong>
+
+            <p>
+                この計算は医学的な測定値ではなく、
+                自分への評価や反応の多さを振り返るための
+                任意の参考ワークです。
+            </p>
+
+            ① 1日に工夫を使った平均回数：
+
+            <input
+                type="number"
+                id="calc-eff"
+                min="0"
+                max="100000"
+                value="20"
+                oninput="runPunishCalc()">
+
+            回
+
+            <br><br>
+
+            ② 1年に話す日数：
+
+            <input
+                type="number"
+                id="calc-days"
+                min="1"
+                max="366"
+                value="300"
+                oninput="runPunishCalc()">
+
+            日
+
+            <br><br>
+
+            ③ 吃音を意識し始めてからの年数：
+
+            <input
+                type="number"
+                id="calc-years"
+                min="0"
+                max="120"
+                value="15"
+                oninput="runPunishCalc()">
+
+            年
+
+            <div
+                style="margin-top:10px;font-weight:bold;">
+
+                推定回数：
+
+                <span
+                    id="punish-total-val">
+                    90,000
+                </span>
+
+                回
+
+            </div>
+
+        </div>
+        `;
+
+
+    const therapyDesc =
+        `
+        <h4>【振り返り】</h4>
+
+        <p>
+            今回の数値を「成功・失敗」として
+            評価するのではなく、
+            どの項目に注意や負担が生じているのかを
+            確認するために使用してください。
+        </p>
+
+        <p>
+            次の行動については、
+            現在のステップとAIからの案内に従ってください。
+        </p>
+        `;
+
+
+    document.getElementById(
+        "rep-total-desc"
+    ).innerHTML =
+        totalDesc;
+
+    document.getElementById(
+        "rep-mechanism"
+    ).innerHTML =
+        mechanismDesc;
+
+    document.getElementById(
+        "rep-therapy"
+    ).innerHTML =
+        therapyDesc;
+
+
+    latestReportMessage =
+`【悪循環セルフチェック報告（ステップ${stepVal}）】
+現在のトータル負荷スコア：${total}%
+前後比較：${prevScoreText}
+
+[詳細項目]
+・否定的価値観・推測：${values.value}%
+・発話強迫・隠蔽：${values.cognition}%
+・感情の反芻・予期不安：${values.emotion}%
+・注目・自己監視：${values.attention}%
+・工夫（助走・延期）：${values.effort}%
+・その他の工夫：${values.avoid}%
+・回避行動：${values.avoidAct}%
+・会話の聞き漏らし負担：${values.listenBurden}%
+・悪い面への注意の偏り：${values.negBias}%
+
+上記のスコア結果を踏まえて、
+現在のステップに沿った振り返りとセルフケア上のガイダンスをお願いします。`;
+
+
+    const resultArea =
+        document.getElementById(
+            "result-area"
+        );
+
+
+    if (resultArea) {
+
+        resultArea.style.display =
+            "block";
+
+        resultArea.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+
+    renderHistory();
+
+    runPunishCalc();
+}
+
+
+/* =========================================================
+   Punishment calculation
+========================================================= */
+
+function runPunishCalc() {
+
+    const effEl =
+        document.getElementById(
+            "calc-eff"
+        );
+
+    const daysEl =
+        document.getElementById(
+            "calc-days"
+        );
+
+    const yearsEl =
+        document.getElementById(
+            "calc-years"
+        );
+
+    const target =
+        document.getElementById(
+            "punish-total-val"
+        );
+
+
+    if (!effEl ||
+        !daysEl ||
+        !yearsEl ||
+        !target) {
+
+        return;
+    }
+
+
+    const eff =
+        Math.max(
+            0,
+            Number.parseInt(
+                effEl.value,
+                10
+            ) || 0
+        );
+
+
+    const days =
+        Math.min(
+            366,
+            Math.max(
+                1,
+                Number.parseInt(
+                    daysEl.value,
+                    10
+                ) || 1
+            )
+        );
+
+
+    const years =
+        Math.max(
+            0,
+            Number.parseInt(
+                yearsEl.value,
+                10
+            ) || 0
+        );
+
+
+    const total =
+        eff *
+        days *
+        years;
+
+
+    target.innerText =
+        total.toLocaleString(
+            "ja-JP"
+        );
+}
+
+
+/* =========================================================
+   Copy report
+========================================================= */
+
+async function copyText(text) {
+
+    if (!text) {
+        return false;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        return true;
+
+    } catch (error) {
+
+        /*
+         * Clipboard APIが使えない環境向け
+         */
+
+        try {
+
+            const textarea =
+                document.createElement(
+                    "textarea"
+                );
+
+            textarea.value =
+                text;
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.opacity =
+                "0";
+
+            document.body.appendChild(
+                textarea
+            );
+
+            textarea.focus();
+
+            textarea.select();
+
+            const success =
+                document.execCommand(
+                    "copy"
+                );
+
+            textarea.remove();
+
+            return success;
+
+        } catch (fallbackError) {
+
+            return false;
+        }
+    }
+}
+
+
+async function copyLatestReport() {
+
+    if (!latestReportMessage) {
+
+        alert(
+            "先にセルフチェックのレポートを生成してください。"
+        );
+
+        return;
+    }
+
+
+    const success =
+        await copyText(
+            latestReportMessage
+        );
+
+
+    if (success) {
+
+        alert(
+            "AI送信用レポートをコピーしました。右下のAIチャットボットへ貼り付けてください。"
+        );
+
+    } else {
+
+        alert(
+            "コピーできませんでした。表示されたレポートを手動でコピーしてください。"
+        );
+    }
+}
+
+
+/* =========================================================
+   History
+========================================================= */
+
+function renderHistory() {
+
+    const container =
+        document.getElementById(
+            "history-container"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    const history =
+        getSavedScoreHistory();
+
+
+    if (!history.length) {
+
+        container.innerHTML =
+            `<div class="history-empty">
+                まだセルフチェック履歴はありません。
+            </div>`;
+
+        return;
+    }
+
+
+    const rows =
+        history
+            .slice()
+            .reverse()
+            .slice(0, 20)
+            .map(record => {
+
+                return `
+                    <tr>
+                        <td>
+                            ${escapeHTML(
+                                formatDate(record.date)
+                            )}
+                        </td>
+
+                        <td>
+                            Step ${escapeHTML(
+                                record.step
+                            )}
+                        </td>
+
+                        <td>
+                            ${Number(record.total)}%
+                        </td>
+                    </tr>
+                `;
+
+            })
+            .join("");
+
+
+    container.innerHTML =
+        `
+        <div class="history-table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+                    <tr>
+                        <th>日付</th>
+                        <th>ステップ</th>
+                        <th>スコア</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+        `;
+}
+
+
+/* =========================================================
+   Scenario creation
+========================================================= */
+
+function requestAIScenario() {
+
+    const sceneEl =
+        document.getElementById(
+            "ai-scene-type"
+        );
+
+    const ageEl =
+        document.getElementById(
+            "ai-scene-age"
+        );
+
+
+    if (!sceneEl ||
+        !ageEl) {
+
+        return;
+    }
+
+
+    const scene =
+        sceneEl.value.trim();
+
+    const age =
+        ageEl.value.trim();
+
+
+    if (!scene) {
+
+        alert(
+            "作成したい場面を入力してください。"
+        );
+
+        sceneEl.focus();
+
+        return;
+    }
+
+
+    if (!age) {
+
+        alert(
+            "対象年齢を入力してください。"
+        );
+
+        ageEl.focus();
+
+        return;
+    }
+
+
+    const msg =
+`【対立内容の自動作成依頼】
+対象年齢：${age}歳
+希望場面：${scene}
+
+現在は対立内容の自作教育フェーズです。
+上記の設定に合わせて、RASSの対立内容を作成してください。
+
+以下の形式で、利用者がメモして見返しやすいように端的に作成してください。
+
+＜１＞〇〇の場面
+＜２＞周囲をよく観察しながら、自分のペースで〇〇を行っている。
+＜３＞相手は〇〇しながら真剣に聞いている。
+
+セリフや発話器官の操作を中心とした指示ではなく、
+外部の景色・人物・物などへの注意を中心に構成してください。
+
+必要な補足説明がある場合は、
+「補足説明」としてフォーマットの下に分けてください。
+
+指定された件数や場面条件がある場合は、
+その条件をすべて守ってください。`;
+
+
+    const ctaBox =
+        document.querySelector(
+            ".cta-action-box"
+        );
+
+
+    if (ctaBox) {
+
+        ctaBox.innerHTML =
+            `
+            <strong>
+                【AIへ送信する対立内容作成依頼】
+            </strong>
+
+            <p>
+                以下をコピーして、
+                右下のAIチャットボットへ送信してください。
+            </p>
+
+            <pre style="
+                background:#f8fafc;
+                border:1px solid #e5e7eb;
+                padding:12px;
+                border-radius:8px;
+                white-space:pre-wrap;
+                user-select:all;
+            ">${escapeHTML(msg)}</pre>
+
+            <button
+                type="button"
+                class="copy-button"
+                onclick="copyTextAndNotify(this)"
+                data-copy="${escapeHTML(msg)}">
+
+                <i class="fa-regular fa-copy"></i>
+                依頼文をコピー
+
+            </button>
+            `;
+
+        ctaBox.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+}
+
+
+async function copyTextAndNotify(button) {
+
+    if (!button) {
+        return;
+    }
+
+
+    const text =
+        button.getAttribute(
+            "data-copy"
+        );
+
+
+    if (!text) {
+        return;
+    }
+
+
+    /*
+     * HTML attributeに入れる方式では、
+     * 改行や特殊文字の復元に問題が出る可能性がある。
+     *
+     * そのため、この関数ではdata-copyを
+     * HTML decodeしてからコピーする。
+     */
+
+    const temp =
+        document.createElement(
+            "textarea"
+        );
+
+    temp.innerHTML =
+        text;
+
+    const decoded =
+        temp.value;
+
+
+    const success =
+        await copyText(
+            decoded
+        );
+
+
+    if (success) {
+
+        alert(
+            "AIへの依頼文をコピーしました。"
+        );
+
+    } else {
+
+        alert(
+            "コピーできませんでした。"
+        );
+    }
+}
+
+
+/* =========================================================
+   Dify status
+========================================================= */
+
+function setChatbotStatus(
+    ready,
+    message
+) {
+
+    const dot =
+        document.getElementById(
+            "chatbot-status-dot"
+        );
+
+    const text =
+        document.getElementById(
+            "chatbot-status-text"
+        );
+
+
+    if (!dot || !text) {
+        return;
+    }
+
+
+    dot.classList.toggle(
+        "ready",
+        Boolean(ready)
+    );
+
+    text.innerText =
+        message;
+}
+
+
+/* =========================================================
+   Initialization
+========================================================= */
+
+function initializeApp() {
+
+    /*
+     * Slider display
+     */
+
+    [
+        "value",
+        "cognition",
+        "emotion",
+        "attention",
+        "effort",
+        "avoid",
+        "avoid-act",
+        "listen-burden",
+        "neg-bias"
+    ].forEach(syncVal);
+
+
+    /*
+     * Initial session
+     */
+
+    changeSession();
+
+
+    /*
+     * History
+     */
+
+    renderHistory();
+
+
+    /*
+     * Dify embedのロードはdeferなので、
+     * 少し待って表示状態を更新。
+     */
+
+    setTimeout(() => {
+
+        setChatbotStatus(
+            true,
+            "AIチャットボットを利用できます"
+        );
+
+    }, 1500);
+}
+
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeApp
+    );
+
+} else {
+
+    initializeApp();
+}
+
+</script>
+
+</body>
+</html>
