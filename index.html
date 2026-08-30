@@ -1,936 +1,765 @@
-<script>
-    window.difyChatbotConfig = { token: 'uCSrQyoRDZaA3gjC' }
-</script>
-
-<script src="https://udify.app/embed.min.js" id="uCSrQyoRDZaA3gjC" defer></script>
-
-<script>
-/* ============================================================
-   RASS 吃音セルフケア支援アプリ
-   修正版 JavaScript
-   ============================================================ */
-
-/* ------------------------------------------------------------
-   基本スライド
-   ※「一般的な知見」と「RASS独自モデル」が混同されないよう
-      表現を一部調整
-   ------------------------------------------------------------ */
-
-const baseSlides = [
-
-    {
-        title: "P1. 吃音の基礎知識（有病率と原因）",
-        text:
-`● 成人の場合、吃音の有病率は人口の約1%と言われています。100人に1人程度という計算になります。
-
-● 成人では男性に多いことが知られています。
-
-● 吃音の原因は単一ではなく、遺伝的要因や発達・環境など、複数の要因が関係すると考えられています。
-
-● 吃音の発症メカニズムにはまだ明らかになっていない部分があり、「これだけが根本原因」という形では説明できません。
-
-● 現在の吃音支援では、発話の流暢性だけではなく、本人が感じる困難、予期不安、回避、生活への影響なども含めて状態を捉えることが重要です。
-
-【知見の位置づけ】
-ここでは、吃音に関する一般的な基礎知識と、RASSが重視する考え方を区別して説明しています。`
-    },
-
-    {
-        title: "P2. 吃音の症状（中核症状）",
-        text:
-`吃音の症状は、大きく分けると、本人の意思とは関係なく現れる「中核症状」と、どもることへの反応として生じる「二次的な行動」に分けて考えることができます。
-
-【① 中核症状（吃音そのもの）】
-
-1. 繰り返し（連発）
-音や語の一部を繰り返す症状。
-例：「み、み、みかん」
-
-2. 引き伸ばし（伸発）
-音を引き延ばす症状。
-例：「みーーかん」
-
-3. ブロック（難発・阻止）
-言葉を出そうとしても声が出にくくなる状態。
-例：「……っみかん」
-
-※発話時に顔や身体などが動く「随伴症状」が伴う場合もあります。
-
-【知見の位置づけ】
-中核症状の説明は、吃音を理解するための一般的な基礎知識です。`
-    },
-
-    {
-        title: "P3. 吃音の症状（二次的症状：工夫・回避）",
-        text:
-`吃音を経験する中で、「どもることを避けたい」「何とかうまく話したい」という目的から、さまざまな行動が生じることがあります。
-
-RASSでは、これらを「工夫」と「回避」という観点から捉えます。
-
-● 解除反応
-ブロックなどが生じた際に、そこから抜け出そうとして力を入れたり、発話を意図的に操作したりする行動。
-
-● 助走・挿入
-言葉の前に「あの」「えーっと」などを入れて、発話しやすくしようとする行動。
-
-● 延期
-言えると思えるまで話すタイミングを遅らせる行動。
-
-● 回避
-言葉や場面そのものを避ける行動。
-
-・発話回避
-本当は答えが分かっていても答えない、別の表現を選ぶなど。
-
-・場面回避
-人と会う、電話をする、発表するなどの場面そのものを避ける行動。
-
-【RASSでの位置づけ】
-RASSでは、これらの「工夫」や「回避」を、吃音に対する反応として重要な観察対象として扱います。
-
-※ここでの分類は、RASSのセルフケア上の整理方法です。`
-    },
-
-    {
-        title: "P4. 吃音の進展段階（RASSで用いる状態整理モデル）",
-        text:
-`吃音の状態を理解するため、RASSでは「進展段階」というモデルを用いて整理します。
-
-● 第1層
-繰り返しや引き伸ばしなどの中核症状が中心で、本人が吃音をあまり意識していない状態。
-
-● 第2層
-ブロックなどが加わり、本人が吃音を意識するようになった状態。
-
-● 第3層
-吃音をコントロールしようとする「工夫」が増え、発話時の負担感や苦悩が強くなった状態。
-
-● 第4層
-工夫だけでは対応しきれず、発話や場面そのものを避ける「回避」が大きな問題となっている状態。
-
-★重要
-RASSでは、中核症状の頻度だけではなく、「工夫」「回避」「苦悩」「生活上の制限」などを含めて状態を捉えます。
-
-【注意】
-ここでいう「第1〜4層」は、RASSで用いる状態整理のモデルです。医学的な正式診断名や、すべての吃音者に適用される公式の重症度分類を意味するものではありません。
-
-また、状態は固定されたものではなく、場面や時期によって変動することがあります。`
-    },
-
-    {
-        title: "P5. なぜ吃音は変動するのか（RASSの悪循環モデル）",
-        text:
-`RASSでは、吃音に伴う負担を理解するため、「ビーカー」のイメージを使います。
-
-頭の中にひとつのビーカーがあり、そこに水が入っていると考えてください。
-
-RASSでは、水が多い状態を「吃音への注目、否定的な感情、工夫、回避などが重なっている状態」のイメージとして捉えます。
-
-● ビーカーに水を注ぐと考える要因
-・吃音について何度も考え続ける
-・発話を強く意識する
-・発話をコントロールしようとする
-・回避する
-・過去の発話を何度も振り返る
-
-● 水を減らす方向の経験
-・発話そのものから注意を外す
-・自然に行動できた経験
-・「話せた／話せなかった」だけではなく、場面そのものを経験できたという成功体験
-
-【知見の位置づけ】
-「ビーカー」はRASSにおける理解モデルです。実際の脳内に水が存在するという意味ではありません。`
-    },
-
-    {
-        title: "P6. 発話への過剰な意識と直接的なコントロール",
-        text:
-`人は通常、歩行や自転車の運転などを細かく意識せずに行っています。
-
-例えば歩くとき、
-
-「右足を出す」
-「次に左足を出す」
-「バランスを取る」
-
-と毎回細かく意識し続けると、かえって動作がぎこちなく感じられることがあります。
-
-RASSでは、発話についても同様に、
-
-「この音は言えるか」
-「詰まらないか」
-「どう声を出せばよいか」
-
-などへの過度な注意やコントロールが、発話時の負担につながる場合があると考えます。
-
-そのためRASSでは、発話そのものを直接コントロールすることよりも、発話への過剰な注目を減らし、外部の状況へ注意を戻すことを重視します。
-
-【重要】
-これはRASSの考え方に基づく説明であり、すべての吃音治療・支援が同じ理論を採用しているという意味ではありません。`
-    },
-
-    {
-        title: "P7. RASSアプローチの核心：なぜ「間接法」なのか？",
-        text:
-`【RASSにおける間接的なアプローチ】
-
-RASSでは、発話を直接コントロールする練習よりも、発話への過剰な注目や工夫、回避から距離を取ることを重視します。
-
-目的は、「どもらないように話す技術」を身につけることではなく、発話そのものを過剰に監視・操作しない状態を目指すことです。
-
-RASSでは、この考え方を「自然で無意識な発話への遡及的アプローチ」として整理しています。
-
-そして、
-
-・日中 → 発話から外部の景色や物へ注意を戻す
-・夜間 → 声を出さず、イメージを用いたメンタルリハーサルを行う
-
-という方法を組み合わせます。
-
-【知見の位置づけ】
-「自然で無意識な発話への遡及」はRASSの中心的な理論モデルです。一般的な吃音支援全体に共通する唯一の理論として扱わないでください。`
-    },
-
-    {
-        title: "P8. 年表方式メンタルリハーサル法（M・R法）の仕組み",
-        text:
-`【M・R法の基本】
-
-頭の中で自分がある場面にいることをイメージし、声を出さずに、その場面を映像として体験する方法です。
-
-RASSでは、発話そのものをコントロールするのではなく、場面全体の視覚情報に注意を向けることを重視します。
-
-● 専門家が設計する「対立内容」
-
-苦手な場面をいきなりイメージすると、過去の失敗や予期不安に注意が向くことがあります。
-
-そのためRASSでは、自然な発話が成立している場面をイメージしやすくするための「対立内容」を設定します。
-
-● 年表を遡る考え方
-
-現在の強い苦手場面からいきなり開始するのではなく、比較的吃音への意識が少なかった時期の場面から始め、徐々に現在に近づけていく方法を採用します。
-
-【注意】
-この方法はRASSにおけるセルフケア・トレーニング方法です。イメージがうまくできないこと自体を「失敗」と評価する必要はありません。`
-    },
-
-    {
-        title: "P9. 効果の捉え方と注意点",
-        text:
-`RASSについては、開発者による研究・報告の中で、長期的な経過や改善についての結果が報告されています。
-
-一方で、これらの結果をそのまま全ての吃音者に当てはめたり、「RASSを行えば一定割合の人が必ず改善する」と保証したりすることはできません。
-
-そのため、このアプリでは「改善率○%」という数字だけを目標にするのではなく、
-
-・吃音への注目が減ったか
-・工夫や回避が減ったか
-・日常生活の制限が減ったか
-・発話について考え続ける時間が減ったか
-・自分らしく行動できる場面が増えたか
-
-といった変化を振り返ることを重視します。
-
-また、セルフケアは即効性を保証するものではありません。
-
-数値やその日の調子だけで一喜一憂せず、一定期間の変化を振り返ってください。
-
-【知見の位置づけ】
-ここで紹介する研究結果はRASSに関する報告として扱います。一般的な吃音者全体に同じ結果が得られることを保証するものではありません。`
-    },
-
-    {
-        title: "P10. RASSにおける到達目標",
-        text:
-`RASSでは、「どもらないように完璧に話すこと」だけを最終目標とはしません。
-
-重要なのは、
-
-・吃音への恐怖心
-・予期不安
-・過剰な自己監視
-・発話後の過度な振り返り
-・工夫
-・回避
-
-などが減少し、結果として自然に会話や日常生活へ参加できる状態を目指すことです。
-
-つまり、
-
-「何回どもったか」
-
-だけではなく、
-
-「どもることをどれだけ気にしていたか」
-「どれだけ工夫・回避していたか」
-「生活をどれだけ制限していたか」
-
-も重要な観察対象になります。
-
-【RASSにおける到達の考え方】
-
-RASSでは、チェックシート上の負担が非常に低くなり、吃音を過度に意識せず生活できる状態を一つの到達目標として考えます。
-
-ただし、これはRASSにおけるセルフケア上の到達基準であり、医学的な「治癒」や「正常」の診断基準を意味するものではありません。
-
-この考え方とセルフケアの進め方に納得できる場合は、右下のAIに現在の困りごとを伝えてください。`
-    },
-
-    {
-        title: "P11. メンタルリハーサル法（M・R法）の基本と注意点",
-        text:
-`【M・R法の基本ルール】
-
-① 声を出すことを目的にしません。
-
-② セリフを暗記したり、実際にどう発音するかを細かくコントロールしたりしません。
-
-③ 自分の目から見えている主観的な視点で、目の前の景色や登場人物、物の色、形、位置などを映像として観察します。
-
-④ 発話そのものではなく、「その場面にいる」という視覚的な体験へ注意を向けます。
-
-⑤ うまくイメージできない日があっても、それ自体を失敗と評価しません。
-
-【重要】
-M・R法はRASSにおけるセルフケア・トレーニングの一つです。実施によって必ず症状が改善することを保証するものではありません。`
-    }
-
-];
-
-
-/* ------------------------------------------------------------
-   スライド管理
-   ------------------------------------------------------------ */
-
-let currentSlides = [...baseSlides];
-let currentSlideIndex = 0;
-
-
-/* ------------------------------------------------------------
-   HTMLエスケープ
-   ユーザー入力をinnerHTMLへ挿入する場合の安全対策
-   ------------------------------------------------------------ */
-
-function escapeHtml(value) {
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* ------------------------------------------------------------
-   スライド表示
-   ------------------------------------------------------------ */
-
-function updateSlideDisplay() {
-
-    const titleElement = document.getElementById('slide-title');
-    const textElement = document.getElementById('slide-text');
-    const pageElement = document.getElementById('slide-page');
-    const prevButton = document.getElementById('prev-btn');
-    const nextButton = document.getElementById('next-btn');
-
-    if (!titleElement || !textElement) return;
-
-    if (currentSlides.length === 0) return;
-
-    if (currentSlideIndex < 0) {
-        currentSlideIndex = 0;
-    }
-
-    if (currentSlideIndex >= currentSlides.length) {
-        currentSlideIndex = currentSlides.length - 1;
-    }
-
-    const slide = currentSlides[currentSlideIndex];
-
-    titleElement.innerText = slide.title;
-    textElement.innerText = slide.text;
-
-    if (pageElement) {
-        pageElement.innerText =
-            `${currentSlideIndex + 1} / ${currentSlides.length}`;
-    }
-
-    if (prevButton) {
-        prevButton.disabled = (currentSlideIndex === 0);
-    }
-
-    if (nextButton) {
-        nextButton.disabled =
-            (currentSlideIndex === currentSlides.length - 1);
-    }
-}
-
-
-function nextSlide() {
-
-    if (currentSlideIndex < currentSlides.length - 1) {
-        currentSlideIndex++;
-        updateSlideDisplay();
-    }
-}
-
-
-function prevSlide() {
-
-    if (currentSlideIndex > 0) {
-        currentSlideIndex--;
-        updateSlideDisplay();
-    }
-}
-
-
-/* ------------------------------------------------------------
-   スライダー表示値
-   ------------------------------------------------------------ */
-
-function syncVal(id) {
-
-    const range = document.getElementById(`range-${id}`);
-    const output = document.getElementById(`val-${id}`);
-
-    if (!range || !output) return;
-
-    output.innerText = `${range.value}%`;
-}
-
-
-/* ------------------------------------------------------------
-   スコア履歴
-   ------------------------------------------------------------ */
-
-function getSavedScoreHistory() {
-
-    try {
-
-        const history = localStorage.getItem('rass_score_history');
-
-        if (!history) {
-            return [];
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RASS吃音セルフケア支援</title>
+
+    <meta
+        name="description"
+        content="RASSの考え方を参考に、吃音に関する気づきとセルフケアを対話形式で支援するサービスです。"
+    >
+
+    <meta name="theme-color" content="#1e3a8a">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --secondary: #0f766e;
+            --bg: #f3f6fb;
+            --card: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --border: #dbe2ea;
+            --danger: #b91c1c;
+            --warning: #92400e;
+            --success: #166534;
+            --shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+            --radius: 14px;
         }
 
-        const parsed = JSON.parse(history);
-
-        return Array.isArray(parsed) ? parsed : [];
-
-    } catch (error) {
-
-        console.warn(
-            "スコア履歴の読み込みに失敗しました。",
-            error
-        );
-
-        return [];
-    }
-}
-
-
-function saveScoreToHistory(stepVal, scoreTotal) {
-
-    const history = getSavedScoreHistory();
-
-    const timestamp =
-        new Date().toLocaleDateString('ja-JP');
-
-    history.push({
-        step: String(stepVal),
-        total: Number(scoreTotal),
-        date: timestamp
-    });
-
-    try {
-
-        localStorage.setItem(
-            'rass_score_history',
-            JSON.stringify(history)
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "スコア履歴の保存に失敗しました。",
-            error
-        );
-    }
-
-    return history;
-}
-
-
-/* ------------------------------------------------------------
-   同一ステップの直近スコアを取得
-   ------------------------------------------------------------ */
-
-function getPreviousScoreForSameStep(history, stepVal) {
-
-    const normalizedStep = String(stepVal);
-
-    for (let i = history.length - 1; i >= 0; i--) {
-
-        if (
-            history[i] &&
-            String(history[i].step) === normalizedStep
-        ) {
-            return history[i];
+        * {
+            box-sizing: border-box;
         }
-    }
 
-    return null;
-}
+        html {
+            scroll-behavior: smooth;
+        }
 
+        body {
+            margin: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Noto Sans JP",
+                "Yu Gothic",
+                "Hiragino Kaku Gothic ProN",
+                Meiryo,
+                sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.75;
+        }
 
-/* ------------------------------------------------------------
-   セッション切り替え
-   ------------------------------------------------------------ */
+        button,
+        input,
+        select {
+            font: inherit;
+        }
 
-function changeSession() {
+        button {
+            cursor: pointer;
+        }
 
-    const select =
-        document.getElementById('session-select');
+        .container {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+        }
 
-    const protocolBox =
-        document.getElementById('protocol-box');
+        header {
+            background: linear-gradient(
+                135deg,
+                #1e3a8a,
+                #2563eb
+            );
+            color: white;
+            padding: 28px 0;
+            box-shadow: var(--shadow);
+        }
 
-    const homeworkBox =
-        document.getElementById('homework-box');
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
 
-    const slideViewer =
-        document.getElementById('slide-viewer-container');
+        .brand h1 {
+            margin: 0;
+            font-size: 1.45rem;
+        }
 
-    const checksheetContainer =
-        document.getElementById('checksheet-container');
+        .brand p {
+            margin: 4px 0 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
 
-    const slideSectionTitle =
-        document.getElementById('slide-section-title');
+        .status-badge {
+            padding: 7px 12px;
+            border: 1px solid rgba(255,255,255,.35);
+            border-radius: 999px;
+            font-size: .8rem;
+            white-space: nowrap;
+        }
 
-    const scenarioCreator =
-        document.getElementById('scenario-creator-container');
+        main {
+            padding: 28px 0 80px;
+        }
 
-    if (!select) return;
+        .notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 22px;
+        }
 
-    const sVal = String(select.value);
+        .notice strong {
+            color: var(--warning);
+        }
 
-    currentSlides = [...baseSlides];
-    currentSlideIndex = 0;
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 22px;
+            align-items: start;
+        }
 
-    if (scenarioCreator) {
-        scenarioCreator.style.display = "none";
-    }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
 
-    if (slideViewer) {
-        slideViewer.style.display = "none";
-    }
+        .card h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.15rem;
+        }
 
-    if (checksheetContainer) {
-        checksheetContainer.style.display = "block";
-    }
+        .card h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
 
-    let ctaText = "";
+        .session-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
+        .session-row label {
+            font-weight: 700;
+        }
 
-    /* ========================================================
-       STEP 1
-       ======================================================== */
+        select {
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 10px 12px;
+            background: white;
+            min-width: 220px;
+        }
 
-    if (sVal === "1") {
+        .visual-banner {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: #eff6ff;
+            border-left: 5px solid var(--primary-light);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
 
-        currentSlides = baseSlides.slice(0, 10);
+        .visual-banner i {
+            color: var(--primary-light);
+            margin-top: 5px;
+        }
 
-        ctaText =
-`こんにちは！
-セルフケアの「ステップ1」を開始します。
+        ol {
+            padding-left: 24px;
+        }
 
-私の年齢・仕事（または所属）・現在特に困っている発話場面について、順番にヒアリングしてください。
+        .cta-action-box {
+            margin-top: 18px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 15px;
+        }
 
-その後、私の回答をRASSで用いる「進展段階モデル」に照らして、現在の状態を整理してください。`;
+        .copy-area {
+            width: 100%;
+            min-height: 160px;
+            resize: vertical;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            background: #f8fafc;
+            color: var(--text);
+        }
 
-        if (protocolBox) {
+        .copy-button {
+            margin-top: 10px;
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 16px;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+        }
 
-            protocolBox.innerHTML = `
-                <div class="visual-banner">
-                    <i class="fa-solid fa-comments"></i>
-                    <div class="visual-banner-text">
-                        まずはAIによるヒアリングと現在の状態整理から始めます。
+        .copy-button:hover {
+            background: #172554;
+        }
+
+        .slide-viewer {
+            position: relative;
+        }
+
+        .slide {
+            background: linear-gradient(
+                145deg,
+                #ffffff,
+                #f8fafc
+            );
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 360px;
+        }
+
+        .slide h3 {
+            margin-top: 0;
+            font-size: 1.15rem;
+        }
+
+        .slide-text {
+            white-space: pre-line;
+        }
+
+        .slide-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .nav-button {
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            padding: 9px 16px;
+        }
+
+        .nav-button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .page-number {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        .check-item {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .check-item:last-child {
+            border-bottom: 0;
+        }
+
+        .check-title {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .range-value {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            color: var(--muted);
+            font-size: .75rem;
+        }
+
+        .primary-button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 18px;
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
+            margin-top: 18px;
+        }
+
+        .primary-button:hover {
+            background: #172554;
+        }
+
+        .result {
+            display: none;
+        }
+
+        .score-box {
+            text-align: center;
+            padding: 24px;
+            border-radius: 12px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 18px;
+        }
+
+        .score-number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .result-section {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .result-section:last-child {
+            border-bottom: 0;
+        }
+
+        .punish-calc {
+            margin-top: 20px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .punish-calc input {
+            width: 90px;
+            padding: 7px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .scenario-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .scenario-form label {
+            font-weight: 700;
+        }
+
+        .scenario-form input {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        footer {
+            padding: 30px 0;
+            background: #111827;
+            color: #d1d5db;
+            font-size: .8rem;
+        }
+
+        footer p {
+            margin: 5px 0;
+        }
+
+        .small {
+            font-size: .82rem;
+            color: var(--muted);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 850px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .header-inner {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .slide {
+                min-height: auto;
+            }
+        }
+    </style>
+
+    <!--
+        Dify Chatbot
+        ---------------------------------------------
+        実際の公開用トークンをここに設定してください。
+
+        注意：
+        ブラウザに埋め込むトークンは利用者側から確認可能です。
+        高いセキュリティが必要なAPIキーや秘密鍵は絶対にここへ置かないでください。
+    -->
+
+    <script>
+        window.difyChatbotConfig = {
+            token: 'YOUR_DIFY_PUBLIC_TOKEN'
+        };
+    </script>
+
+    <script
+        src="https://udify.app/embed.min.js"
+        id="YOUR_DIFY_PUBLIC_TOKEN"
+        defer>
+    </script>
+</head>
+
+<body>
+
+<header>
+    <div class="container header-inner">
+        <div class="brand">
+            <h1>RASS吃音セルフケア支援</h1>
+            <p>対話とセルフチェックによる継続的なセルフケア支援</p>
+        </div>
+
+        <div class="status-badge">
+            AIセルフケア支援ツール
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+
+        <section class="notice">
+            <strong>
+                <i class="fa-solid fa-circle-info"></i>
+                ご利用前に
+            </strong>
+
+            <p>
+                このサービスは、吃音に関するセルフケアを対話形式で支援するためのツールです。
+                医師・言語聴覚士等による診断、治療、緊急時の医療対応を代替するものではありません。
+            </p>
+
+            <p>
+                AIによる評価はセルフチェックを整理するための参考情報であり、
+                医学的な診断や確定的な重症度判定ではありません。
+            </p>
+        </section>
+
+        <div class="layout">
+
+            <!-- =========================
+                 LEFT
+            ========================== -->
+            <div>
+
+                <section class="card">
+                    <h2>
+                        <i class="fa-solid fa-list-check"></i>
+                        セッション選択
+                    </h2>
+
+                    <div class="session-row">
+                        <label for="session-select">
+                            現在のステップ
+                        </label>
+
+                        <select
+                            id="session-select"
+                            onchange="changeSession()">
+
+                            <option value="1">
+                                ステップ1：場面の特定・初期評価
+                            </option>
+
+                            <option value="2">
+                                ステップ2：悪循環の特定
+                            </option>
+
+                            <option value="3">
+                                ステップ3：仕組みの理解
+                            </option>
+
+                            <option value="4">
+                                ステップ4：注意シフト
+                            </option>
+
+                            <option value="5">ステップ5</option>
+                            <option value="6">ステップ6</option>
+                            <option value="7">ステップ7</option>
+                            <option value="8">ステップ8</option>
+                            <option value="9">ステップ9</option>
+                            <option value="10">ステップ10</option>
+                            <option value="11">ステップ11</option>
+                            <option value="12">ステップ12</option>
+                            <option value="13">ステップ13</option>
+                            <option value="14">ステップ14</option>
+
+                            <option value="15">
+                                ステップ15：対立内容の自作教育フェーズ
+                            </option>
+                        </select>
                     </div>
-                </div>
+                </section>
 
-                <strong>【手順】</strong>
 
-                <ol>
-                    <li>AIからの質問に答え、年齢・仕事（または所属）・現在特に困っている発話場面を伝えてください。</li>
-                    <li>AIが回答内容をRASSの「進展段階モデル」に照らして整理します。</li>
-                    <li>左側の臨床参考資料を読み、RASSの基本的な考え方を確認してください。</li>
-                </ol>
+                <!-- =========================
+                     PROTOCOL
+                ========================== -->
 
-                <div class="cta-action-box">
-                    🔥 【AIへ送信するメッセージ】
-                    <br>
-                    以下の文面をコピーして、右下のチャットボットへ送信してください：
-                    <pre style="background:rgba(255,255,255,0.2); padding:10px; border-radius:6px; white-space:pre-wrap; font-size:0.85rem; margin-top:8px; user-select:all;">${escapeHtml(ctaText)}</pre>
-                </div>
-            `;
-        }
+                <section class="card">
 
-        if (homeworkBox) {
+                    <h2>
+                        <i class="fa-solid fa-route"></i>
+                        本日の進め方
+                    </h2>
 
-            homeworkBox.innerHTML =
-                "左側の資料（P1〜P10）を読み、これから行うセルフケアの基本的な考え方を確認してください。";
-        }
+                    <div id="protocol-box"></div>
 
-        if (slideViewer) {
-            slideViewer.style.display = "block";
-        }
+                </section>
 
-        if (checksheetContainer) {
-            checksheetContainer.style.display = "none";
-        }
 
-        if (slideSectionTitle) {
-            slideSectionTitle.innerText =
-                "臨床参考資料・初期評価";
-        }
+                <!-- =========================
+                     SLIDES
+                ========================== -->
 
-        currentSlideIndex = 0;
+                <section
+                    id="slide-viewer-container"
+                    class="card slide-viewer">
 
-        updateSlideDisplay();
+                    <h2 id="slide-section-title">
+                        臨床ガイダンス・参考資料
+                    </h2>
 
-        return;
-    }
+                    <div class="slide">
 
+                        <h3 id="slide-title"></h3>
 
-    /* ========================================================
-       STEP 2以降
-       ======================================================== */
+                        <div
+                            id="slide-text"
+                            class="slide-text">
+                        </div>
 
-    if (slideViewer) {
+                    </div>
 
-        slideViewer.style.display =
-            (sVal === "2" || sVal === "3")
-                ? "block"
-                : "none";
-    }
+                    <div class="slide-controls">
 
-    if (checksheetContainer) {
-        checksheetContainer.style.display = "block";
-    }
+                        <button
+                            id="prev-btn"
+                            class="nav-button"
+                            type="button"
+                            onclick="prevSlide()">
 
+                            <i class="fa-solid fa-chevron-left"></i>
+                            前へ
 
-    /* ========================================================
-       STEP 15
-       ======================================================== */
+                        </button>
 
-    if (sVal === "15") {
+                        <span
+                            id="slide-page"
+                            class="page-number">
+                        </span>
 
-        if (scenarioCreator) {
-            scenarioCreator.style.display = "block";
-        }
-    }
+                        <button
+                            id="next-btn"
+                            class="nav-button"
+                            type="button"
+                            onclick="nextSlide()">
 
+                            次へ
+                            <i class="fa-solid fa-chevron-right"></i>
 
-    ctaText =
-`下の「悪循環セルフチェックシート」を設定し、
-「分析レポートを生成」ボタンを押してください。
+                        </button>
 
-出力された最新スコアと前回比較メッセージをコピーして、右下のチャットボットへ送信してください。`;
+                    </div>
 
+                </section>
 
-    if (protocolBox) {
 
-        protocolBox.innerHTML = `
-            <div class="visual-banner">
-                <i class="fa-solid fa-chart-line"></i>
-                <div class="visual-banner-text">
-                    【ステップ ${escapeHtml(sVal)}】
-                    悪循環セルフチェックで現在の自己評価上の負荷を確認します。
-                </div>
-            </div>
+                <!-- =========================
+                     CHECK SHEET
+                ========================== -->
 
-            <strong>【本日のセルフケア手順】</strong>
+                <section
+                    id="checksheet-container"
+                    class="card">
 
-            <ol>
-                <li>下のセルフチェックシートを現在の体感に合わせて調整してください。</li>
-                <li>「悪循環を分析して、RASSの臨床解説を生成する」ボタンを押してください。</li>
-                <li>生成された内容を確認し、必要に応じて右下のチャットボットへ送信してください。</li>
-            </ol>
+                    <h2>
+                        <i class="fa-solid fa-chart-line"></i>
+                        悪循環セルフチェック
+                    </h2>
 
-            <div style="font-size:0.82rem; opacity:0.85; margin:10px 0;">
-                ※このスコアは医学的な重症度、吃音頻度、治癒率を測定するものではありません。
-                本アプリ内で、ご自身の状態変化を振り返るための参考指標です。
-            </div>
+                    <p class="small">
+                        0〜100%の範囲で、現在の体感に近い位置へ調整してください。
+                        数値は診断値ではなく、ご自身の状態を振り返るための指標です。
+                    </p>
 
-            <div class="cta-action-box">
-                🔥 【AIへ送信するメッセージ】
-                <br>
-                ${escapeHtml(ctaText)}
-            </div>
-        `;
-    }
+                    <div id="checksheet-list">
 
+                        <div class="check-item">
 
-    /* ========================================================
-       各ステップのご自宅での取り組み
-       ======================================================== */
-
-    if (homeworkBox) {
-
-        if (sVal === "2") {
-
-            homeworkBox.innerHTML =
-                "日常で吃音に関する予期や振り返りの雑念がよぎったとき、可能な範囲で目の前の景色やモノの色・形などへ注意を戻す「注意シフト」を意識してください。";
-
-        } else if (sVal === "3") {
-
-            homeworkBox.innerHTML =
-                "このステップでは、まず注意シフトの体験と仕組みの理解を行います。対立内容の作成やメンタルリハーサルは、この段階では行いません。";
-
-        } else if (sVal >= "4" && sVal <= "14") {
-
-            homeworkBox.innerHTML =
-                `ステップ ${escapeHtml(sVal)} の担当内容を用いて、一日1回を目安にセルフケア・トレーニングを継続してください。次回はチェックシートで状態の変化を振り返ります。`;
-
-        } else if (sVal === "15") {
-
-            homeworkBox.innerHTML =
-                "現在の生活で必要となる対立内容を自分で考えるための教育フェーズです。無理に作成せず、必要に応じてAIの支援を利用してください。";
-        }
-    }
-
-
-    /* ========================================================
-       STEP 2
-       ======================================================== */
-
-    if (sVal === "2") {
-
-        if (slideSectionTitle) {
-            slideSectionTitle.innerText =
-                "臨床参考資料・セルフチェック";
-        }
-
-        currentSlideIndex = 4;
-
-        updateSlideDisplay();
-
-        return;
-    }
-
-
-    /* ========================================================
-       STEP 3
-       ======================================================== */
-
-    if (sVal === "3") {
-
-        if (slideSectionTitle) {
-            slideSectionTitle.innerText =
-                "臨床参考資料・仕組みの理解";
-        }
-
-        /* P11を表示 */
-        currentSlideIndex = 10;
-
-        updateSlideDisplay();
-
-        return;
-    }
-}
-
-
-/* ------------------------------------------------------------
-   悪循環セルフチェック
-   ------------------------------------------------------------ */
-
-function generateClinicalReport() {
-
-    const getValue = (id) => {
-
-        const element =
-            document.getElementById(`range-${id}`);
-
-        if (!element) return 0;
-
-        const value =
-            parseInt(element.value, 10);
-
-        return Number.isFinite(value)
-            ? value
-            : 0;
-    };
-
-
-    const valValue = getValue('value');
-    const valCognition = getValue('cognition');
-    const valEmotion = getValue('emotion');
-    const valAttention = getValue('attention');
-    const valEffort = getValue('effort');
-    const valAvoid = getValue('avoid');
-    const valAvoidAct = getValue('avoid-act');
-    const valListenBurden = getValue('listen-burden');
-    const valNegBias = getValue('neg-bias');
-
-
-    const values = [
-        valValue,
-        valCognition,
-        valEmotion,
-        valAttention,
-        valEffort,
-        valAvoid,
-        valAvoidAct,
-        valListenBurden,
-        valNegBias
-    ];
-
-
-    const total =
-        Math.round(
-            values.reduce(
-                (sum, value) => sum + value,
-                0
-            ) / values.length
-        );
-
-
-    const sessionSelect =
-        document.getElementById('session-select');
-
-    const stepVal =
-        sessionSelect
-            ? String(sessionSelect.value)
-            : "不明";
-
-
-    const history =
-        getSavedScoreHistory();
-
-
-    /* --------------------------------------------------------
-       同じステップの直近記録だけを比較
-       -------------------------------------------------------- */
-
-    const previous =
-        getPreviousScoreForSameStep(
-            history,
-            stepVal
-        );
-
-
-    let prevScoreText =
-        "今回がこのステップの初回測定です。";
-
-    let diffText = "";
-
-
-    if (previous) {
-
-        const diff =
-            total - Number(previous.total);
-
-
-        if (diff < 0) {
-
-            diffText =
-                `（同一ステップ内の前回比：▼${Math.abs(diff)}ポイント）`;
-
-        } else if (diff > 0) {
-
-            diffText =
-                `（同一ステップ内の前回比：▲${diff}ポイント）`;
-
-        } else {
-
-            diffText =
-                "（同一ステップ内の前回比：変化なし）";
-        }
-
-
-        prevScoreText =
-            `前回（ステップ${previous.step}）：${previous.total}%`
-            + ` ➔ 今回（ステップ${stepVal}）：${total}% `
-            + diffText;
-    }
-
-
-    saveScoreToHistory(
-        stepVal,
-        total
-    );
-
-
-    const reportTotal =
-        document.getElementById('rep-total');
-
-    if (reportTotal) {
-
-        reportTotal.innerText =
-            `${total}% ${diffText}`;
-    }
-
-
-    /* --------------------------------------------------------
-       トータル説明
-       -------------------------------------------------------- */
-
-    const totalDesc = `
-        <div style="margin-bottom:10px;">
-            <b>【スコア推移・前後比較】</b>
-            <br>
-            ${escapeHtml(prevScoreText)}
-        </div>
-
-        <p>
-            今回の悪循環セルフチェックにおける
-            自己評価上のトータル負荷は
-            <b>${total}%</b> です。
-        </p>
-
-        <p style="font-size:0.85rem; opacity:0.85;">
-            ※この数値は医学的な重症度、吃音頻度、治癒率を示すものではありません。
-            本アプリ内で、ご自身の状態の変化を振り返るための参考指標です。
-        </p>
-    `;
-
-
-    /* --------------------------------------------------------
-       各項目
-       -------------------------------------------------------- */
-
-    const mechanismDesc = `
-        <div>
-            ・Ⅰ-1 他者推測・自己評価：
-            ${valValue}%<br>
-
-            ・Ⅰ-2 発話強迫・隠蔽：
-            ${valCognition}%<br>
-
-            ・Ⅱ-1 情動反応・反芻：
-            ${valEmotion}%<br>
-
-            ・Ⅲ-1 注目・自己監視：
-            ${valAttention}%<br>
-
-            ・Ⅲ-2 工夫（助走・延期）：
-            ${valEffort}%<br>
-
-            ・Ⅲ-3 その他の工夫（解除・言い換え）：
-            ${valAvoid}%<br>
-
-            ・Ⅲ-4 回避行動：
-            ${valAvoidAct}%<br>
-
-            ・Ⅳ-1 聞き漏らし等負担：
-            ${valListenBurden}%<br>
-
-            ・Ⅴ-1 悪い面への注意偏り：
-            ${valNegBias}%
-        </div>
-
-        <div style="
-            margin-top:15px;
-            padding:12px;
-            border-radius:8px;
-          
+                            <div class="check-title">
+                                <span>
+                                    Ⅰ-1 他者推測・否定的価値観
+                                </span>
+
+                                <span
+                                    id="val-value"
+                                    class="range-value">
+                                    0%
+                                </span>
+                            </div>
+
+                            <input
+                                id="range-value"
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="0"
+                                oninput="syncVal('value')">
+
+                            <div class="range-labels">
+                                <span>ほぼない</span>
+                                <span>非常に強い</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="check-item">
+
+                            <div class="check-title">
+                                <span>
+                                    Ⅰ-2 発話強迫・隠蔽
+                                </span>
+
+                                <span
+                                    id="val-cognition"
+                                    class="range-value">
+                                    0%
+                                </span>
+                            </div>
+
+                            <input
+                                id="range-cognition"
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="0"
+                                oninput="syncVal('cognition')">
+
+                            <div class="range-labels">
+                                <span>ほぼない</span>
+                                <span>非常に強い</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="check-item">
+
+                            <div class="check-title">
+                                <span>
+                                    Ⅱ-1 情動反応・反芻
+                                </span>
+
+                                <span
+                                    id="val-emotion"
+                                    class="range-value">
+                                    0%
+                                </span>
+                            </div>
+
+                            <input
+                                id="range-emotion"
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="0"
+                                oninput="syncVal('emotion')">
+
+                            <div class="range-labels">
+                                <span>ほぼない</span>
+                                <span>非常に強い</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="check-item">
+
+                            <div class="check-title">
+                                <span>
+                                    Ⅲ-1 注目・自己監視
+                                </span>
+
+                                <span
+                                    id="val-attention"
+                                    class="range-value">
+                                    0%
+                                </span>
+                            </div>
+
+                            <input
+                                id="range-attention"
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="10"
+                                value="0"
+                                oninput="syncVal('attention')">
+
+                            <div class="range-labels">
+                                <span>ほぼない</span>
+                                <span>非常に強い</span>
+                            </div>
+
+                        </div>
+
+
+                        <div class="check-item">
+
+                            <div class="check-title">
+                                <span>
+                                    Ⅲ-2 工夫（助走・延期）
+                                </span>
+
+                                <span
+                                    id="val-effort"
+                                    class="range-value">
+                                    0%
+ 
