@@ -473,7 +473,7 @@ textarea.form-control {
 }
 
 /* =========================
-   v2.2 Safety / bridge / developer mode
+   v2.4 Safety / bridge / developer mode
 ========================= */
 .rass-safety-state {
     display: none;
@@ -1432,7 +1432,7 @@ window.difyChatbotConfig = {
 
 <script>
 /* =========================================================
-   RASS Application v2.0
+   RASS Application v2.4
    =========================================================
 
    設計方針
@@ -1618,7 +1618,7 @@ let currentSlideIndex = 0;
 let latestReportMessage = "";
 
 /* =========================================================
-   v2.2 App / Dify bridge state
+   v2.4 App / Dify bridge state
 ========================================================= */
 let appStage = "1";
 let safetyLocked = false;
@@ -1872,7 +1872,7 @@ function syncVal(id) {
 
 
 /* =========================================================
-   v2.2 Stage / safety bridge
+   v2.4 Stage / safety bridge
 ========================================================= */
 function normalizeStage(value) {
     const v = String(value || "").trim().toUpperCase();
@@ -2013,6 +2013,32 @@ function runDeveloperSmokeTests() {
     const out = document.getElementById("rass-dev-status");
     if (out) out.innerText = results.join("\n");
 }
+
+// =========================================================
+// Public stage bridge
+// =========================================================
+// Future custom chat/API integrations can call:
+//   window.RASSStageBridge.receive("SAFETY")
+//   window.RASSStageBridge.receive("4", "reason")
+// Standard Dify Embed does not expose response text to the parent page,
+// so this bridge is intentionally kept separate from the standard embed.
+window.RASSStageBridge = {
+    receive(stage, reason = "") {
+        const normalized = normalizeStage(stage);
+        if (!normalized) return false;
+        if (normalized === "SAFETY") {
+            return enterSafetyMode(reason || "AIから安全対応モードの通知を受信しました。");
+        }
+        if (safetyLocked) return false;
+        return setAppStage(normalized, "bridge");
+    },
+    receiveText(text) {
+        return handleDifyStageText(text);
+    },
+    getState() {
+        return { stage: appStage, safetyLocked };
+    }
+};
 
 window.addEventListener("message", handleDifyStageMessage);
 
@@ -3270,4 +3296,3 @@ if (
 </script>
 
 </body>
-</html>
