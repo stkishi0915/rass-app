@@ -643,6 +643,67 @@ window.difyChatbotConfig = {
     defer>
 </script>
 
+
+<!-- =========================================================
+     RASS v3 Phase 2-4 Supabase bridge
+     ========================================================= -->
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+  const SUPABASE_URL = "https://vifxsktvfhsepnasfmpq.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_flQ-6JFCEMEmeRKOBkdrug_WY1CBMmP";
+  const SUPABASE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/rass-chat`;
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+  async function ensureRassSession() {
+    let { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    if (data?.session) return data.session;
+
+    const signIn = await supabase.auth.signInAnonymously();
+    if (signIn.error) throw signIn.error;
+    return signIn.data?.session ?? null;
+  }
+
+  async function rassBackend(action, extra = {}) {
+    const session = await ensureRassSession();
+    if (!session?.access_token) {
+      throw new Error("Supabase認証セッションを取得できませんでした。");
+    }
+
+    const response = await fetch(SUPABASE_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.access_token}`,
+        "apikey": SUPABASE_PUBLISHABLE_KEY
+      },
+      body: JSON.stringify({
+        action,
+        ...extra
+      })
+    });
+
+    const text = await response.text();
+    let body = null;
+    try { body = text ? JSON.parse(text) : null; } catch {}
+
+    if (!response.ok || !body?.ok) {
+      const detail = body ? JSON.stringify(body, null, 2) : text;
+      throw new Error(`RASSバックエンドエラー\n\n${detail}`);
+    }
+
+    return body;
+  }
+
+  window.RASSV3 = {
+    ensureSession: ensureRassSession,
+    getSession: () => rassBackend("session_get"),
+    updateStep: (step) => rassBackend("session_update", { current_step: step })
+  };
+</script>
+
 </head>
 
 <body>
@@ -1623,6 +1684,7 @@ let latestReportMessage = "";
 let appStage = "1";
 let safetyLocked = false;
 let developerMode = false;
+let suppressStepPersist = true;
 const DIFY_ALLOWED_ORIGINS = ["https://udify.app"];
 
 const STORAGE_KEY = "rass_score_history_v2";
@@ -2066,6 +2128,15 @@ function changeSession() {
         String(select.value);
 
     appStage = normalizeStage(sVal) || sVal;
+
+    // Phase 2-4: persist the selected step in Supabase.
+    // Do not block the existing UI rendering.
+    if (window.RASSV3 && !suppressStepPersist && !safetyLocked && /^([1-9]|1[0-5])$/.test(sVal)) {
+        window.RASSV3.updateStep(Number(sVal)).catch(error => {
+            console.error("RASS step update failed:", error);
+            setChatbotStatus(false, "ステップ保存に失敗しました。ページを再読み込みせず、しばらくしてから再試行してください。");
+        });
+    }
 
 
     const protocolBox =
@@ -3222,7 +3293,7 @@ function markLockableAreas() {
     });
 }
 
-function initializeApp() {
+async function initializeApp() {
 
     developerMode = new URLSearchParams(window.location.search).get("rass_dev") === "1";
     markLockableAreas();
@@ -3248,11 +3319,30 @@ function initializeApp() {
 
     /*
      * Initial session
+     * Phase 2-4: restore persisted state from Supabase first.
      */
+
+    try {
+        const backend = await window.RASSV3.getSession();
+        const session = backend.session || {};
+
+        if (session.safety_locked) {
+            enterSafetyMode("前回のセッションで安全対応モードが有効になっています。");
+        } else if (session.current_step) {
+            setAppStage(String(session.current_step), "supabase");
+        } else {
+            setAppStage("1", "supabase");
+        }
+    } catch (error) {
+        console.error("RASS session restore failed:", error);
+        setAppStage("1", "supabase-fallback");
+        setChatbotStatus(false, "セッション復元に失敗しました。現在はStep 1で表示しています。");
+    }
 
     changeSession();
     appStage = getCurrentStage();
     updateSafetyUI();
+    suppressStepPersist = false;
 
 
     /*
@@ -3285,7 +3375,7 @@ if (
 
     document.addEventListener(
         "DOMContentLoaded",
-        initializeApp
+        () => { initializeApp().catch(console.error); }
     );
 
 } else {
@@ -3296,3 +3386,4 @@ if (
 </script>
 
 </body>
+</html>
