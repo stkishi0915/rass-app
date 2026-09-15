@@ -1764,6 +1764,31 @@ function saveScoreToHistory(stepVal, scoreTotal) {
 }
 
 
+/* =========================================================
+   Step 4 M・R fixed response routing
+   ========================================================= */
+function normalizeRassTextForMatch(value) {
+    return String(value || "")
+        .normalize("NFKC")
+        .replace(/[\u3000\s]+/g, "")
+        .replace(/[。、，,．.「」『』【】（）()［］\[\]・]/g, "");
+}
+
+function isMRContentNotSpecifiedIntent(normalizedQuery) {
+    const q = String(normalizedQuery || "");
+
+    const patterns = [
+        /何を話すか.*考えたく(ない|ありません)/,
+        /話す内容.*考えたく(ない|ありません)/,
+        /話す内容.*決めたく(ない|ありません)/,
+        /何を話すか.*決めたく(ない|ありません)/,
+        /話すこと.*考えたく(ない|ありません)/,
+        /話すこと.*決めたく(ない|ありません)/
+    ];
+
+    return patterns.some(pattern => pattern.test(q));
+}
+
 function escapeHTML(value) {
 
     return String(value)
@@ -3365,6 +3390,26 @@ async function sendRassChatMessage() {
     const currentStep = Number(getCurrentStage());
     appendChatMessage("user", query);
     input.value = "";
+
+    /*
+     * Step 4 M・R専用の固定応答分岐。
+     * 「話す内容を決めたくない」だけの意思表示を
+     * 「M・Rが難しい／中断したい」とAIに誤解させないため、
+     * このケースではDifyへ送信せず、アプリ側で応答を確定する。
+     */
+    const normalizedQuery = normalizeRassTextForMatch(query);
+    if (currentStep === 4 && isMRContentNotSpecifiedIntent(normalizedQuery)) {
+        const fixedAnswer =
+            "話す内容は決めなくても大丈夫です。\n\n" +
+            "そのまま、現在設定されている外部の対象に注意を向けながら、相手に何かを伝えようとしている場面をイメージしてください。\n" +
+            "発話する内容や、言葉がどうなるかを考える必要はありません。";
+
+        appendChatMessage("assistant", fixedAnswer);
+        setRassChatStatus("M・Rの場面設定を継続しています。", false);
+        input.focus();
+        return;
+    }
+
     const assistantBubble = appendChatMessage("assistant", "回答を準備しています…");
     setRassChatStatus("AIが回答を作成しています…", true);
 
