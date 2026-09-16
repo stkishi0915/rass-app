@@ -531,6 +531,28 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 .rass-chat-system-note { margin-top:8px; padding:9px 11px; border-radius:8px; background:#f1f5f9; color:#475569; font-size:.78rem; }
 
 
+
+/* =========================
+   v3.2 Mobile care flow / AI guidance
+========================= */
+.ai-usage-guide{
+    margin:12px 0 14px;padding:14px 16px;border:1px solid #bfdbfe;
+    background:#eff6ff;border-radius:10px;color:#1e3a5f;line-height:1.75;
+}
+.ai-usage-guide strong{color:var(--primary)}
+.ai-usage-guide ul{margin:8px 0 0;padding-left:1.25rem}
+.ai-usage-guide li{margin:4px 0}
+@media(max-width:900px){
+    .main-grid{display:flex !important;flex-direction:column}
+    .main-grid > div{display:contents}
+    #protocol-container{order:10}
+    #checksheet-container{order:20}
+    #mr-scenario-container{order:30}
+    #ai-support-container{order:40}
+    #slide-viewer-container{order:50}
+    #scenario-creator-container{order:60}
+}
+
 /* =========================
    v3.0 Standard M-R scenario
 ========================= */
@@ -876,7 +898,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
             <!-- Protocol -->
 
-            <section class="card">
+            <section id="protocol-container" class="card">
 
                 <h2 class="card-title">
                     <i class="fa-solid fa-route"></i>
@@ -1420,7 +1442,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
         <div>
 
-            <section class="card">
+            <section id="ai-support-container" class="card">
 
                 <h2 class="card-title">
                     <i class="fa-solid fa-robot"></i>
@@ -1430,6 +1452,10 @@ body.rass-safety-lock #session-select { pointer-events: none; }
                 <p>
                     RASS専用チャットです。現在のステップ情報はSupabaseを経由してAIへ自動的に渡されます。
                 </p>
+
+                <div id="ai-usage-guide" class="ai-usage-guide">
+                    AIは、現在のStepで迷った点を整理するために利用できます。
+                </div>
 
                 <div class="rass-bridge-note">
                     現在のアプリ状態：<strong id="rass-current-stage-label">Step 1</strong>
@@ -1535,7 +1561,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
 <script>
 /* =========================================================
-   RASS Application v3.1
+   RASS Application v3.2
    =========================================================
 
    設計方針
@@ -2301,6 +2327,33 @@ async function advanceMRScenario() {
     } finally { setMRBusy(false); }
 }
 
+
+function updateAIUsageGuide(stepValue = getCurrentStage()) {
+    const guide = document.getElementById("ai-usage-guide");
+    if (!guide) return;
+    const step = Number(stepValue);
+
+    if (step >= 4 && step <= 14) {
+        guide.innerHTML = `
+            <strong>AIチャットは「迷ったときの補助」として使います</strong>
+            <ul>
+                <li>悪循環セルフチェックの結果から、日常生活で増えている要因を整理したいとき</li>
+                <li>現在表示されているM・R対立内容の意味や、頭の中での進め方が分からないとき</li>
+                <li>M・Rをイメージしにくい、負担を感じるなど、進め方に迷ったとき</li>
+            </ul>
+            <div style="margin-top:8px">
+                対立内容はすでにアプリで設定されています。AIに新しい対立内容を作ってもらう必要はありません。
+                問題なくセルフチェックとM・Rを進められる場合、AIチャットの利用は必須ではありません。
+            </div>`;
+    } else if (step === 15) {
+        guide.innerHTML = `<strong>このStepでのAIの役割</strong><br>
+            自分の生活場面から対立内容を作る際に、必要な情報の整理と＜1＞＜2＞＜3＞の組み立てを支援します。`;
+    } else {
+        guide.innerHTML = `<strong>このStepでのAIの役割</strong><br>
+            画面の案内に沿って、現在の状態やこれまでの経験を一つずつ整理するために利用してください。`;
+    }
+}
+
 /* =========================================================
    Session handling
 ========================================================= */
@@ -2325,6 +2378,7 @@ function changeSession() {
         String(select.value);
 
     appStage = normalizeStage(sVal) || sVal;
+    updateAIUsageGuide(appStage);
 
     // Phase 2-4: persist the selected step in Supabase.
     // Do not block the existing UI rendering.
@@ -2569,9 +2623,6 @@ function changeSession() {
                 日常生活で、吃音に関連する否定的な感情や考えの反芻、発話への過度な注目、意図的な発話操作・工夫、回避などが増えていないか、悪循環セルフチェックで確認してください。
             </li>
             <li>
-                必要に応じてセルフチェックのレポートを生成し、AIとの対話で現在の状態を整理できます。
-            </li>
-            <li>
                 「現在のM・R対立内容」を確認し、声に出す発話練習ではなく、設定された場面と一連の流れを頭の中でイメージしてください。
             </li>
             <li>
@@ -2579,6 +2630,9 @@ function changeSession() {
             </li>
             <li>
                 1つの対立内容について最低5回に達すると「次の対立内容へ」が利用できます。自動では次へ進みません。
+            </li>
+            <li>
+                AIチャットは、チェック結果を整理したいとき、M・Rの進め方が分からないとき、負担や迷いがあるときに利用してください。問題なく進められる場合は必須ではありません。
             </li>
         </ol>
 
@@ -3710,6 +3764,7 @@ async function initializeApp() {
     changeSession();
     appStage = getCurrentStage();
     updateSafetyUI();
+    updateAIUsageGuide(appStage);
     suppressStepPersist = false;
     await refreshMRScenario();
 
