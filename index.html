@@ -1573,7 +1573,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
 <script>
 /* =========================================================
-   RASS Application v3.3
+   RASS Application v3.3.1
    =========================================================
 
    設計方針
@@ -2300,10 +2300,12 @@ async function refreshMRScenario() {
     try {
         setMRStatus("現在の対立内容を読み込んでいます…");
         const result = await window.RASSV3.getScenario();
-        renderMRScenario(result.session, result.scenario);
-        setMRStatus("");
-        // Completion UI is normally set when "次の対立内容へ" is pressed.
-        // It intentionally does not auto-advance the Step.
+        renderMRScenario(result.session, result.scenario, {
+            stepComplete: Boolean(result.step_complete)
+        });
+        setMRStatus(result.step_complete
+            ? `Step ${result.session.current_step} のM・Rは完了しています。次のStepへ進めます。`
+            : "");
     } catch (error) {
         console.error("RASS scenario load failed:", error);
         if (container) container.classList.add("active");
