@@ -530,6 +530,29 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 .rass-chat-status { min-height:1.3em; font-size:.78rem; color:var(--muted); }
 .rass-chat-system-note { margin-top:8px; padding:9px 11px; border-radius:8px; background:#f1f5f9; color:#475569; font-size:.78rem; }
 
+
+/* =========================
+   v3.0 Standard M-R scenario
+========================= */
+.mr-scenario-card{display:none}
+.mr-scenario-card.active{display:block}
+.mr-scenario-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.mr-scenario-number{font-weight:800;color:var(--primary);background:var(--primary-soft);border-radius:999px;padding:6px 12px}
+.mr-scenario-age{color:var(--muted);font-size:.82rem}
+.mr-source-content{display:grid;gap:10px}
+.mr-part{padding:12px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;white-space:pre-wrap}
+.mr-part-label{display:block;font-weight:800;color:var(--primary);margin-bottom:4px}
+.mr-count-box{margin-top:16px;padding:14px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px}
+.mr-count-line{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.mr-count-number{font-size:1.25rem;font-weight:800;color:var(--primary)}
+.mr-progress{width:100%;height:10px;margin-top:10px}
+.mr-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.mr-secondary-button{width:100%;border:1px solid var(--primary);border-radius:10px;background:white;color:var(--primary);padding:13px 18px;font-weight:700}
+.mr-status{min-height:1.4em;margin-top:10px;color:var(--muted);font-size:.84rem}
+.mr-step-complete{display:none;margin-top:14px;padding:12px 14px;border:1px solid #86efac;background:#f0fdf4;border-radius:10px;color:#166534;font-weight:700}
+.mr-step-complete.active{display:block}
+@media(max-width:600px){.mr-actions{grid-template-columns:1fr}}
+
 /* =========================
    Chatbot status
 ========================= */
@@ -691,7 +714,10 @@ body.rass-safety-lock #session-select { pointer-events: none; }
     updateStep: (step) => rassBackend("session_update", { current_step: step }),
     sendChat: (query, step) => rassBackend("chat", { query, current_step: Number(step) }),
     getHistory: () => rassBackend("chat_history"),
-    resetChat: () => rassBackend("chat_reset")
+    resetChat: () => rassBackend("chat_reset"),
+    getScenario: () => rassBackend("scenario_get"),
+    completeMR: () => rassBackend("mr_complete"),
+    nextScenario: () => rassBackend("scenario_next")
   };
 </script>
 
@@ -794,11 +820,11 @@ body.rass-safety-lock #session-select { pointer-events: none; }
                         </option>
 
                         <option value="4">
-                            Step 4　注意シフト
+                            Step 4　標準M・R
                         </option>
 
                         <option value="5">
-                            Step 5　セルフケア
+                            Step 5　標準M・R
                         </option>
 
                         <option value="6">
@@ -867,6 +893,32 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
             </section>
 
+
+
+            <!-- Standard M-R scenario (Steps 4-14) -->
+            <section id="mr-scenario-container" class="card mr-scenario-card rass-lockable" aria-live="polite">
+                <h2 class="card-title"><i class="fa-solid fa-brain"></i>現在のM・R対立内容</h2>
+                <div class="mr-scenario-head">
+                    <div id="mr-scenario-number" class="mr-scenario-number">No. -</div>
+                    <div id="mr-scenario-age" class="mr-scenario-age"></div>
+                </div>
+                <div class="mr-source-content">
+                    <div class="mr-part"><span class="mr-part-label">＜1＞</span><span id="mr-part-1">読み込み中…</span></div>
+                    <div class="mr-part"><span class="mr-part-label">＜2＞</span><span id="mr-part-2"></span></div>
+                    <div id="mr-part-3-box" class="mr-part"><span class="mr-part-label">＜3＞</span><span id="mr-part-3"></span></div>
+                </div>
+                <div class="mr-count-box">
+                    <div class="mr-count-line"><span>この対立内容の実施回数</span><span id="mr-count-number" class="mr-count-number">0 / 5回以上</span></div>
+                    <progress id="mr-progress" class="mr-progress" max="5" value="0"></progress>
+                    <div class="rass-bridge-note">本セルフケア版では、1日1回を基本として、1つの対立内容について最低5回実施します。</div>
+                </div>
+                <div class="mr-actions">
+                    <button type="button" id="mr-complete-button" class="primary-button" onclick="recordMRComplete()"><i class="fa-solid fa-check"></i> 今回のM・Rを実施した</button>
+                    <button type="button" id="mr-next-button" class="mr-secondary-button" onclick="advanceMRScenario()" disabled>次の対立内容へ <i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div id="mr-status" class="mr-status"></div>
+                <div id="mr-step-complete" class="mr-step-complete">このStepに設定された対立内容をすべて完了しました。Stepは自動では変更されません。</div>
+            </section>
 
             <!-- Slides -->
 
@@ -1483,7 +1535,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
 <script>
 /* =========================================================
-   RASS Application v2.4
+   RASS Application v3.0
    =========================================================
 
    設計方針
@@ -1952,7 +2004,8 @@ function syncVal(id) {
 ========================================================= */
 function normalizeStage(value) {
     const v = String(value || "").trim().toUpperCase();
-    return ["1","2","3","4","SAFETY"].includes(v) ? v : null;
+    if (v === "SAFETY") return v;
+    return /^(?:[1-9]|1[0-5])$/.test(v) ? v : null;
 }
 
 function getCurrentStage() {
@@ -2117,6 +2170,137 @@ window.RASSStageBridge = {
 };
 
 
+
+/* =========================================================
+   v3.0 Standard M-R scenario UI
+========================================================= */
+let currentMRScenario = null;
+let currentMRSession = null;
+let mrRequestBusy = false;
+
+function isMRAppStep(value = getCurrentStage()) {
+    const step = Number(value);
+    return Number.isInteger(step) && step >= 4 && step <= 14;
+}
+function setMRStatus(message = "") {
+    const el = document.getElementById("mr-status");
+    if (el) el.innerText = message;
+}
+function setMRBusy(busy) {
+    mrRequestBusy = Boolean(busy);
+    const completeBtn = document.getElementById("mr-complete-button");
+    const nextBtn = document.getElementById("mr-next-button");
+    const count = Number(currentMRSession?.current_scenario_count || 0);
+    const min = Number(currentMRScenario?.minimum_reps || 5);
+    if (completeBtn) completeBtn.disabled = mrRequestBusy || safetyLocked || !currentMRScenario;
+    if (nextBtn) nextBtn.disabled = mrRequestBusy || safetyLocked || !currentMRScenario || count < min;
+}
+function renderMRScenario(session, scenario, options = {}) {
+    currentMRSession = session || null;
+    currentMRScenario = scenario || null;
+    const container = document.getElementById("mr-scenario-container");
+    if (!container) return;
+    const step = Number(session?.current_step ?? getCurrentStage());
+    const visible = step >= 4 && step <= 14 && !safetyLocked;
+    container.classList.toggle("active", visible);
+    if (!visible) return;
+
+    const setText = (id, value) => { const el = document.getElementById(id); if (el) el.innerText = value ?? ""; };
+    if (!scenario) {
+        setText("mr-scenario-number", "No. -");
+        setText("mr-scenario-age", "");
+        setText("mr-part-1", "現在の対立内容を取得できませんでした。");
+        setText("mr-part-2", "");
+        setText("mr-part-3", "");
+        const p3Box = document.getElementById("mr-part-3-box");
+        if (p3Box) p3Box.style.display = "none";
+        setMRBusy(false);
+        return;
+    }
+
+    setText("mr-scenario-number", `No. ${scenario.scenario_no}`);
+    setText("mr-scenario-age", scenario.target_age_source ? `原資料の対象年齢：${scenario.target_age_source}` : "");
+    setText("mr-part-1", scenario.part_1 || "");
+    setText("mr-part-2", scenario.part_2 || "");
+
+    // Source lock: missing <3> stays missing; the HTML must not invent it.
+    const hasPart3 = typeof scenario.part_3 === "string" && scenario.part_3.trim() !== "";
+    const p3Box = document.getElementById("mr-part-3-box");
+    if (p3Box) p3Box.style.display = hasPart3 ? "block" : "none";
+    setText("mr-part-3", hasPart3 ? scenario.part_3 : "");
+
+    const count = Number(session?.current_scenario_count || 0);
+    const min = Number(scenario.minimum_reps || 5);
+    setText("mr-count-number", `${count} / ${min}回以上`);
+    const progress = document.getElementById("mr-progress");
+    if (progress) { progress.max = min; progress.value = Math.min(count, min); }
+
+    const complete = document.getElementById("mr-step-complete");
+    if (complete) complete.classList.toggle("active", Boolean(options.stepComplete));
+    setMRBusy(false);
+}
+async function refreshMRScenario() {
+    const container = document.getElementById("mr-scenario-container");
+    if (!isMRAppStep() || safetyLocked) {
+        if (container) container.classList.remove("active");
+        currentMRScenario = null; currentMRSession = null;
+        return;
+    }
+    if (!window.RASSV3) return;
+    try {
+        setMRStatus("現在の対立内容を読み込んでいます…");
+        const result = await window.RASSV3.getScenario();
+        renderMRScenario(result.session, result.scenario);
+        setMRStatus("");
+    } catch (error) {
+        console.error("RASS scenario load failed:", error);
+        if (container) container.classList.add("active");
+        setMRStatus("対立内容の読み込みに失敗しました。");
+        setMRBusy(false);
+    }
+}
+async function recordMRComplete() {
+    if (!requireUnlocked() || !isMRAppStep() || !window.RASSV3 || mrRequestBusy) return;
+    try {
+        setMRBusy(true); setMRStatus("実施回数を記録しています…");
+        const result = await window.RASSV3.completeMR();
+        renderMRScenario(result.session, result.scenario);
+        const count = Number(result.count ?? result.session?.current_scenario_count ?? 0);
+        const min = Number(result.minimum_reps ?? result.scenario?.minimum_reps ?? 5);
+        setMRStatus(count >= min ? `実施回数を${count}回として記録しました。次の対立内容へ進めます。` : `実施回数を${count}回として記録しました。`);
+    } catch (error) {
+        console.error("RASS M-R count update failed:", error);
+        setMRStatus("実施回数の記録に失敗しました。現在の状態を再確認してください。");
+        await refreshMRScenario();
+    } finally { setMRBusy(false); }
+}
+async function advanceMRScenario() {
+    if (!requireUnlocked() || !isMRAppStep() || !window.RASSV3 || mrRequestBusy) return;
+    try {
+        setMRBusy(true); setMRStatus("次の対立内容を確認しています…");
+        const result = await window.RASSV3.nextScenario();
+        if (result.step_complete) {
+            renderMRScenario(result.session, result.scenario, { stepComplete: true });
+            setMRStatus("このStepに設定された対立内容をすべて完了しました。");
+            return;
+        }
+        renderMRScenario(result.session, result.scenario);
+        setMRStatus(`No. ${result.scenario?.scenario_no ?? ""} に進みました。実施回数は0回から開始します。`);
+
+        // Prevent an old Dify conversation from overriding the newly selected source-locked scenario.
+        try {
+            await window.RASSV3.resetChat();
+            clearChatMessages();
+            const box = document.getElementById("rass-chat-messages");
+            if (box) box.innerHTML = `<div class="rass-chat-empty">対立内容が更新されました。新しいRASS対話を開始できます。</div>`;
+        } catch (e) { console.warn("Dify reset after scenario advance failed:", e); }
+    } catch (error) {
+        console.error("RASS scenario advance failed:", error);
+        setMRStatus("次の対立内容への移動に失敗しました。現在の状態を再確認してください。");
+        await refreshMRScenario();
+    } finally { setMRBusy(false); }
+}
+
 /* =========================================================
    Session handling
 ========================================================= */
@@ -2145,10 +2329,14 @@ function changeSession() {
     // Phase 2-4: persist the selected step in Supabase.
     // Do not block the existing UI rendering.
     if (window.RASSV3 && !suppressStepPersist && !safetyLocked && /^([1-9]|1[0-5])$/.test(sVal)) {
-        window.RASSV3.updateStep(Number(sVal)).catch(error => {
-            console.error("RASS step update failed:", error);
-            setChatbotStatus(false, "ステップ保存に失敗しました。ページを再読み込みせず、しばらくしてから再試行してください。");
-        });
+        window.RASSV3.updateStep(Number(sVal))
+            .then(() => refreshMRScenario())
+            .catch(error => {
+                console.error("RASS step update failed:", error);
+                setChatbotStatus(false, "ステップ保存に失敗しました。ページを再読み込みせず、しばらくしてから再試行してください。");
+            });
+    } else if (!suppressStepPersist) {
+        refreshMRScenario().catch(console.error);
     }
 
 
@@ -2362,45 +2550,24 @@ function changeSession() {
     /*
      * Step 4～14
      */
-
-    checksheetContainer.style.display =
-        "block";
-
-    slideViewer.style.display =
-        "block";
-
-    slideSectionTitle.innerText =
-        "臨床参考資料 ＆ セルフケア";
-
+    checksheetContainer.style.display = "none";
+    slideViewer.style.display = "block";
+    slideSectionTitle.innerText = "臨床参考資料 ＆ M・Rセルフケア";
     protocolBox.innerHTML = `
         <div class="visual-banner">
-            <i class="fa-solid fa-chart-line"></i>
-            <div class="visual-banner-text">
-                ステップ ${escapeHTML(sVal)} のセルフケアに取り組みます。
-            </div>
+            <i class="fa-solid fa-brain"></i>
+            <div class="visual-banner-text">Step ${escapeHTML(sVal)} の標準M・Rセルフケアに取り組みます。</div>
         </div>
-
         <strong>【本日の進め方】</strong>
-
         <ol class="protocol-list">
-            <li>
-                現在の体感をセルフチェックシートに入力してください。
-            </li>
-
-            <li>
-                「レポートを生成する」を押してください。
-            </li>
-
-            <li>
-                生成されたレポートをAIチャットボットへ送信してください。
-            </li>
+            <li>下の「現在のM・R対立内容」を確認してください。</li>
+            <li>声に出す発話練習ではなく、設定された場面と一連の流れを頭の中でイメージしてください。</li>
+            <li>今回のM・Rを終えたら「今回のM・Rを実施した」を押して記録してください。</li>
+            <li>最低5回に達すると「次の対立内容へ」が利用できます。自動では次へ進みません。</li>
         </ol>
-
-        <div class="cta-action-box">
-            現在のステップに応じたAIの案内を優先してください。
-        </div>
+        <div class="cta-action-box">具体的な発話文を必ず決める必要はありません。現在の既定教材を変更せずに進めます。</div>
     `;
-
+    refreshMRScenario().catch(console.error);
 
     if (sVal === "4") {
 
@@ -3421,9 +3588,8 @@ async function sendRassChatMessage() {
         const stageTag = String(result.stage_tag || "").toUpperCase();
         if (stageTag === "SAFETY") {
             enterSafetyMode("AI応答に安全対応タグが含まれています。通常のセルフケア操作を停止しています。");
-        } else if (stageTag && !safetyLocked && ["1", "2", "3", "4"].includes(stageTag)) {
-            setAppStage(stageTag, "dify-api");
         }
+        // Normal Stage tags are confirmation-only. Supabase is authoritative.
 
         setRassChatStatus(
             stageTag === "SAFETY"
@@ -3526,6 +3692,7 @@ async function initializeApp() {
     appStage = getCurrentStage();
     updateSafetyUI();
     suppressStepPersist = false;
+    await refreshMRScenario();
 
 
     /*
