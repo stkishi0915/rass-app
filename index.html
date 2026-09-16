@@ -1573,7 +1573,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
 <script>
 /* =========================================================
-   RASS Application v3.3.1
+   RASS Application v3.3.2
    =========================================================
 
    設計方針
@@ -2369,14 +2369,12 @@ async function advanceMRStep() {
 
         // Supabase is authoritative. Update the local display only after the
         // gated server transition has succeeded.
-        appStage = String(nextStep);
+        // Supabase is authoritative. Synchronize every Step-dependent UI
+        // through the existing single stage bridge.
         suppressStepPersist = true;
-        const select = document.getElementById("session-select");
-        if (select) select.value = String(nextStep);
+        setAppStage(String(nextStep), "server");
         suppressStepPersist = false;
-
-        updateCurrentStageLabel();
-        updateAIUsageGuide(appStage);
+        updateAIUsageGuide(getCurrentStage());
 
         mrStepComplete = false;
         renderMRScenario(result.session, result.scenario);
