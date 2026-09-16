@@ -1535,7 +1535,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
 <script>
 /* =========================================================
-   RASS Application v3.0
+   RASS Application v3.1
    =========================================================
 
    設計方針
@@ -2549,23 +2549,42 @@ function changeSession() {
 
     /*
      * Step 4～14
+     * RASSセルフケアは、
+     * ①日常生活で悪循環を増やさないためのセルフチェック
+     * ②標準M・R
+     * の二本立てで進める。
      */
-    checksheetContainer.style.display = "none";
+    checksheetContainer.style.display = "block";
     slideViewer.style.display = "block";
-    slideSectionTitle.innerText = "臨床参考資料 ＆ M・Rセルフケア";
+    slideSectionTitle.innerText = "臨床参考資料 ＆ セルフケア";
     protocolBox.innerHTML = `
         <div class="visual-banner">
             <i class="fa-solid fa-brain"></i>
-            <div class="visual-banner-text">Step ${escapeHTML(sVal)} の標準M・Rセルフケアに取り組みます。</div>
+            <div class="visual-banner-text">Step ${escapeHTML(sVal)} では、日常生活で悪循環を増やさないためのセルフケアと標準M・Rを並行して進めます。</div>
         </div>
+
         <strong>【本日の進め方】</strong>
         <ol class="protocol-list">
-            <li>下の「現在のM・R対立内容」を確認してください。</li>
-            <li>声に出す発話練習ではなく、設定された場面と一連の流れを頭の中でイメージしてください。</li>
-            <li>今回のM・Rを終えたら「今回のM・Rを実施した」を押して記録してください。</li>
-            <li>最低5回に達すると「次の対立内容へ」が利用できます。自動では次へ進みません。</li>
+            <li>
+                日常生活で、吃音に関連する否定的な感情や考えの反芻、発話への過度な注目、意図的な発話操作・工夫、回避などが増えていないか、悪循環セルフチェックで確認してください。
+            </li>
+            <li>
+                必要に応じてセルフチェックのレポートを生成し、AIとの対話で現在の状態を整理できます。
+            </li>
+            <li>
+                「現在のM・R対立内容」を確認し、声に出す発話練習ではなく、設定された場面と一連の流れを頭の中でイメージしてください。
+            </li>
+            <li>
+                今回のM・Rを終えたら「今回のM・Rを実施した」を押して記録してください。
+            </li>
+            <li>
+                1つの対立内容について最低5回に達すると「次の対立内容へ」が利用できます。自動では次へ進みません。
+            </li>
         </ol>
-        <div class="cta-action-box">具体的な発話文を必ず決める必要はありません。現在の既定教材を変更せずに進めます。</div>
+
+        <div class="cta-action-box">
+            悪循環セルフチェックとM・Rは、RASSセルフケアの両方の要素として並行して扱います。チェック結果によってM・Rの実施回数を増減させたり、既定の対立内容を変更したりはしません。
+        </div>
     `;
     refreshMRScenario().catch(console.error);
 
