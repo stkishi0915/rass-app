@@ -807,6 +807,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
       item_key: String(itemKey)
     }),
     saveViciousCycle: (values) => rassBackend("vicious_cycle_save", { values }),
+    getViciousCycleHistory: (limit = 20) => rassBackend("vicious_cycle_history", { limit }),
     stepNext: () => rassBackend("step_next")
   };
 </script>
@@ -2941,6 +2942,7 @@ async function saveViciousCycleCheck() {
             await refreshPreMRProgress();
         }
 
+        await renderHistory();
         return result;
     } catch (error) {
         console.error(error);
@@ -3142,87 +3144,67 @@ async function copyLatestReport() {
    History
 ========================================================= */
 
-function renderHistory() {
+async function renderHistory() {
+    const box = document.getElementById("history-list");
+    if (!box || !window.RASSV3) return;
 
-    const container =
-        document.getElementById(
-            "history-container"
-        );
+    box.innerHTML = '<p>履歴を読み込んでいます…</p>';
 
+    try {
+        const result = await window.RASSV3.getViciousCycleHistory(20);
+        const checks = Array.isArray(result?.checks) ? result.checks : [];
 
-    if (!container) {
-        return;
-    }
+        if (!checks.length) {
+            box.innerHTML = "<p>まだセルフチェック履歴はありません。</p>";
+            return;
+        }
 
+        const labels = [
+            ["values_thinking", "Ⅰ 価値観・考え"],
+            ["values_emotion_rumination", "Ⅱ 感情・反芻"],
+            ["values_speech_attention", "Ⅲ-1 発話への注目・自己監視"],
+            ["values_intentional_speech", "Ⅲ-2 発話の目的化・意図的発話"],
+            ["values_coping", "Ⅲ-3 工夫"],
+            ["values_avoidance", "Ⅲ-4 回避"],
+            ["values_listening_burden", "Ⅳ 相手の発話内容理解への負担"],
+            ["values_negative_attention", "Ⅴ 発話以外での否定的な面への注意"]
+        ];
 
-    const history =
-        getSavedScoreHistory();
+        box.innerHTML = checks.map((row) => {
+            const date = row.checked_at ? new Date(row.checked_at) : null;
+            const dateText = date && !Number.isNaN(date.getTime())
+                ? date.toLocaleString("ja-JP", {
+                    year: "numeric", month: "2-digit", day: "2-digit",
+                    hour: "2-digit", minute: "2-digit"
+                  })
+                : "日時不明";
 
-
-    if (!history.length) {
-
-        container.innerHTML =
-            `<div class="history-empty">
-                まだセルフチェック履歴はありません。
-            </div>`;
-
-        return;
-    }
-
-
-    const rows =
-        history
-            .slice()
-            .reverse()
-            .slice(0, 20)
-            .map(record => {
-
+            const valuesHtml = labels.map(([key, label]) => {
+                const value = Number(row[key]);
+                const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
                 return `
-                    <tr>
-                        <td>
-                            ${escapeHTML(
-                                formatDate(record.date)
-                            )}
-                        </td>
+                    <div style="display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #edf0f5;">
+                        <span>${label}</span>
+                        <strong>${safeValue}%</strong>
+                    </div>`;
+            }).join("");
 
-                        <td>
-                            Step ${escapeHTML(
-                                record.step
-                            )}
-                        </td>
-
-                        <td>
-                            ${Number(record.total)}%
-                        </td>
-                    </tr>
-                `;
-
-            })
-            .join("");
-
-
-    container.innerHTML =
-        `
-        <div class="history-table-wrapper">
-
-            <table class="history-table">
-
-                <thead>
-                    <tr>
-                        <th>日付</th>
-                        <th>ステップ</th>
-                        <th>スコア</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${rows}
-                </tbody>
-
-            </table>
-
-        </div>
-        `;
+            return `
+                <article style="border:1px solid #dce3ee;border-radius:14px;padding:16px;margin:0 0 14px;background:#fff;">
+                    <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px;">
+                        <strong>${dateText}</strong>
+                        <span>Step ${Number(row.step) || "-"}</span>
+                    </div>
+                    ${valuesHtml}
+                    <p style="margin:12px 0 0;font-size:.9rem;color:#64748b;">
+                        数値はその時点の振り返りです。良い・悪い、改善・悪化を判定するものではありません。
+                    </p>
+                </article>`;
+        }).join("");
+    } catch (error) {
+        console.error(error);
+        box.innerHTML = "<p>履歴を読み込めませんでした。通信状態を確認してください。</p>";
+    }
 }
 
 
