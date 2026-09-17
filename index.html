@@ -678,6 +678,63 @@ body.rass-safety-lock #session-select { pointer-events: none; }
     }
 }
 
+
+/* =========================
+   Step 1-3 standardized progress
+========================= */
+.pre-mr-progress-card { display:none; }
+.pre-mr-progress-card.active { display:block; }
+.pre-mr-progress-intro {
+    margin: 0 0 14px;
+    line-height: 1.75;
+}
+.pre-mr-progress-list {
+    display: grid;
+    gap: 10px;
+}
+.pre-mr-progress-item {
+    border: 1px solid #d8dee8;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+}
+.pre-mr-progress-item.done {
+    background: #f5fbf7;
+}
+.pre-mr-progress-item-title {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.pre-mr-progress-item-desc {
+    font-size: .94rem;
+    line-height: 1.65;
+    margin-bottom: 9px;
+}
+.pre-mr-progress-item button {
+    width: 100%;
+}
+.pre-mr-progress-item.done button {
+    opacity: .72;
+}
+.pre-mr-step-complete {
+    display:none;
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f2faf5;
+    border: 1px solid #b9dec5;
+}
+.pre-mr-step-complete.active { display:block; }
+.pre-mr-step-complete-title {
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+.pre-mr-progress-status {
+    margin-top: 10px;
+    min-height: 1.5em;
+    font-size: .94rem;
+}
+
 /* =========================
    Reduced motion
 ========================= */
@@ -744,6 +801,11 @@ body.rass-safety-lock #session-select { pointer-events: none; }
     getScenario: () => rassBackend("scenario_get"),
     completeMR: () => rassBackend("mr_complete"),
     nextScenario: () => rassBackend("scenario_next"),
+    getStepProgress: (step) => rassBackend("step_progress_get", { step: Number(step) }),
+    completeStepProgress: (step, itemKey) => rassBackend("step_progress_complete", {
+      step: Number(step),
+      item_key: String(itemKey)
+    }),
     stepNext: () => rassBackend("step_next")
   };
 </script>
@@ -836,15 +898,15 @@ body.rass-safety-lock #session-select { pointer-events: none; }
                         aria-label="現在のステップ（アプリが管理します）">
 
                         <option value="1">
-                            Step 1　場面の特定・初期評価
+                            Step 1　自己整理・RASSガイダンス
                         </option>
 
                         <option value="2">
-                            Step 2　悪循環の特定
+                            Step 2　悪循環・注意シフト
                         </option>
 
                         <option value="3">
-                            Step 3　仕組みの理解
+                            Step 3　M・R準備
                         </option>
 
                         <option value="4">
@@ -922,6 +984,26 @@ body.rass-safety-lock #session-select { pointer-events: none; }
             </section>
 
 
+
+
+            <!-- Standardized completion UI (Steps 1-3) -->
+            <section id="pre-mr-progress-container" class="card pre-mr-progress-card rass-lockable" aria-live="polite">
+                <h2 class="card-title">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span id="pre-mr-progress-heading">このStepで行うこと</span>
+                </h2>
+                <p id="pre-mr-progress-intro" class="pre-mr-progress-intro"></p>
+                <div id="pre-mr-progress-list" class="pre-mr-progress-list"></div>
+                <div id="pre-mr-progress-status" class="pre-mr-progress-status"></div>
+                <div id="pre-mr-step-complete" class="pre-mr-step-complete">
+                    <div id="pre-mr-step-complete-title" class="pre-mr-step-complete-title"></div>
+                    <div id="pre-mr-step-complete-text"></div>
+                    <button type="button" id="pre-mr-step-next-button" class="primary-button mr-step-next-button"
+                            onclick="advancePreMRStep()">
+                        次のStepへ進む <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
 
             <!-- Standard M-R scenario (Steps 4-14) -->
             <section id="mr-scenario-container" class="card mr-scenario-card rass-lockable" aria-live="polite">
@@ -2209,6 +2291,202 @@ window.RASSStageBridge = {
 
 
 
+
+/* =========================================================
+   v3.4 Step 1-3 standardized progress UI
+========================================================= */
+const PRE_MR_STEP_ITEMS = {
+    1: {
+        heading: "Step 1　自己整理・RASSガイダンス",
+        intro: "臨床家による診断や重症度判定ではなく、セルフケア開始前の自己整理と基本ガイダンスを行います。",
+        items: [
+            ["basic_information", "基本情報を整理した", "年齢・仕事または所属・現在特に困っている発話場面など、セルフケアに必要な基本情報を整理します。"],
+            ["self_review", "これまでの状態・経験を振り返った", "吃音を自覚した時期や、これまで行ってきた対処、生活上気になっていることを振り返ります。"],
+            ["rass_guidance", "吃音とRASSの基本ガイダンスを確認した", "中核症状、工夫・回避、進展段階、自然で無意識な発話、RASSセルフケアの基本方針を確認します。"]
+        ]
+    },
+    2: {
+        heading: "Step 2　悪循環・注意シフト",
+        intro: "日常生活で悪循環を増やしている要因を振り返り、注意シフトの考え方を学んで実際に試します。数値の良し悪しは進行条件ではありません。",
+        items: [
+            ["vicious_cycle_check", "悪循環セルフチェックを実施した", "現在の否定的な考え・感情、発話への注目、意図的な工夫、回避などを一通り確認します。"],
+            ["vicious_cycle_guidance", "悪循環の説明を確認した", "チェックした要因が相互に影響しうるというRASSの考え方を確認します。"],
+            ["attention_shift_guidance", "注意シフトの説明を確認した", "嫌な考えや内的な注意にとらわれたとき、目の前の客観的な情報へ注意を移す考え方を確認します。"],
+            ["attention_shift_practice", "注意シフトを実際に試した", "完璧にできたかを評価せず、一度実際に試したことを記録します。"]
+        ]
+    },
+    3: {
+        heading: "Step 3　M・R準備",
+        intro: "対立内容No.1へ進む前に、注意シフトを振り返り、M・Rの説明、リラクセーション、中性イメージ、基本ルールを確認します。",
+        items: [
+            ["step2_review", "Step 2の取り組みを振り返った", "注意シフトを試した際の様子や、日常生活で気づいたことを振り返ります。"],
+            ["mr_guidance", "M・Rの説明を確認した", "M・Rは声に出す発話練習ではなく、頭の中で場面と行動の流れを扱うことを確認します。"],
+            ["relaxation_practice", "リラクセーションを実施した", "このStepで案内されるリラクセーションを一度実施したことを記録します。"],
+            ["neutral_imagery_practice", "中性イメージを実施した", "対立内容ではない中性的な場面のイメージを一度実施したことを記録します。"],
+            ["mr_rules_confirmation", "M・Rの基本ルールを確認した", "声に出して練習しない、具体的な発話文や発話器官を意図的に操作する練習にしない、という基本事項を確認します。"]
+        ]
+    }
+};
+
+let currentPreMRProgress = null;
+let preMRRequestBusy = false;
+
+function isPreMRStep(value = getCurrentStage()) {
+    return [1, 2, 3].includes(Number(value));
+}
+
+function setPreMRStatus(message = "") {
+    const el = document.getElementById("pre-mr-progress-status");
+    if (el) el.innerText = message;
+}
+
+function setPreMRBusy(busy) {
+    preMRRequestBusy = Boolean(busy);
+    document.querySelectorAll("#pre-mr-progress-container button").forEach(btn => {
+        if (btn.id === "pre-mr-step-next-button") {
+            btn.disabled = preMRRequestBusy || safetyLocked || !currentPreMRProgress?.step_complete;
+        } else {
+            btn.disabled = preMRRequestBusy || safetyLocked || btn.dataset.completed === "true";
+        }
+    });
+}
+
+function renderPreMRProgress(result) {
+    const container = document.getElementById("pre-mr-progress-container");
+    if (!container) return;
+
+    const step = Number(result?.step ?? result?.session?.current_step ?? getCurrentStage());
+    const spec = PRE_MR_STEP_ITEMS[step];
+    const visible = Boolean(spec) && !safetyLocked;
+    container.classList.toggle("active", visible);
+    if (!visible) return;
+
+    currentPreMRProgress = result;
+    const heading = document.getElementById("pre-mr-progress-heading");
+    const intro = document.getElementById("pre-mr-progress-intro");
+    const list = document.getElementById("pre-mr-progress-list");
+    if (heading) heading.innerText = spec.heading;
+    if (intro) intro.innerText = spec.intro;
+
+    const serverItems = new Map((result.items || []).map(item => [item.item_key, item]));
+    if (list) {
+        list.innerHTML = "";
+        spec.items.forEach(([key, title, desc]) => {
+            const completed = serverItems.get(key)?.completed === true;
+            const item = document.createElement("div");
+            item.className = `pre-mr-progress-item${completed ? " done" : ""}`;
+            item.innerHTML = `
+                <div class="pre-mr-progress-item-title">${completed ? "✓ " : ""}${escapeHTML(title)}</div>
+                <div class="pre-mr-progress-item-desc">${escapeHTML(desc)}</div>
+                <button type="button" class="${completed ? "mr-secondary-button" : "primary-button"}"
+                        data-completed="${completed ? "true" : "false"}"
+                        ${completed ? "disabled" : ""}
+                        onclick="completePreMRItem('${key}')">
+                    ${completed ? "確認済み" : "実施・確認した"}
+                </button>`;
+            list.appendChild(item);
+        });
+    }
+
+    const completeBox = document.getElementById("pre-mr-step-complete");
+    const complete = result.step_complete === true;
+    if (completeBox) completeBox.classList.toggle("active", complete);
+    if (complete) {
+        const title = document.getElementById("pre-mr-step-complete-title");
+        const body = document.getElementById("pre-mr-step-complete-text");
+        const btn = document.getElementById("pre-mr-step-next-button");
+        if (title) title.innerText = `Step ${step} の標準項目を完了しました`;
+        if (body) body.innerText = step === 3
+            ? "Step 4へ進むと、標準M・Rの対立内容No.1を0回から開始します。"
+            : `準備ができました。Step ${step + 1}へ進めます。`;
+        if (btn) btn.innerHTML = `Step ${step + 1}へ進む <i class="fa-solid fa-arrow-right"></i>`;
+    }
+    setPreMRBusy(false);
+}
+
+async function refreshPreMRProgress() {
+    const container = document.getElementById("pre-mr-progress-container");
+    if (!isPreMRStep() || safetyLocked) {
+        if (container) container.classList.remove("active");
+        currentPreMRProgress = null;
+        return;
+    }
+    if (!window.RASSV3) return;
+    try {
+        setPreMRStatus("このStepの進行状況を読み込んでいます…");
+        const result = await window.RASSV3.getStepProgress(Number(getCurrentStage()));
+        renderPreMRProgress(result);
+        setPreMRStatus(result.step_complete ? "このStepの標準項目を完了しています。" : "");
+    } catch (error) {
+        console.error("Step 1-3 progress load failed:", error);
+        setPreMRStatus("進行状況の読み込みに失敗しました。");
+    }
+}
+
+async function completePreMRItem(itemKey) {
+    if (!requireUnlocked() || !isPreMRStep() || !window.RASSV3 || preMRRequestBusy) return;
+    const step = Number(getCurrentStage());
+    try {
+        setPreMRBusy(true);
+        setPreMRStatus("実施・確認を記録しています…");
+        const result = await window.RASSV3.completeStepProgress(step, itemKey);
+        renderPreMRProgress(result);
+        setPreMRStatus(result.step_complete
+            ? `Step ${step} の標準項目をすべて完了しました。`
+            : "記録しました。残りの項目を進めてください。");
+    } catch (error) {
+        console.error("Step 1-3 progress update failed:", error);
+        setPreMRStatus("記録に失敗しました。現在のStepを再確認してください。");
+        await refreshPreMRProgress();
+    } finally {
+        setPreMRBusy(false);
+    }
+}
+
+async function advancePreMRStep() {
+    if (!requireUnlocked() || !isPreMRStep() || !window.RASSV3 ||
+        preMRRequestBusy || !currentPreMRProgress?.step_complete) return;
+
+    const previousStep = Number(getCurrentStage());
+    try {
+        setPreMRBusy(true);
+        setPreMRStatus(`Step ${previousStep + 1}へ進んでいます…`);
+        const result = await window.RASSV3.stepNext();
+        const nextStep = Number(result.current_step ?? result.session?.current_step);
+
+        suppressStepPersist = true;
+        setAppStage(String(nextStep), "server");
+        suppressStepPersist = false;
+        updateAIUsageGuide(getCurrentStage());
+
+        currentPreMRProgress = null;
+
+        try {
+            await window.RASSV3.resetChat();
+            clearChatMessages();
+            const box = document.getElementById("rass-chat-messages");
+            if (box) box.innerHTML =
+                `<div class="rass-chat-empty">Step ${nextStep}に進みました。必要なときに新しいRASS対話を開始できます。</div>`;
+        } catch (e) {
+            console.warn("Dify reset after Step advance failed:", e);
+        }
+
+        changeSession();
+        if (nextStep <= 3) {
+            await refreshPreMRProgress();
+        } else {
+            await refreshMRScenario();
+        }
+    } catch (error) {
+        console.error("Step 1-3 advance failed:", error);
+        setPreMRStatus("次のStepへの移動に失敗しました。未完了項目がないか確認してください。");
+        await refreshPreMRProgress();
+    } finally {
+        setPreMRBusy(false);
+    }
+}
+
+
 /* =========================================================
    v3.0 Standard M-R scenario UI
 ========================================================= */
@@ -2459,6 +2737,7 @@ function changeSession() {
     // The selector is display-only and changeSession() only re-renders the
     // UI for the Step already confirmed by Supabase.
     if (!suppressStepPersist) {
+        refreshPreMRProgress().catch(console.error);
         refreshMRScenario().catch(console.error);
     }
 
@@ -2531,8 +2810,7 @@ function changeSession() {
             <div class="visual-banner">
                 <i class="fa-solid fa-comments"></i>
                 <div class="visual-banner-text">
-                    まずはAIとの対話によって、
-                    現在困っている場面と状態を整理します。
+                    自分の状態を整理し、吃音とRASSセルフケアの基本を確認します。
                 </div>
             </div>
 
@@ -2555,7 +2833,7 @@ function changeSession() {
             </ol>
 
             <div class="cta-action-box">
-                AIチャットボットとのヒアリングを開始してください。
+                下の標準項目を順に実施・確認してください。AIチャットは整理や疑問があるときの補助として利用できます。
             </div>
         `;
 
@@ -2567,6 +2845,7 @@ function changeSession() {
             "臨床参考資料";
 
         updateSlideDisplay();
+        refreshPreMRProgress().catch(console.error);
 
         return;
     }
@@ -2578,8 +2857,7 @@ function changeSession() {
             <div class="visual-banner">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <div class="visual-banner-text">
-                    発話場面で生じている
-                    「注目・工夫・回避」の悪循環を整理します。
+                    悪循環をセルフチェックし、注意シフトの考え方を学んで実際に試します。
                 </div>
             </div>
 
@@ -2601,7 +2879,7 @@ function changeSession() {
             </ol>
 
             <div class="cta-action-box">
-                AIチャットボットの質問に沿って進めてください。
+                悪循環セルフチェックと標準項目を進めてください。数値の改善はStep進行の条件ではありません。
             </div>
         `;
 
@@ -2613,8 +2891,10 @@ function changeSession() {
             "臨床参考資料";
 
         currentSlideIndex = 5;
+        checksheetContainer.style.display = "block";
 
         updateSlideDisplay();
+        refreshPreMRProgress().catch(console.error);
 
         return;
     }
@@ -2626,8 +2906,7 @@ function changeSession() {
             <div class="visual-banner">
                 <i class="fa-solid fa-brain"></i>
                 <div class="visual-banner-text">
-                    発話への注意と人為的コントロールが
-                    悪循環にどのように関係するかを整理します。
+                    標準M・Rを開始する前に、M・Rの説明、リラクセーション、中性イメージ、基本ルールを確認します。
                 </div>
             </div>
 
@@ -2650,8 +2929,7 @@ function changeSession() {
             </ol>
 
             <div class="cta-action-box">
-                AIとの対話を通じて、
-                現在の仕組みへの理解を深めてください。
+                下の標準項目を一通り実施・確認してください。Step 3では、まだ対立内容No.1は開始しません。
             </div>
         `;
 
@@ -2665,6 +2943,7 @@ function changeSession() {
         currentSlideIndex = 6;
 
         updateSlideDisplay();
+        refreshPreMRProgress().catch(console.error);
 
         return;
     }
@@ -3835,6 +4114,7 @@ async function initializeApp() {
     updateSafetyUI();
     updateAIUsageGuide(appStage);
     suppressStepPersist = false;
+    await refreshPreMRProgress();
     await refreshMRScenario();
 
 
