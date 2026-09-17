@@ -735,6 +735,45 @@ body.rass-safety-lock #session-select { pointer-events: none; }
     font-size: .94rem;
 }
 
+
+/* =========================
+   v3.7 Step 2 vicious-cycle guidance
+========================= */
+.vicious-guidance {
+    margin-top: 10px;
+    border: 1px solid #d8dee8;
+    border-radius: 12px;
+    padding: 14px;
+    background: #f8fafc;
+}
+.vicious-guidance-progress {
+    font-size: .88rem;
+    margin-bottom: 8px;
+}
+.vicious-guidance-panel {
+    line-height: 1.75;
+}
+.vicious-guidance-panel h4 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+}
+.vicious-guidance-panel p {
+    margin: 0 0 10px;
+}
+.vicious-guidance-note {
+    padding: 10px 12px;
+    border: 1px solid #d8dee8;
+    border-radius: 10px;
+    background: #fff;
+    margin: 10px 0;
+}
+.vicious-guidance-actions {
+    margin-top: 12px;
+}
+.vicious-guidance-actions button {
+    width: 100%;
+}
+
 /* =========================
    Reduced motion
 ========================= */
@@ -807,7 +846,6 @@ body.rass-safety-lock #session-select { pointer-events: none; }
       item_key: String(itemKey)
     }),
     saveViciousCycle: (values) => rassBackend("vicious_cycle_save", { values }),
-    getViciousCycleHistory: (limit = 20) => rassBackend("vicious_cycle_history", { limit }),
     stepNext: () => rassBackend("step_next")
   };
 </script>
@@ -2167,6 +2205,66 @@ const PRE_MR_STEP_ITEMS = {
 
 let currentPreMRProgress = null;
 let preMRRequestBusy = false;
+let viciousGuidancePage = 0;
+
+const VICIOUS_GUIDANCE_PAGES = [
+    {
+        title: "1．悪循環とは",
+        body: `
+            <p>RASSでは、吃音についての否定的な捉え方、嫌な感情の反芻、発話への過度な注目、意図的な発話操作・工夫、回避などが、互いに影響し合うことがあると考えます。</p>
+            <div class="vicious-guidance-note">ここでは、自分がどの項目に当てはまるかを診断したり、重症度を決めたりすることが目的ではありません。</div>`
+    },
+    {
+        title: "2．工夫や回避との関係",
+        body: `
+            <p>「何とかうまく話そう」と発話そのものへ注意を向け、意図的に操作したり、話すこと・話す場面を避けたりすると、発話への注意や否定的な捉え方がさらに続くことがあります。</p>
+            <p>セルフケアでは、発話を上手にコントロールする新しいテクニックを身につけるのではなく、この悪循環を増やす行動に気づくことを扱います。</p>`
+    },
+    {
+        title: "3．数値を下げるゲームではありません",
+        body: `
+            <p>悪循環セルフチェックの数値は、その時点の傾向を振り返るための記録です。高い数値を「失敗」、低い数値を「成功」と評価しません。</p>
+            <div class="vicious-guidance-note"><strong>意識的に0％へ下げようと努力する必要はありません。</strong> 数値の良し悪しはStepを進む条件にも、M・Rの回数を変える条件にも使いません。</div>`
+    },
+    {
+        title: "4．次は注意シフトへ",
+        body: `
+            <p>嫌な考えや発話の振り返りに気づいたとき、それを頭の中で繰り返し続けるのではなく、目の前にある客観的な情報へ注意を移す方法を次に確認します。</p>
+            <p>即効性や完璧さを求めるものではありません。まず方法を知り、実際に一度試すところから進めます。</p>`
+    }
+];
+
+function renderViciousGuidance(completed = false) {
+    const host = document.getElementById("vicious-guidance-host");
+    if (!host || completed) return;
+    const page = Math.max(0, Math.min(viciousGuidancePage, VICIOUS_GUIDANCE_PAGES.length - 1));
+    const spec = VICIOUS_GUIDANCE_PAGES[page];
+    const last = page === VICIOUS_GUIDANCE_PAGES.length - 1;
+    host.innerHTML = `
+        <div class="vicious-guidance-progress">説明 ${page + 1} / ${VICIOUS_GUIDANCE_PAGES.length}</div>
+        <div class="vicious-guidance-panel">
+            <h4>${spec.title}</h4>
+            ${spec.body}
+        </div>
+        <div class="vicious-guidance-actions">
+            <button type="button" class="primary-button"
+                    onclick="${last ? "finishViciousGuidance()" : "nextViciousGuidancePage()"}">
+                ${last ? "4つの説明を確認した" : "次の説明へ"}
+            </button>
+        </div>`;
+}
+
+function nextViciousGuidancePage() {
+    if (viciousGuidancePage < VICIOUS_GUIDANCE_PAGES.length - 1) {
+        viciousGuidancePage += 1;
+        renderViciousGuidance(false);
+    }
+}
+
+async function finishViciousGuidance() {
+    if (viciousGuidancePage !== VICIOUS_GUIDANCE_PAGES.length - 1) return;
+    await completePreMRItem("vicious_cycle_guidance");
+}
 
 function isPreMRStep(value = getCurrentStage()) {
     return [1, 2, 3].includes(Number(value));
@@ -2212,16 +2310,22 @@ function renderPreMRProgress(result) {
             const completed = serverItems.get(key)?.completed === true;
             const item = document.createElement("div");
             item.className = `pre-mr-progress-item${completed ? " done" : ""}`;
+            const isViciousGuidance = step === 2 && key === "vicious_cycle_guidance";
             item.innerHTML = `
                 <div class="pre-mr-progress-item-title">${completed ? "✓ " : ""}${escapeHTML(title)}</div>
                 <div class="pre-mr-progress-item-desc">${escapeHTML(desc)}</div>
-                <button type="button" class="${completed ? "mr-secondary-button" : "primary-button"}"
-                        data-completed="${completed ? "true" : "false"}"
-                        ${completed ? "disabled" : ""}
-                        onclick="completePreMRItem('${key}')">
-                    ${completed ? "確認済み" : "実施・確認した"}
-                </button>`;
+                ${isViciousGuidance && !completed
+                    ? '<div id="vicious-guidance-host" class="vicious-guidance"></div>'
+                    : `<button type="button" class="${completed ? "mr-secondary-button" : "primary-button"}"
+                            data-completed="${completed ? "true" : "false"}"
+                            ${completed ? "disabled" : ""}
+                            onclick="completePreMRItem('${key}')">
+                        ${completed ? "確認済み" : "実施・確認した"}
+                       </button>`}`;
             list.appendChild(item);
+            if (isViciousGuidance && !completed) {
+                renderViciousGuidance(false);
+            }
         });
     }
 
@@ -2252,6 +2356,10 @@ async function refreshPreMRProgress() {
     try {
         setPreMRStatus("このStepの進行状況を読み込んでいます…");
         const result = await window.RASSV3.getStepProgress(Number(getCurrentStage()));
+        if (Number(getCurrentStage()) === 2 &&
+            !result.items?.find(item => item.item_key === "vicious_cycle_guidance")?.completed) {
+            viciousGuidancePage = 0;
+        }
         renderPreMRProgress(result);
         setPreMRStatus(result.step_complete ? "このStepの標準項目を完了しています。" : "");
     } catch (error) {
@@ -2939,10 +3047,9 @@ async function saveViciousCycleCheck() {
         // Step 2 only: v4.3 automatically completes vicious_cycle_check
         // after the DB insert succeeds. Refresh the progress UI from server truth.
         if (Number(getCurrentStage()) === 2) {
-            await refreshPreMRProgress();
+            await loadPreMRProgress();
         }
 
-        await renderHistory();
         return result;
     } catch (error) {
         console.error(error);
@@ -3144,67 +3251,87 @@ async function copyLatestReport() {
    History
 ========================================================= */
 
-async function renderHistory() {
-    const box = document.getElementById("history-container");
-    if (!box || !window.RASSV3) return;
+function renderHistory() {
 
-    box.innerHTML = '<p>履歴を読み込んでいます…</p>';
+    const container =
+        document.getElementById(
+            "history-container"
+        );
 
-    try {
-        const result = await window.RASSV3.getViciousCycleHistory(20);
-        const checks = Array.isArray(result?.checks) ? result.checks : [];
 
-        if (!checks.length) {
-            box.innerHTML = "<p>まだセルフチェック履歴はありません。</p>";
-            return;
-        }
-
-        const labels = [
-            ["values_thinking", "Ⅰ 価値観・考え"],
-            ["values_emotion_rumination", "Ⅱ 感情・反芻"],
-            ["values_speech_attention", "Ⅲ-1 発話への注目・自己監視"],
-            ["values_intentional_speech", "Ⅲ-2 発話の目的化・意図的発話"],
-            ["values_coping", "Ⅲ-3 工夫"],
-            ["values_avoidance", "Ⅲ-4 回避"],
-            ["values_listening_burden", "Ⅳ 相手の発話内容理解への負担"],
-            ["values_negative_attention", "Ⅴ 発話以外での否定的な面への注意"]
-        ];
-
-        box.innerHTML = checks.map((row) => {
-            const date = row.checked_at ? new Date(row.checked_at) : null;
-            const dateText = date && !Number.isNaN(date.getTime())
-                ? date.toLocaleString("ja-JP", {
-                    year: "numeric", month: "2-digit", day: "2-digit",
-                    hour: "2-digit", minute: "2-digit"
-                  })
-                : "日時不明";
-
-            const valuesHtml = labels.map(([key, label]) => {
-                const value = Number(row[key]);
-                const safeValue = Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 0;
-                return `
-                    <div style="display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid #edf0f5;">
-                        <span>${label}</span>
-                        <strong>${safeValue}%</strong>
-                    </div>`;
-            }).join("");
-
-            return `
-                <article style="border:1px solid #dce3ee;border-radius:14px;padding:16px;margin:0 0 14px;background:#fff;">
-                    <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px;">
-                        <strong>${dateText}</strong>
-                        <span>Step ${Number(row.step) || "-"}</span>
-                    </div>
-                    ${valuesHtml}
-                    <p style="margin:12px 0 0;font-size:.9rem;color:#64748b;">
-                        数値はその時点の振り返りです。良い・悪い、改善・悪化を判定するものではありません。
-                    </p>
-                </article>`;
-        }).join("");
-    } catch (error) {
-        console.error(error);
-        box.innerHTML = "<p>履歴を読み込めませんでした。通信状態を確認してください。</p>";
+    if (!container) {
+        return;
     }
+
+
+    const history =
+        getSavedScoreHistory();
+
+
+    if (!history.length) {
+
+        container.innerHTML =
+            `<div class="history-empty">
+                まだセルフチェック履歴はありません。
+            </div>`;
+
+        return;
+    }
+
+
+    const rows =
+        history
+            .slice()
+            .reverse()
+            .slice(0, 20)
+            .map(record => {
+
+                return `
+                    <tr>
+                        <td>
+                            ${escapeHTML(
+                                formatDate(record.date)
+                            )}
+                        </td>
+
+                        <td>
+                            Step ${escapeHTML(
+                                record.step
+                            )}
+                        </td>
+
+                        <td>
+                            ${Number(record.total)}%
+                        </td>
+                    </tr>
+                `;
+
+            })
+            .join("");
+
+
+    container.innerHTML =
+        `
+        <div class="history-table-wrapper">
+
+            <table class="history-table">
+
+                <thead>
+                    <tr>
+                        <th>日付</th>
+                        <th>ステップ</th>
+                        <th>スコア</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+        `;
 }
 
 
@@ -3682,7 +3809,7 @@ async function initializeApp() {
      * History
      */
 
-    await renderHistory();
+    renderHistory();
 
 
     /*
