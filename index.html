@@ -774,6 +774,29 @@ body.rass-safety-lock #session-select { pointer-events: none; }
     width: 100%;
 }
 
+
+
+/* =========================
+   v3.8 Step 3 guided relaxation
+========================= */
+.relaxation-guide {
+    margin-top: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 14px;
+    background: #f8fafc;
+}
+.relaxation-guide-progress { font-size:.88rem; margin-bottom:8px; }
+.relaxation-guide-panel { line-height:1.75; }
+.relaxation-guide-panel h4 { margin:0 0 8px; font-size:1rem; }
+.relaxation-guide-panel p { margin:0 0 10px; }
+.relaxation-guide-note {
+    padding:10px 12px; border:1px solid #d8dee8; border-radius:10px;
+    background:#fff; margin:10px 0;
+}
+.relaxation-guide-actions { display:flex; gap:8px; margin-top:12px; }
+.relaxation-guide-actions button { flex:1; }
+
 /* =========================
    Reduced motion
 ========================= */
@@ -2206,6 +2229,72 @@ const PRE_MR_STEP_ITEMS = {
 let currentPreMRProgress = null;
 let preMRRequestBusy = false;
 let viciousGuidancePage = 0;
+let relaxationGuidePage = 0;
+
+const RELAXATION_GUIDE_PAGES = [
+    {
+        title: "1．準備",
+        body: `<p>安全に座れる場所などで、無理のない姿勢をとります。</p>
+               <div class="relaxation-guide-note">ここで行う身体感覚への注意は、M・Rの映像想起を準備するためのリラクセーションに限ったものです。発話をコントロールするためには使いません。</div>`
+    },
+    {
+        title: "2．右足",
+        body: `<p>右足の親指がそこにあることを感じ、親指から順に足の指、足の甲、土踏まず、足首、ふくらはぎ、すね、太ももへと、力を抜く感じをたどります。</p>
+               <p>はっきりした変化を作ろうとせず、感じられる範囲で進めます。</p>`
+    },
+    {
+        title: "3．左足",
+        body: `<p>左足も同じように、足の指から足首、下腿、太ももへと順に進めます。</p>
+               <p>左右が同じ感覚になる必要はありません。</p>`
+    },
+    {
+        title: "4．体幹",
+        body: `<p>お腹、脇腹、胸、腰、肩甲骨の周囲へと範囲を移し、それぞれの部位で余分な力を抜く感じをたどります。</p>
+               <p>痛みや不快感があれば、その部位は飛ばしてください。</p>`
+    },
+    {
+        title: "5．腕・肩",
+        body: `<p>片方ずつ腕と肩へ注意を移し、力を抜く感じをたどります。終わったら反対側も同様に行います。</p>`
+    },
+    {
+        title: "6．首・顔面・頭",
+        body: `<p>首、顔面、頭の周囲へと進みます。無理に変化を起こそうとせず、楽にできる範囲だけで構いません。</p>`
+    },
+    {
+        title: "7．終了",
+        body: `<p>目を開け、腕や肩、脚などを無理のない範囲で軽く動かして、普段の状態へ戻ります。</p>
+               <div class="relaxation-guide-note">十分にリラックスできたかどうかは評価しません。一通り実施したことを記録します。気分不良、吐き気、頭痛などがある場合はここで中止してください。</div>`
+    }
+];
+
+function renderRelaxationGuide(completed = false) {
+    const host = document.getElementById("relaxation-guide-host");
+    if (!host || completed) return;
+    const page = Math.max(0, Math.min(relaxationGuidePage, RELAXATION_GUIDE_PAGES.length - 1));
+    const spec = RELAXATION_GUIDE_PAGES[page];
+    const last = page === RELAXATION_GUIDE_PAGES.length - 1;
+    host.innerHTML = `
+        <div class="relaxation-guide-progress">リラクセーション ${page + 1} / ${RELAXATION_GUIDE_PAGES.length}</div>
+        <div class="relaxation-guide-panel"><h4>${spec.title}</h4>${spec.body}</div>
+        <div class="relaxation-guide-actions">
+            ${page > 0 ? '<button type="button" class="mr-secondary-button" onclick="previousRelaxationPage()">前へ</button>' : ''}
+            <button type="button" class="primary-button" onclick="${last ? 'finishRelaxationGuide()' : 'nextRelaxationPage()'}">
+                ${last ? '一通り実施した' : '次へ'}
+            </button>
+        </div>`;
+}
+function nextRelaxationPage() {
+    if (relaxationGuidePage < RELAXATION_GUIDE_PAGES.length - 1) relaxationGuidePage += 1;
+    renderRelaxationGuide(false);
+}
+function previousRelaxationPage() {
+    if (relaxationGuidePage > 0) relaxationGuidePage -= 1;
+    renderRelaxationGuide(false);
+}
+async function finishRelaxationGuide() {
+    if (relaxationGuidePage !== RELAXATION_GUIDE_PAGES.length - 1) return;
+    await completePreMRItem("relaxation_practice");
+}
 
 const VICIOUS_GUIDANCE_PAGES = [
     {
@@ -2311,21 +2400,27 @@ function renderPreMRProgress(result) {
             const item = document.createElement("div");
             item.className = `pre-mr-progress-item${completed ? " done" : ""}`;
             const isViciousGuidance = step === 2 && key === "vicious_cycle_guidance";
-            item.innerHTML = `
-                <div class="pre-mr-progress-item-title">${completed ? "✓ " : ""}${escapeHTML(title)}</div>
-                <div class="pre-mr-progress-item-desc">${escapeHTML(desc)}</div>
-                ${isViciousGuidance && !completed
-                    ? '<div id="vicious-guidance-host" class="vicious-guidance"></div>'
-                    : `<button type="button" class="${completed ? "mr-secondary-button" : "primary-button"}"
+            const isRelaxationGuide = step === 3 && key === "relaxation_practice";
+            let actionHtml;
+            if (isViciousGuidance && !completed) {
+                actionHtml = '<div id="vicious-guidance-host" class="vicious-guidance"></div>';
+            } else if (isRelaxationGuide && !completed) {
+                actionHtml = '<div id="relaxation-guide-host" class="relaxation-guide"></div>';
+            } else {
+                actionHtml = `<button type="button" class="${completed ? "mr-secondary-button" : "primary-button"}"
                             data-completed="${completed ? "true" : "false"}"
                             ${completed ? "disabled" : ""}
                             onclick="completePreMRItem('${key}')">
                         ${completed ? "確認済み" : "実施・確認した"}
-                       </button>`}`;
-            list.appendChild(item);
-            if (isViciousGuidance && !completed) {
-                renderViciousGuidance(false);
+                       </button>`;
             }
+            item.innerHTML = `
+                <div class="pre-mr-progress-item-title">${completed ? "✓ " : ""}${escapeHTML(title)}</div>
+                <div class="pre-mr-progress-item-desc">${escapeHTML(desc)}</div>
+                ${actionHtml}`;
+            list.appendChild(item);
+            if (isViciousGuidance && !completed) renderViciousGuidance(false);
+            if (isRelaxationGuide && !completed) renderRelaxationGuide(false);
         });
     }
 
@@ -2359,6 +2454,10 @@ async function refreshPreMRProgress() {
         if (Number(getCurrentStage()) === 2 &&
             !result.items?.find(item => item.item_key === "vicious_cycle_guidance")?.completed) {
             viciousGuidancePage = 0;
+        }
+        if (Number(getCurrentStage()) === 3 &&
+            !result.items?.find(item => item.item_key === "relaxation_practice")?.completed) {
+            relaxationGuidePage = 0;
         }
         renderPreMRProgress(result);
         setPreMRStatus(result.step_complete ? "このStepの標準項目を完了しています。" : "");
