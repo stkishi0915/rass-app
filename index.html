@@ -2938,7 +2938,7 @@ async function saveViciousCycleCheck() {
         // Step 2 only: v4.3 automatically completes vicious_cycle_check
         // after the DB insert succeeds. Refresh the progress UI from server truth.
         if (Number(getCurrentStage()) === 2) {
-            await loadPreMRProgress();
+            await refreshPreMRProgress();
         }
 
         return result;
