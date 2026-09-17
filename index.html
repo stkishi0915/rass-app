@@ -806,6 +806,7 @@ body.rass-safety-lock #session-select { pointer-events: none; }
       step: Number(step),
       item_key: String(itemKey)
     }),
+    saveViciousCycle: (values) => rassBackend("vicious_cycle_save", { values }),
     stepNext: () => rassBackend("step_next")
   };
 </script>
@@ -1105,289 +1106,124 @@ body.rass-safety-lock #session-select { pointer-events: none; }
 
             <!-- Checksheet -->
 
-            <section
-                id="checksheet-container"
-                class="card"
-                style="display:none;">
-
+            <section id="checksheet-container" class="card" style="display:none;">
                 <h2 class="card-title">
                     <i class="fa-solid fa-chart-line"></i>
-                    悪循環セルフチェックシート
+                    悪循環セルフチェック
                 </h2>
 
+                <p><strong>最近の生活で、次のことがどのくらいありますか？</strong></p>
                 <p>
-                    現在の体感に近い数値を10％刻みで設定してください。
-                    数値そのものを「良い・悪い」と評価する必要はありません。
+                    0％＝ほとんどない　／　100％＝非常によくある。10％刻みで、今の感覚に近いところを選んでください。
+                    正解・不正解はありません。数値を意識して下げる必要もありません。
+                </p>
+                <p class="note-box">
+                    このチェックは、日常生活で悪循環に関係する要因を自分で振り返るための日常用簡易版です。
+                    診断や重症度判定を行うものではありません。
                 </p>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅰ-1　他者推測・自己処罰
-                    </div>
-
+                    <div class="checksheet-label">Ⅰ　価値観・考え</div>
+                    <p><strong>吃音について、自分や周囲の人を否定的に考えることがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">例：どもった自分を責める、相手から悪く思われたと考えるなど。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-value"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('value')">
-
-                        <span
-                            id="val-value"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-thinking" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('thinking')">
+                        <span id="val-thinking" class="range-value">0%</span>
                     </div>
-
-                    <div class="checksheet-scale">
-                        <span>0%</span>
-                        <span>100%</span>
-                    </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅰ-2　発話強迫・隠蔽
-                    </div>
-
+                    <div class="checksheet-label">Ⅱ　感情・反芻</div>
+                    <p><strong>吃音について嫌な気持ちが続いたり、あとから繰り返し考えることがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">例：恥ずかしさ・つらさ・不安が続く、終わった会話を何度も振り返るなど。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-cognition"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('cognition')">
-
-                        <span
-                            id="val-cognition"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-emotion-rumination" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('emotion-rumination')">
+                        <span id="val-emotion-rumination" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅱ-1　情動反応・反芻
-                    </div>
-
+                    <div class="checksheet-label">Ⅲ-1　発話への注目・自己監視</div>
+                    <p><strong>話す前後や話しているとき、言葉・声・身体・話した結果などを気にすることがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">例：言葉が出るか、どもるか、声や身体の状態などに注意が向く。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-emotion"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('emotion')">
-
-                        <span
-                            id="val-emotion"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-speech-attention" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('speech-attention')">
+                        <span id="val-speech-attention" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅲ-1　注目・自己監視
-                    </div>
-
+                    <div class="checksheet-label">Ⅲ-2　発話の目的化・意図的発話</div>
+                    <p><strong>「うまく話そう」「言葉を出そう」など、話すこと自体を意識して行おうとすることがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">ここでは発話を意図的にコントロールしようとする状態を振り返ります。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-attention"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('attention')">
-
-                        <span
-                            id="val-attention"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-intentional-speech" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('intentional-speech')">
+                        <span id="val-intentional-speech" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅲ-2　工夫（助走・延期）
-                    </div>
-
+                    <div class="checksheet-label">Ⅲ-3　工夫</div>
+                    <p><strong>どもることを避けたり言葉を出したりするために、話し方や身体などを意図的に工夫することがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">例：話す速さ・呼吸・口の動き・助走・延期・言い換え等。これらを推奨するものではありません。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-effort"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('effort')">
-
-                        <span
-                            id="val-effort"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-coping" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('coping')">
+                        <span id="val-coping" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅲ-3　その他の工夫（解除・言い換え）
-                    </div>
-
+                    <div class="checksheet-label">Ⅲ-4　回避</div>
+                    <p><strong>どもることを避けるために、言いたいことを言わなかったり、話すことを避けることがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">例：発言をやめる、言葉を避ける、話す必要のある場面を避けるなど。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-avoid"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('avoid')">
-
-                        <span
-                            id="val-avoid"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-avoidance" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('avoidance')">
+                        <span id="val-avoidance" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅲ-4　回避行動
-                    </div>
-
+                    <div class="checksheet-label">Ⅳ　相手の発話内容理解への負担</div>
+                    <p><strong>自分がどう話すかに気を取られて、相手の話を聞き漏らしたり、言葉を頭にとどめようと努力することがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">相手の話を理解することへの負担を振り返ります。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-avoid-act"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('avoid-act')">
-
-                        <span
-                            id="val-avoid-act"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-listening-burden" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('listening-burden')">
+                        <span id="val-listening-burden" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
                 <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅳ-1　聞き漏らし等負担
-                    </div>
-
+                    <div class="checksheet-label">Ⅴ　発話以外での否定的な面への注意</div>
+                    <p><strong>発話以外でも、物事の否定的な面に注意が向くことがありますか？</strong></p>
+                    <p style="font-size:.92rem;color:#536174;">良い・悪いを判定するためではなく、現在の傾向を振り返ります。</p>
                     <div class="range-row">
-
-                        <input
-                            id="range-listen-burden"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('listen-burden')">
-
-                        <span
-                            id="val-listen-burden"
-                            class="range-value">
-                            0%
-                        </span>
-
+                        <input id="range-negative-attention" type="range" min="0" max="100" step="10" value="0"
+                               oninput="syncVal('negative-attention')">
+                        <span id="val-negative-attention" class="range-value">0%</span>
                     </div>
-
+                    <div class="checksheet-scale"><span>0%</span><span>100%</span></div>
                 </div>
 
-
-                <div class="checksheet-item">
-
-                    <div class="checksheet-label">
-                        Ⅴ-1　悪い面への注意偏り
-                    </div>
-
-                    <div class="range-row">
-
-                        <input
-                            id="range-neg-bias"
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="10"
-                            value="0"
-                            oninput="syncVal('neg-bias')">
-
-                        <span
-                            id="val-neg-bias"
-                            class="range-value">
-                            0%
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    class="primary-button"
-                    onclick="generateClinicalReport()">
-
-                    <i class="fa-solid fa-file-medical"></i>
-                    悪循環を分析してレポートを生成する
-
+                <button id="save-vicious-cycle-button" type="button" class="primary-button"
+                        onclick="saveViciousCycleCheck()">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    今回のチェックを記録する
                 </button>
-
+                <div id="vicious-cycle-save-status" class="pre-mr-progress-status" aria-live="polite"></div>
             </section>
 
 
@@ -3071,311 +2907,53 @@ function getRangeValue(id) {
 }
 
 
-function generateClinicalReport() {
+async function saveViciousCycleCheck() {
+    if (!requireUnlocked() || !window.RASSV3) return;
 
-    if (!requireUnlocked()) return;
+    const button = document.getElementById("save-vicious-cycle-button");
+    const status = document.getElementById("vicious-cycle-save-status");
 
     const values = {
-
-        value:
-            getRangeValue("range-value"),
-
-        cognition:
-            getRangeValue("range-cognition"),
-
-        emotion:
-            getRangeValue("range-emotion"),
-
-        attention:
-            getRangeValue("range-attention"),
-
-        effort:
-            getRangeValue("range-effort"),
-
-        avoid:
-            getRangeValue("range-avoid"),
-
-        avoidAct:
-            getRangeValue("range-avoid-act"),
-
-        listenBurden:
-            getRangeValue(
-                "range-listen-burden"
-            ),
-
-        negBias:
-            getRangeValue(
-                "range-neg-bias"
-            )
+        thinking: getRangeValue("range-thinking"),
+        emotion_rumination: getRangeValue("range-emotion-rumination"),
+        speech_attention: getRangeValue("range-speech-attention"),
+        intentional_speech: getRangeValue("range-intentional-speech"),
+        coping: getRangeValue("range-coping"),
+        avoidance: getRangeValue("range-avoidance"),
+        listening_burden: getRangeValue("range-listening-burden"),
+        negative_attention: getRangeValue("range-negative-attention")
     };
 
+    if (button) button.disabled = true;
+    if (status) status.textContent = "記録しています…";
 
-    const valueArray =
-        Object.values(values);
+    try {
+        const result = await window.RASSV3.saveViciousCycle(values);
 
-
-    const total =
-        Math.round(
-            valueArray.reduce(
-                (sum, value) =>
-                    sum + value,
-                0
-            ) / valueArray.length
-        );
-
-
-    const stepVal =
-        document.getElementById(
-            "session-select"
-        ).value;
-
-
-    const history =
-        getSavedScoreHistory();
-
-
-    let prevScoreText =
-        "今回が初回測定です。";
-
-    let diffText =
-        "";
-
-
-    if (history.length > 0) {
-
-        const lastRecord =
-            history[history.length - 1];
-
-        const diff =
-            total -
-            Number(lastRecord.total);
-
-
-        if (diff < 0) {
-
-            diffText =
-                `（前回比：▼${Math.abs(diff)}%）`;
-
-        } else if (diff > 0) {
-
-            diffText =
-                `（前回比：▲${diff}%）`;
-
-        } else {
-
-            diffText =
-                "（前回比：変化なし）";
+        if (status) {
+            status.textContent =
+                "✓ 今回のセルフチェックを記録しました。数値は良い・悪いを判定するものではありません。";
         }
 
+        // Step 2 only: v4.3 automatically completes vicious_cycle_check
+        // after the DB insert succeeds. Refresh the progress UI from server truth.
+        if (Number(getCurrentStage()) === 2) {
+            await loadPreMRProgress();
+        }
 
-        prevScoreText =
-            `前回（ステップ${escapeHTML(lastRecord.step)}）：${lastRecord.total}% → 今回（ステップ${escapeHTML(stepVal)}）：${total}% ${diffText}`;
+        return result;
+    } catch (error) {
+        console.error(error);
+        if (status) status.textContent = "記録できませんでした。通信状態を確認して、もう一度お試しください。";
+        throw error;
+    } finally {
+        if (button) button.disabled = false;
     }
+}
 
-
-    saveScoreToHistory(
-        stepVal,
-        total
-    );
-
-
-    const reportTotal =
-        document.getElementById(
-            "rep-total"
-        );
-
-
-    if (reportTotal) {
-
-        reportTotal.innerText =
-            `${total}%`;
-    }
-
-
-    const totalDesc =
-        `
-        <div>
-            <strong>【スコア推移・前後比較】</strong><br>
-            ${escapeHTML(prevScoreText)}
-        </div>
-
-        <p>
-            今回の悪循環セルフチェック・
-            トータル負荷は
-            <strong>${total}%</strong>
-            です。
-        </p>
-
-        <p>
-            この数値だけで吃音の重症度や
-            医学的な改善・悪化を確定することはできません。
-            前回との変化を記録し、
-            日常生活での体験と合わせて振り返ってください。
-        </p>
-        `;
-
-
-    const mechanismDesc =
-        `
-        <h4>【各項目】</h4>
-
-        <ul>
-            <li>Ⅰ-1 他者推測・自己処罰：${values.value}%</li>
-            <li>Ⅰ-2 発話強迫・隠蔽：${values.cognition}%</li>
-            <li>Ⅱ-1 情動反応・反芻：${values.emotion}%</li>
-            <li>Ⅲ-1 注目・自己監視：${values.attention}%</li>
-            <li>Ⅲ-2 工夫（助走・延期）：${values.effort}%</li>
-            <li>Ⅲ-3 その他の工夫：${values.avoid}%</li>
-            <li>Ⅲ-4 回避行動：${values.avoidAct}%</li>
-            <li>Ⅳ-1 聞き漏らし等負担：${values.listenBurden}%</li>
-            <li>Ⅴ-1 悪い面への注意偏り：${values.negBias}%</li>
-        </ul>
-
-        <div class="punish-calc">
-
-            <strong>
-                【自分を罰した回数の試算ワーク】
-            </strong>
-
-            <p>
-                この計算は医学的な測定値ではなく、
-                自分への評価や反応の多さを振り返るための
-                任意の参考ワークです。
-            </p>
-
-            ① 1日に工夫を使った平均回数：
-
-            <input
-                type="number"
-                id="calc-eff"
-                min="0"
-                max="100000"
-                value="20"
-                oninput="runPunishCalc()">
-
-            回
-
-            <br><br>
-
-            ② 1年に話す日数：
-
-            <input
-                type="number"
-                id="calc-days"
-                min="1"
-                max="366"
-                value="300"
-                oninput="runPunishCalc()">
-
-            日
-
-            <br><br>
-
-            ③ 吃音を意識し始めてからの年数：
-
-            <input
-                type="number"
-                id="calc-years"
-                min="0"
-                max="120"
-                value="15"
-                oninput="runPunishCalc()">
-
-            年
-
-            <div
-                style="margin-top:10px;font-weight:bold;">
-
-                推定回数：
-
-                <span
-                    id="punish-total-val">
-                    90,000
-                </span>
-
-                回
-
-            </div>
-
-        </div>
-        `;
-
-
-    const therapyDesc =
-        `
-        <h4>【振り返り】</h4>
-
-        <p>
-            今回の数値を「成功・失敗」として
-            評価するのではなく、
-            どの項目に注意や負担が生じているのかを
-            確認するために使用してください。
-        </p>
-
-        <p>
-            次の行動については、
-            現在のステップとAIからの案内に従ってください。
-        </p>
-        `;
-
-
-    document.getElementById(
-        "rep-total-desc"
-    ).innerHTML =
-        totalDesc;
-
-    document.getElementById(
-        "rep-mechanism"
-    ).innerHTML =
-        mechanismDesc;
-
-    document.getElementById(
-        "rep-therapy"
-    ).innerHTML =
-        therapyDesc;
-
-
-    latestReportMessage =
-`${buildStageContextMessage()}\n\n【悪循環セルフチェック報告（ステップ${stepVal}）】
-現在のトータル負荷スコア：${total}%
-前後比較：${prevScoreText}
-
-[詳細項目]
-・否定的価値観・推測：${values.value}%
-・発話強迫・隠蔽：${values.cognition}%
-・感情の反芻・予期不安：${values.emotion}%
-・注目・自己監視：${values.attention}%
-・工夫（助走・延期）：${values.effort}%
-・その他の工夫：${values.avoid}%
-・回避行動：${values.avoidAct}%
-・会話の聞き漏らし負担：${values.listenBurden}%
-・悪い面への注意の偏り：${values.negBias}%
-
-上記のスコア結果を踏まえて、
-現在のステップに沿った振り返りとセルフケア上のガイダンスをお願いします。`;
-
-
-    const resultArea =
-        document.getElementById(
-            "result-area"
-        );
-
-
-    if (resultArea) {
-
-        resultArea.style.display =
-            "block";
-
-        resultArea.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }
-
-
-    renderHistory();
-
-    runPunishCalc();
+// Backward-compatible name; no aggregate score/report is generated in v3.5.
+function generateClinicalReport() {
+    return saveViciousCycleCheck();
 }
 
 
